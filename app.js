@@ -1,371 +1,488 @@
-// Variables globales
-let modoModal = 'login';
-let fotoTemporal = null;
-let alimentoSeleccionadoId = null;
-let categoriaFiltro = 'todos';
-let ordenActual = 'vencimiento';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NO WASTE - App Móvil</title>
+    <!-- Framework Tailwind CSS & Iconos FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="antialiased w-full min-h-screen">
 
-// INVENTARIO INICIAL
-let inventario = [
-    { id: 1, nombre: 'Plátanos Maduros', cantidad: '4 unidades', dias: 0, emoji: '🍌', pronto: true, imagen: null, diasTotal: 7 },
-    { id: 2, nombre: 'Leche Entera', cantidad: '1 Litro', dias: 2, emoji: '🥛', pronto: true, imagen: null, diasTotal: 10 },
-    { id: 3, nombre: 'Aguacates', cantidad: '2 pcs', dias: 6, emoji: '🥑', pronto: false, imagen: null, diasTotal: 10 },
-    { id: 4, nombre: 'Tomates', cantidad: '5 pcs', dias: 5, emoji: '🍅', pronto: false, imagen: null, diasTotal: 8 }
-];
+    <!-- CONTENEDOR GLOBAL -->
+    <div class="app-screen">
+        
+        <!-- MARCO MÓVIL CENTRADO -->
+        <div class="app-card">
+            
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
+            <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
+                
+                <!-- DECORACIONES SVG INTERNAS -->
+                <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                    <svg class="absolute -top-6 -right-10 w-44 h-44 opacity-90" viewBox="0 0 100 100">
+                        <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
+                        <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#b1d387"/>
+                        <circle cx="50" cy="65" r="14" fill="#6d4c41"/>
+                    </svg>
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderizarDespensa();
-});
+                    <svg class="absolute -top-4 -left-8 w-36 h-36 opacity-80" viewBox="0 0 100 100">
+                        <path d="M10 20 Q40 10 50 50 Q20 40 10 20 Z" fill="#3b630b"/>
+                        <path d="M5 50 Q35 30 60 70 Q25 70 5 50 Z" fill="#2d4c08"/>
+                    </svg>
 
-// RENDERIZAR INVENTARIO
-function renderizarDespensa() {
-    const listaPronto = document.getElementById('lista-pronto');
-    const listaFrescos = document.getElementById('lista-frescos');
-    const seccionPronto = document.getElementById('seccion-pronto');
-    const seccionFrescos = document.getElementById('seccion-frescos');
+                    <svg class="absolute -bottom-12 -left-12 w-48 h-48 opacity-90" viewBox="0 0 100 100">
+                        <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C68 95 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08"/>
+                        <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#c3e296"/>
+                        <circle cx="50" cy="65" r="14" fill="#5d4037"/>
+                    </svg>
 
-    if (!listaPronto || !listaFrescos) return;
+                    <svg class="absolute -bottom-6 -right-6 w-36 h-36 opacity-80" viewBox="0 0 100 100">
+                        <path d="M90 80 Q60 90 50 50 Q80 60 90 80 Z" fill="#3b630b"/>
+                        <path d="M95 50 Q65 70 40 30 Q75 30 95 50 Z" fill="#2d4c08"/>
+                    </svg>
 
-    listaPronto.innerHTML = '';
-    listaFrescos.innerHTML = '';
+                    <i class="fa-solid fa-heart absolute top-20 left-6 text-emerald-600/30 text-sm"></i>
+                    <i class="fa-solid fa-heart absolute top-1/2 right-4 text-emerald-600/30 text-xs"></i>
+                    <i class="fa-solid fa-heart absolute bottom-24 left-10 text-emerald-600/30 text-xs"></i>
+                </div>
 
-    const termino = (document.getElementById('input-buscar')?.value || '').toLowerCase().trim();
+                <!-- ENCABEZADO -->
+                <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
+                    <div class="flex justify-between items-center w-full">
+                        <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                        
+                        <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
+                        
+                        <button type="button" id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition cursor-pointer">
+                            <i class="fa-solid fa-location-dot text-sm"></i>
+                        </button>
+                    </div>
 
-    let filtrados = inventario.filter(item => {
-        const coincideNombre = item.nombre.toLowerCase().includes(termino);
-        if (categoriaFiltro === 'pronto') return coincideNombre && item.pronto;
-        if (categoriaFiltro === 'frescos') return coincideNombre && !item.pronto;
-        return coincideNombre;
-    });
+                    <div id="badge-ubicacion" class="hidden animate-fade-in mt-1 px-3 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-bold text-emerald-900 shadow-sm">
+                        <span id="texto-ciudad">📍 Detectando ciudad...</span>
+                    </div>
+                </header>
 
-    if (ordenActual === 'vencimiento') {
-        filtrados.sort((a, b) => a.dias - b.dias);
-    } else if (ordenActual === 'nombre') {
-        filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    }
+                <!-- CONTENIDO CENTRAL DE BIENVENIDA -->
+                <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
+                    
+                    <div class="relative my-2 w-full max-w-[220px] animate-float">
+                        <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
+                            <div class="relative w-24 h-20 flex items-center justify-center drop-shadow-sm">
+                                <svg viewBox="0 0 100 100" class="w-full h-full">
+                                    <path d="M50 10 C32 10 22 28 22 55 C22 78 34 90 50 90 C66 90 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08" />
+                                    <path d="M50 15 C36 15 27 31 27 55 C27 74 37 84 50 84 C63 84 73 74 73 55 C73 31 64 15 50 15 Z" fill="#c3e296" />
+                                    <circle cx="50" cy="62" r="13" fill="#5d4037" stroke="#3e2723" stroke-width="1"/>
+                                    <circle cx="43" cy="38" r="2.5" fill="#1b3303"/>
+                                    <circle cx="57" cy="38" r="2.5" fill="#1b3303"/>
+                                    <path d="M44 44 Q50 50 56 44" stroke="#1b3303" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    <path d="M50 10 Q58 2 66 8 Q58 14 50 10 Z" fill="#3b630b"/>
+                                </svg>
+                            </div>
 
-    let contadorPronto = 0;
-    let contadorFrescos = 0;
-
-    filtrados.forEach(item => {
-        if (item.pronto) {
-            contadorPronto++;
-            listaPronto.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400 transition">
-                    <div class="flex items-center gap-3">
-                        ${item.imagen ? `<img src="${item.imagen}" class="w-8 h-8 rounded-xl object-cover">` : `<span class="text-2xl">${item.emoji}</span>`}
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${item.nombre}</h4>
-                            <p class="text-[10px] text-red-600 font-semibold">${item.dias === 0 ? 'Vence hoy' : 'Vence en ' + item.dias + ' días'} • ${item.cantidad}</p>
+                            <span class="text-xl font-brand font-bold text-[#1b3303] tracking-wider mt-1">NO WASTE</span>
+                            <span class="text-[8px] uppercase font-bold tracking-wider text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
                         </div>
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                        ¿Qué cocinar?
+
+                    <!-- BOTONES QUE ABREN EL MODAL -->
+                    <div class="w-full space-y-3 mt-3">
+                        <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                            Iniciar sesion
+                        </button>
+                        
+                        <button type="button" onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                            Crear cuenta
+                        </button>
+                    </div>
+
+                    <p class="text-slate-600 font-serif-custom text-[11px] my-3">o continuar con:</p>
+
+                    <div class="flex justify-center items-center gap-5">
+                        <button type="button" onclick="loginSocial('Google')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Google">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
+                                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
+                                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+                            </svg>
+                        </button>
+
+                        <button type="button" onclick="loginSocial('Facebook')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Facebook">
+                            <i class="fa-brands fa-facebook text-xl text-blue-600"></i>
+                        </button>
+
+                        <button type="button" onclick="loginSocial('Apple')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Apple">
+                            <i class="fa-brands fa-apple text-xl text-black"></i>
+                        </button>
+                    </div>
+                </main>
+
+                <div class="pb-3"></div>
+            </div>
+
+            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL) -->
+            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[#2d4c08] font-bold text-base shadow-sm">
+                                🥑
+                            </div>
+                            <div>
+                                <h2 class="text-xs font-semibold text-emerald-200">¡Hola, Sofía! 👋</h2>
+                                <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
+                            <span>Has salvado <b id="stat-salvados">3.2 kg</b> este mes</span>
+                        </div>
+                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 2 🌟</span>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                    <!-- BUSCADOR EN TIEMPO REAL -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+                            <input type="text" id="input-buscar" oninput="filtrarAlimentos()" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                        </div>
+                        <button type="button" onclick="abrirModalFiltros()" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 active:bg-slate-100 transition cursor-pointer">
+                            <i class="fa-solid fa-sliders text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- CATEGORÍAS -->
+                    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+                        <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
+                            Todos
+                        </button>
+                        <button type="button" id="btn-cat-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🔴 Vence pronto
+                        </button>
+                        <button type="button" id="btn-cat-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🟢 Frescos
+                        </button>
+                    </div>
+
+                    <!-- SECCIÓN: CONSUMIR PRONTO -->
+                    <div id="seccion-pronto">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span> Consumir Pronto
+                            </h3>
+                            <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-full border border-red-200">¡Prioridad!</span>
+                        </div>
+
+                        <div id="lista-pronto" class="space-y-2"></div>
+                    </div>
+
+                    <!-- SECCIÓN: EN BUEN ESTADO -->
+                    <div id="seccion-frescos">
+                        <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
+                        </h3>
+
+                        <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+
+                    <button type="button" onclick="alert('Perfil de usuario en desarrollo 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-regular fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
+                    </button>
+                </nav>
+
+            </div>
+
+            <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE CON BARRA MÁS GRANDE Y BOTONES -->
+            <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
+                <!-- ENCABEZADO CON VOLVER -->
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight">Detalle del Producto</h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+                    <!-- FOTO REAL DEL ALIMENTO -->
+                    <div class="w-full h-48 rounded-3xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center shadow-md relative">
+                        <img id="tab-detalle-img" src="" class="w-full h-full object-cover">
+                        <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md">
+                            Fresco
+                        </span>
+                    </div>
+
+                    <!-- TITULO Y CANTIDAD -->
+                    <div class="text-center">
+                        <h3 id="tab-detalle-nombre" class="text-xl font-bold text-slate-800">Nombre del Alimento</h3>
+                        <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
+                    </div>
+
+                    <!-- BARRA DE PORCENTAJE DE FRESCURA MÁS GRANDE -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5">
+                        <div class="flex justify-between items-center text-xs font-bold">
+                            <span class="text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
+                            </span>
+                            <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold text-sm">100% Fresco</span>
+                        </div>
+
+                        <!-- BARRA MÁS ALTA Y VISIBLE (h-5) -->
+                        <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 shadow-inner">
+                            <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
+                        </div>
+
+                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
+                    </div>
+
+                    <!-- TARJETAS DE MÉTRICAR -->
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
+                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
+                        </div>
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- BOTONES DE ACCIÓN: CONSUMIDO, DONAR, RECETA -->
+                <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 btn-green text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Consumido</span>
+                        </button>
+
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Donar</span>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-amber-600"></i>
+                        <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
                 </div>
-            `;
-        } else {
-            contadorFrescos++;
-            listaFrescos.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400 transition">
-                    <div class="flex items-center gap-2 mb-2">
-                        ${item.imagen ? `<img src="${item.imagen}" class="w-7 h-7 rounded-lg object-cover">` : `<span class="text-xl">${item.emoji}</span>`}
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${item.nombre}</h4>
-                            <p class="text-[9px] text-emerald-600 font-medium">Vence en ${item.dias} días</p>
+            </div>
+
+        </div>
+
+        <!-- MODAL 1: INICIAR SESIÓN / CREAR CUENTA -->
+        <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
+                
+                <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
+                    <button type="button" id="tab-login" onclick="cambiarModoModal('login')" class="flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer">
+                        Iniciar Sesión
+                    </button>
+                    <button type="button" id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                        Crear Cuenta
+                    </button>
+                </div>
+
+                <h2 id="modal-titulo" class="font-serif-custom text-green-custom text-lg font-bold mb-3">Iniciar Sesión</h2>
+
+                <form onsubmit="return procesarFormulario(event)">
+                    <div id="campos-login" class="space-y-2.5 mb-3">
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
+                            <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-login" placeholder="Ingresa tu contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-login', 'eye-login')" class="p-1 cursor-pointer">
+                                <i id="eye-login" class="fa-solid fa-eye text-slate-400 text-xs"></i>
+                            </button>
                         </div>
                     </div>
-                    <span class="text-[10px] text-slate-400">Cantidad: ${item.cantidad}</span>
+
+                    <div id="campos-registro" class="space-y-2.5 mb-3 hidden text-left">
+                        <p class="text-[11px] font-bold text-slate-600 mb-1">Tipo de usuario:</p>
+                        <input type="hidden" id="perfil-tipo-input" value="hogar">
+                        <div class="flex gap-2 mb-2">
+                            <button type="button" id="btn-perfil-hogar" onclick="seleccionarPerfil('hogar')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i class="fa-solid fa-house text-xs"></i> Hogar
+                            </button>
+                            <button type="button" id="btn-perfil-comercio" onclick="seleccionarPerfil('comercio')" class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i class="fa-solid fa-store text-xs"></i> Comercio
+                            </button>
+                        </div>
+
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-user text-slate-400 mr-2 text-sm"></i>
+                            <input type="text" placeholder="Nombre completo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
+                            <input type="email" placeholder="Correo electrónico" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-reg1" placeholder="Contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-reg1', 'eye-reg1')" class="p-1 cursor-pointer">
+                                <i id="eye-reg1" class="fa-solid fa-eye text-slate-400 text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-shield-halved text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-reg2" placeholder="Confirmar contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-reg2', 'eye-reg2')" class="p-1 cursor-pointer">
+                                <i id="eye-reg2" class="fa-solid fa-eye text-slate-400 text-xs"></i>
+                            </button>
+                        </div>
+
+                        <label class="flex items-start gap-2 pt-1 cursor-pointer">
+                            <input type="checkbox" id="check-terminos" class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[10px] text-slate-500 leading-tight">Acepto los términos y la política ambiental.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">
+                        Iniciar sesión
+                    </button>
+                </form>
+
+                <a href="#" id="link-olvidaste" class="block text-green-custom font-serif-custom text-[11px] hover:underline mb-2">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+                <p class="text-slate-500 font-serif-custom text-[10px] mb-2">o continuar con:</p>
+                <div class="flex justify-center items-center gap-4">
+                    <button type="button" onclick="loginSocial('Google')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-google text-base text-red-500"></i></button>
+                    <button type="button" onclick="loginSocial('Facebook')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-facebook text-base text-blue-600"></i></button>
+                    <button type="button" onclick="loginSocial('Apple')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-apple text-base text-black"></i></button>
                 </div>
-            `;
-        }
-    });
 
-    if (seccionPronto) seccionPronto.style.display = (contadorPronto > 0 || categoriaFiltro === 'pronto') ? 'block' : 'none';
-    if (seccionFrescos) seccionFrescos.style.display = (contadorFrescos > 0 || categoriaFiltro === 'frescos') ? 'block' : 'none';
-}
+                <button type="button" onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
 
-// PESTAÑA DEDICADA DE DETALLE CON CÁLCULO DE FRESCURA
-function abrirDetalleTab(id) {
-    const item = inventario.find(i => i.id === id);
-    if (!item) return;
+        <!-- MODAL 2: AGREGAR NUEVO ALIMENTO -->
+        <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
+                
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
+                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
+                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
+                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="flex flex-col items-center">
+                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
+                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
+                            </div>
+                        </div>
+                    </div>
 
-    alimentoSeleccionadoId = id;
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                    </div>
 
-    // Asignar textos
-    document.getElementById('tab-detalle-nombre').textContent = item.nombre;
-    document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
-    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para su fecha límite`;
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
+                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 Litro" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
+                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+                </div>
 
-    // Manejar Imagen / Emoji
-    const imgEl = document.getElementById('tab-detalle-img');
-    const emojiEl = document.getElementById('tab-detalle-emoji');
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    if (item.imagen) {
-        imgEl.src = item.imagen;
-        imgEl.classList.remove('hidden');
-        emojiEl.classList.add('hidden');
-    } else {
-        imgEl.classList.add('hidden');
-        emojiEl.classList.remove('hidden');
-        emojiEl.textContent = item.emoji || '🥑';
-    }
+        <!-- MODAL 4: ORDENAR Y FILTRAR -->
+        <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-xs font-bold text-slate-800 mb-3 text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-emerald-700"></i> Ordenar inventario
+                </h3>
 
-    // Calcular Porcentaje de Frescura (0% - 100%)
-    const diasTotal = item.diasTotal || 7;
-    let pct = Math.min(100, Math.max(10, Math.round((item.dias / diasTotal) * 100)));
-    if (item.dias === 0) pct = 5;
+                <div class="space-y-2 text-xs">
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="vencimiento" checked onchange="cambiarOrden('vencimiento')">
+                        <span>📅 Próximos a vencer</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="nombre" onchange="cambiarOrden('nombre')">
+                        <span>🔤 Nombre (A - Z)</span>
+                    </label>
+                </div>
 
-    const barEl = document.getElementById('tab-detalle-bar');
-    const pctTxt = document.getElementById('tab-detalle-porcentaje');
-    const badgeEl = document.getElementById('tab-detalle-badge');
-    const estadoTxt = document.getElementById('tab-detalle-estado');
+                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    Aplicar
+                </button>
+            </div>
+        </div>
 
-    if (barEl) barEl.style.width = `${pct}%`;
-    if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
+    </div>
 
-    // Ajustar Colores según Nivel de Frescura
-    if (pct > 50) {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500";
-        if (badgeEl) { badgeEl.textContent = 'Fresco 🟢'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-emerald-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Óptimo estado";
-    } else if (pct > 20) {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500";
-        if (badgeEl) { badgeEl.textContent = 'Consumir pronto 🟡'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-amber-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Atención requerida";
-    } else {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500";
-        if (badgeEl) { badgeEl.textContent = '¡Urgente! 🔴'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-red-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Prioridad máxima";
-    }
-
-    // Transición de pestañas
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
-}
-
-function volverADespensa() {
-    document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
-    document.getElementById('vista-despensa')?.classList.remove('hidden');
-}
-
-function marcarComoConsumidoTab() {
-    if (alimentoSeleccionadoId) {
-        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
-        renderizarDespensa();
-    }
-    volverADespensa();
-}
-
-function recetaDesdeDetalle() {
-    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
-    if (item) sugerirReceta(item.nombre);
-}
-
-// BÚSQUEDA Y FILTROS
-function filtrarAlimentos() { renderizarDespensa(); }
-
-function filtrarCategoria(cat) {
-    categoriaFiltro = cat;
-    const btnTodos = document.getElementById('btn-cat-todos');
-    const btnPronto = document.getElementById('btn-cat-pronto');
-    const btnFrescos = document.getElementById('btn-cat-frescos');
-
-    [btnTodos, btnPronto, btnFrescos].forEach(b => {
-        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
-    });
-
-    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-
-    renderizarDespensa();
-}
-
-function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
-function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
-function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
-
-// CÁMARA Y FOTO
-function previsualizarFoto(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            fotoTemporal = evt.target.result;
-            const imgPreview = document.getElementById('preview-foto');
-            const placeholder = document.getElementById('placeholder-foto');
-            if (imgPreview && placeholder) {
-                imgPreview.src = fotoTemporal;
-                imgPreview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function guardarAlimento() {
-    const nom = document.getElementById('input-nombre-alimento')?.value.trim();
-    const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
-    const fecha = document.getElementById('input-fecha-alimento')?.value;
-
-    if (!nom) return alert("Por favor ingresa un nombre.");
-
-    let dias = 3;
-    if (fecha) {
-        const hoy = new Date();
-        hoy.setHours(0,0,0,0);
-        const destino = new Date(fecha);
-        destino.setHours(0,0,0,0);
-        dias = Math.max(0, Math.ceil((destino - hoy) / (1000 * 3600 * 24)));
-    }
-
-    const nuevo = {
-        id: Date.now(),
-        nombre: nom,
-        cantidad: cant,
-        dias: dias,
-        emoji: '🥑',
-        pronto: dias <= 2,
-        imagen: fotoTemporal,
-        diasTotal: Math.max(dias + 2, 7)
-    };
-
-    inventario.unshift(nuevo);
-    renderizarDespensa();
-    cerrarModalAgregar();
-
-    document.getElementById('input-nombre-alimento').value = '';
-    document.getElementById('input-cantidad-alimento').value = '';
-    document.getElementById('input-fecha-alimento').value = '';
-    fotoTemporal = null;
-    document.getElementById('preview-foto')?.classList.add('hidden');
-    document.getElementById('placeholder-foto')?.classList.remove('hidden');
-}
-
-// MODAL LOGIN / AUTH
-function abrirModal(modo) {
-    modoModal = modo || 'login';
-    document.getElementById('modal-login')?.classList.remove('hidden');
-    actualizarModalUI();
-}
-
-function abrirLogin() { abrirModal('login'); }
-function abrirRegistro() { abrirModal('registro'); }
-function cerrarLogin() { document.getElementById('modal-login')?.classList.add('hidden'); }
-function cambiarModoModal(modo) { modoModal = modo; actualizarModalUI(); }
-
-function actualizarModalUI() {
-    const titulo = document.getElementById('modal-titulo');
-    const camposLogin = document.getElementById('campos-login');
-    const camposRegistro = document.getElementById('campos-registro');
-    const btnSubmit = document.getElementById('btn-submit-modal');
-    const linkOlvidaste = document.getElementById('link-olvidaste');
-    const tabLogin = document.getElementById('tab-login');
-    const tabRegistro = document.getElementById('tab-registro');
-
-    if (!titulo || !camposLogin || !camposRegistro) return;
-
-    if (modoModal === 'login') {
-        titulo.textContent = 'Iniciar Sesión';
-        camposLogin.classList.remove('hidden');
-        camposRegistro.classList.add('hidden');
-        if (btnSubmit) btnSubmit.textContent = 'Iniciar sesión';
-        if (linkOlvidaste) linkOlvidaste.classList.remove('hidden');
-        if (tabLogin && tabRegistro) {
-            tabLogin.className = "flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer";
-            tabRegistro.className = "flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer";
-        }
-    } else {
-        titulo.textContent = 'Crear Cuenta';
-        camposLogin.classList.add('hidden');
-        camposRegistro.classList.remove('hidden');
-        if (btnSubmit) btnSubmit.textContent = 'Registrarse';
-        if (linkOlvidaste) linkOlvidaste.classList.add('hidden');
-        if (tabLogin && tabRegistro) {
-            tabRegistro.className = "flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer";
-            tabLogin.className = "flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer";
-        }
-    }
-}
-
-function togglePassword(inputId, iconId) {
-    const passInput = document.getElementById(inputId);
-    const passIcon = document.getElementById(iconId);
-    if (passInput && passIcon) {
-        passInput.type = passInput.type === 'password' ? 'text' : 'password';
-        passIcon.className = passInput.type === 'password' ? 'fa-solid fa-eye text-slate-400 text-xs' : 'fa-solid fa-eye-slash text-slate-400 text-xs';
-    }
-}
-
-function seleccionarPerfil(tipo) {
-    const btnHogar = document.getElementById('btn-perfil-hogar');
-    const btnComercio = document.getElementById('btn-perfil-comercio');
-    const inputPerfil = document.getElementById('perfil-tipo-input');
-    if (inputPerfil) inputPerfil.value = tipo;
-
-    if (tipo === 'hogar' && btnHogar && btnComercio) {
-        btnHogar.className = "flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer";
-        btnComercio.className = "flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer";
-    } else if (btnHogar && btnComercio) {
-        btnComercio.className = "flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer";
-        btnHogar.className = "flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer";
-    }
-}
-
-function mostrarDespensa() {
-    document.getElementById('vista-auth')?.classList.add('hidden');
-    document.getElementById('vista-despensa')?.classList.remove('hidden');
-}
-
-function cerrarSesion() {
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-auth')?.classList.remove('hidden');
-}
-
-function loginSocial(red) {
-    alert(`Iniciando sesión con ${red}... ¡Bienvenido a NO WASTE!`);
-    cerrarLogin();
-    mostrarDespensa();
-}
-
-function procesarFormulario(e) {
-    if (e && e.preventDefault) e.preventDefault();
-    cerrarLogin();
-    mostrarDespensa();
-    return false;
-}
-
-function sugerirReceta(alimento) {
-    alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
-}
-
-function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
-function cerrarModalAgregar() { document.getElementById('modal-agregar')?.classList.add('hidden'); }
-
-function obtenerUbicacion() {
-    const badgeUbicacion = document.getElementById('badge-ubicacion');
-    const textoCiudad = document.getElementById('texto-ciudad');
-    const btnGps = document.getElementById('btn-gps');
-    if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-sm"></i>';
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const ciudad = data.address?.city || data.address?.town || "Ubicación detectada";
-                        if (textoCiudad) textoCiudad.textContent = `📍 ${ciudad}`;
-                        if (badgeUbicacion) badgeUbicacion.classList.remove('hidden');
-                    })
-                    .finally(() => { if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>'; });
-            },
-            () => {
-                if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
-                alert("Por favor habilita el permiso de GPS.");
-            }
-        );
-    }
-}
+    <!-- Archivo JS -->
+    <script src="app.js"></script>
+</body>
+</html>
