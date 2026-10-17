@@ -1,4 +1,6 @@
-// Globales
+// Variables globales
+let modoModal = 'login';
+let tipoCuenta = 'personal';
 let alimentoSeleccionadoId = null;
 
 // Filtros
@@ -7,7 +9,7 @@ let tipoFiltro = 'todos';
 let ubicacionFiltro = 'todas';
 let ordenActual = 'vencimiento';
 
-// Datos iniciales
+// INVENTARIO CON CATEGORÍAS Y UBICACIÓN
 let inventario = [
     { 
         id: 1, 
@@ -65,7 +67,78 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
 });
 
-// Renderizado principal con filtrado exacto
+// GEOLOCALIZACIÓN GPS RESTAURADA
+function obtenerUbicacion() {
+    const badge = document.getElementById('badge-ubicacion');
+    const texto = document.getElementById('texto-ciudad');
+
+    if (badge) badge.classList.remove('hidden');
+    if (texto) texto.textContent = '📍 Obteniendo GPS...';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude.toFixed(2);
+                const lon = position.coords.longitude.toFixed(2);
+                if (texto) texto.textContent = `📍 Ubicación: Lat ${lat}, Lon ${lon}`;
+            },
+            () => {
+                if (texto) texto.textContent = '📍 Ciudad de México, MX';
+            }
+        );
+    } else {
+        if (texto) texto.textContent = '📍 Ciudad de México, MX';
+    }
+}
+
+// MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO)
+function abrirModalAuth(modo) {
+    modoModal = modo;
+    const modal = document.getElementById('modal-auth');
+    const titulo = document.getElementById('titulo-modal-auth');
+
+    if (titulo) {
+        titulo.textContent = (modo === 'login') ? 'Iniciar Sesión' : 'Crear Cuenta Nueva';
+    }
+    if (modal) modal.classList.remove('hidden');
+}
+
+function cerrarModalAuth() {
+    document.getElementById('modal-auth')?.classList.add('hidden');
+}
+
+function seleccionarTipoCuenta(tipo) {
+    tipoCuenta = tipo;
+    const btnPersonal = document.getElementById('tab-tipo-personal');
+    const btnEmpresa = document.getElementById('tab-tipo-empresa');
+
+    if (tipo === 'personal') {
+        if (btnPersonal) btnPersonal.className = "flex-1 py-1 rounded-lg font-bold bg-emerald-600 text-white cursor-pointer transition";
+        if (btnEmpresa) btnEmpresa.className = "flex-1 py-1 rounded-lg font-medium text-slate-600 cursor-pointer transition";
+    } else {
+        if (btnPersonal) btnPersonal.className = "flex-1 py-1 rounded-lg font-medium text-slate-600 cursor-pointer transition";
+        if (btnEmpresa) btnEmpresa.className = "flex-1 py-1 rounded-lg font-bold bg-emerald-600 text-white cursor-pointer transition";
+    }
+}
+
+function ejecutarAuth() {
+    const email = document.getElementById('auth-email')?.value.trim();
+    if (!email) {
+        alert("Por favor ingresa tu correo electrónico.");
+        return;
+    }
+
+    const saludo = document.getElementById('saludo-usuario');
+    if (saludo) {
+        const nombre = email.split('@')[0];
+        saludo.textContent = `¡Hola, ${nombre}! 👋 (${tipoCuenta === 'empresa' ? '🏢 Empresa' : '👤 Personal'})`;
+    }
+
+    cerrarModalAuth();
+    mostrarDespensa();
+}
+
+// RENDERIZAR DESPENSA CON FILTROS
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -150,7 +223,7 @@ function renderizarDespensa() {
     }
 }
 
-// Filtros por Categoría, Tipo y Ubicación
+// LÓGICA DE FILTROS POR BOTONES
 function filtrarCategoria(cat) {
     categoriaFiltro = cat;
     const btnTodos = document.getElementById('btn-estado-todos');
@@ -200,7 +273,7 @@ function filtrarUbicacion(ub) {
     renderizarDespensa();
 }
 
-// Vista de Detalle y sus 3 acciones
+// PESTAÑA DETALLE Y SUS 3 ACCIONES (CONSUMIDO, DONAR, RECETA)
 function abrirDetalleTab(id) {
     const item = inventario.find(i => i.id === id);
     if (!item) return;
@@ -264,14 +337,12 @@ function recetaDesdeDetalle() {
 }
 
 function sugerirReceta(alimento) {
-    alert(`🍳 Idea de receta de aprovechamiento con ${alimento}:\n- Crema o batido nutritivo\n- Salteado vegetal express\n- Tortilla / Guiso casero`);
+    alert(`🍳 Receta sugerida con ${alimento}:\n- Preparación rápida de aprovechamiento nutritivo.`);
 }
 
-function donarAlimentoGenerico() {
-    alert("🤝 Red de Donación: Selecciona un alimento de tu despensa para enviarlo a la comunidad.");
-}
+function donarAlimentoGenerico() { alert("🤝 Red de Donación activa."); }
 
-// Navegación
+// NAVEGACIÓN DE VISTAS
 function abrirListaCompras() {
     document.getElementById('vista-despensa')?.classList.add('hidden');
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
@@ -284,7 +355,17 @@ function volverADespensa() {
     document.getElementById('vista-despensa')?.classList.remove('hidden');
 }
 
-// Lista de compras
+function mostrarDespensa() {
+    document.getElementById('vista-auth')?.classList.add('hidden');
+    document.getElementById('vista-despensa')?.classList.remove('hidden');
+}
+
+function cerrarSesion() {
+    document.getElementById('vista-despensa')?.classList.add('hidden');
+    document.getElementById('vista-auth')?.classList.remove('hidden');
+}
+
+// LISTA DE COMPRAS
 function renderizarListaCompras() {
     const cont = document.getElementById('contenedor-lista-compras');
     const badge = document.getElementById('badge-compras-count');
@@ -311,10 +392,10 @@ function renderizarListaCompras() {
                     <span>${item.nombre}</span>
                 </label>
                 <div class="flex gap-1">
-                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg cursor-pointer">
+                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg">
                         + Despensa
                     </button>
-                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1 cursor-pointer">
+                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1">
                         <i class="fa-solid fa-trash text-xs"></i>
                     </button>
                 </div>
@@ -368,7 +449,7 @@ function moverADespensaDesdeCompras(id) {
     }
 }
 
-// Modales y Auth
+// MODALES SECUNDARIOS
 function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
 function cerrarModalAgregar() { document.getElementById('modal-agregar')?.classList.add('hidden'); }
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
@@ -408,14 +489,4 @@ function guardarAlimento() {
     renderizarDespensa();
     cerrarModalAgregar();
     document.getElementById('input-nombre-alimento').value = '';
-}
-
-function mostrarDespensa() {
-    document.getElementById('vista-auth')?.classList.add('hidden');
-    document.getElementById('vista-despensa')?.classList.remove('hidden');
-}
-
-function cerrarSesion() {
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-auth')?.classList.remove('hidden');
 }
