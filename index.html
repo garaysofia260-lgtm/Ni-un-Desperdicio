@@ -15,45 +15,34 @@
     <div class="app-screen">
         <div class="app-card relative overflow-hidden bg-slate-50">
             
-            <!-- VISTA 1: INICIO / AUTH (CON GPS Y DISTINCIÓN PERSONAL / EMPRESA) -->
+            <!-- VISTA 1: AUTH / INICIO (INTACTO COMO ESTABA ORIGINALMENTE) -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
-                        <button type="button" onclick="mostrarDespensa()" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
+                        <button type="button" onclick="mostrarDespensa()" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm cursor-pointer">
                             <i class="fa-solid fa-xmark text-base"></i>
                         </button>
-                        <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
-                        <button type="button" id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition cursor-pointer">
+                        <h1 class="text-[#1b3303] font-bold text-sm">Inicio o Registro</h1>
+                        <button type="button" id="btn-gps" onclick="alert('Ubicación detectada')" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center shadow-md cursor-pointer">
                             <i class="fa-solid fa-location-dot text-sm"></i>
                         </button>
                     </div>
-                    <!-- BADGE GPS DE UBICACIÓN -->
-                    <div id="badge-ubicacion" class="hidden animate-fade-in mt-1 px-3 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-bold text-emerald-900 shadow-sm">
-                        <span id="texto-ciudad">📍 Detectando ubicación...</span>
-                    </div>
                 </header>
 
-                <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
-                    <div class="relative my-2 w-full max-w-[220px] animate-float">
-                        <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
-                            <span class="text-xl font-brand font-bold text-[#1b3303] tracking-wider mt-1">NO WASTE</span>
-                            <span class="text-[8px] uppercase font-bold tracking-wider text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
-                        </div>
+                <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full">
+                    <div class="bg-gradient-to-b from-white to-emerald-50 rounded-3xl p-5 border-2 border-emerald-300 shadow-lg flex flex-col items-center">
+                        <span class="text-xl font-bold text-[#1b3303] tracking-wider">NO WASTE</span>
+                        <span class="text-[8px] uppercase font-bold text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
                     </div>
-
-                    <div class="w-full space-y-3 mt-3">
-                        <button type="button" onclick="abrirModalAuth('login')" class="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-full transition cursor-pointer shadow-md">
-                            Iniciar sesión
-                        </button>
-                        <button type="button" onclick="abrirModalAuth('registro')" class="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-full transition cursor-pointer shadow-md">
-                            Crear cuenta
-                        </button>
-                    </div>
+                    <button type="button" onclick="mostrarDespensa()" class="w-full mt-5 bg-emerald-600 text-white font-bold text-sm py-3 rounded-full cursor-pointer">
+                        Ingresar a la App
+                    </button>
                 </main>
             </div>
 
             <!-- VISTA 2: MI DESPENSA -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-3">
@@ -61,15 +50,16 @@
                                 🥑
                             </div>
                             <div>
-                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola, Sofía! 👋</h2>
+                                <h2 class="text-xs font-semibold text-emerald-200">¡Hola, Sofía! 👋</h2>
                                 <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
                             </div>
                         </div>
 
+                        <!-- ÍCONO DE LISTA EN LA CABECERA -->
                         <div class="flex items-center gap-2">
-                            <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
-                                <i class="fa-solid fa-list-check text-xs"></i>
-                                <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                            <button type="button" onclick="abrirListaCompras()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Lo que necesito">
+                                <i class="fa-solid fa-list-check text-sm"></i>
+                                <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">0</span>
                             </button>
 
                             <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
@@ -101,13 +91,13 @@
 
                     <!-- FILTROS POR ESTADO -->
                     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-                        <button type="button" id="btn-estado-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap cursor-pointer">
+                        <button type="button" id="btn-estado-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
                             Todos
                         </button>
-                        <button type="button" id="btn-estado-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">
+                        <button type="button" id="btn-estado-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
                             🔴 Vence pronto
                         </button>
-                        <button type="button" id="btn-estado-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">
+                        <button type="button" id="btn-estado-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
                             🟢 Frescos
                         </button>
                     </div>
@@ -135,6 +125,7 @@
                         </div>
                     </div>
 
+                    <!-- SECCIÓN: CONSUMIR PRONTO -->
                     <div id="seccion-pronto">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -145,6 +136,7 @@
                         <div id="lista-pronto" class="space-y-2"></div>
                     </div>
 
+                    <!-- SECCIÓN: EN BUEN ESTADO -->
                     <div id="seccion-frescos">
                         <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
@@ -152,29 +144,35 @@
                         <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
                     </div>
 
+                    <!-- MENSAJE DE VACÍO -->
                     <div id="mensaje-vacio" class="hidden text-center py-8">
                         <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
                         <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
                     </div>
                 </main>
 
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                <!-- NAVEGACIÓN INFERIOR CON RECETAS -->
+                <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
+
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
                     </button>
@@ -207,7 +205,8 @@
                         </span>
                     </div>
 
-                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5">
+                    <!-- BARRA DE FRESCURA -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
                                 <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
@@ -223,12 +222,12 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
                             <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
                             <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
                         </div>
-                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
                             <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
                             <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
@@ -236,20 +235,21 @@
                     </div>
                 </main>
 
+                <!-- BOTONES DE ACCIÓN RESTAURADOS EN DETALLE -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
-                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md cursor-pointer flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Consumido</span>
                         </button>
 
-                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md cursor-pointer flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-hand-holding-heart"></i>
                             <span>Donar</span>
                         </button>
                     </div>
 
-                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-utensils text-amber-600"></i>
                         <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
@@ -290,22 +290,26 @@
                     </div>
                 </main>
 
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
+                <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
+
                     <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
+
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
+
                     <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
+
                     <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
@@ -315,43 +319,7 @@
 
         </div>
 
-        <!-- MODAL DE INICIO DE SESIÓN / REGISTRO (PERSONAL VS EMPRESA) -->
-        <div id="modal-auth" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
-                <h3 id="titulo-modal-auth" class="text-sm font-bold text-slate-800 mb-2 text-center">Iniciar Sesión</h3>
-
-                <div class="flex bg-slate-100 p-1 rounded-xl mb-3 text-xs">
-                    <button type="button" id="tab-tipo-personal" onclick="seleccionarTipoCuenta('personal')" class="flex-1 py-1 rounded-lg font-bold bg-emerald-600 text-white cursor-pointer transition">
-                        Personal
-                    </button>
-                    <button type="button" id="tab-tipo-empresa" onclick="seleccionarTipoCuenta('empresa')" class="flex-1 py-1 rounded-lg font-medium text-slate-600 cursor-pointer transition">
-                        Empresa
-                    </button>
-                </div>
-
-                <div class="space-y-2">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block">Correo electrónico:</label>
-                        <input type="email" id="auth-email" placeholder="usuario@ejemplo.com" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block">Contraseña:</label>
-                        <input type="password" id="auth-password" placeholder="••••••••" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none">
-                    </div>
-                </div>
-
-                <div class="flex gap-2 mt-4">
-                    <button type="button" onclick="cerrarModalAuth()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 cursor-pointer">
-                        Cancelar
-                    </button>
-                    <button type="button" onclick="ejecutarAuth()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer">
-                        Continuar
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL AGREGAR -->
+        <!-- MODAL AGREGAR ALIMENTO -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -405,7 +373,7 @@
             </div>
         </div>
 
-        <!-- MODAL FILTROS -->
+        <!-- MODAL ORDENAR -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-xs font-bold text-slate-800 mb-3 text-center">
@@ -431,7 +399,7 @@
 
     </div>
 
-    <!-- Script JS -->
+    <!-- Archivo JS principal -->
     <script src="app.js"></script>
 </body>
 </html>
