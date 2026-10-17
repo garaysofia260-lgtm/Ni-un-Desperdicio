@@ -1,7 +1,7 @@
-// Variable global para almacenar el modo del modal ('login' o 'registro')
+// Variable de control del modal
 let modoModal = 'login';
 
-// Abrir modal con modo específico ('login' o 'registro')
+// Abrir modal de autenticación ('login' o 'registro')
 function abrirModal(modo) {
     modoModal = modo || 'login';
     const modal = document.getElementById('modal-login');
@@ -11,7 +11,6 @@ function abrirModal(modo) {
     }
 }
 
-// Funciones directas para los botones principales
 function abrirLogin() {
     abrirModal('login');
 }
@@ -20,7 +19,6 @@ function abrirRegistro() {
     abrirModal('registro');
 }
 
-// Cerrar modal
 function cerrarLogin() {
     const modal = document.getElementById('modal-login');
     if (modal) {
@@ -28,13 +26,11 @@ function cerrarLogin() {
     }
 }
 
-// Cambiar pestaña dentro del modal
 function cambiarModoModal(modo) {
     modoModal = modo;
     actualizarModalUI();
 }
 
-// Actualiza visualmente los elementos del modal según el modo seleccionado
 function actualizarModalUI() {
     const titulo = document.getElementById('modal-titulo');
     const camposLogin = document.getElementById('campos-login');
@@ -71,7 +67,7 @@ function actualizarModalUI() {
     }
 }
 
-// 1. Mostrar / Ocultar Contraseña
+// 1. Botón Ojo de Contraseña
 function togglePassword(inputId, iconId) {
     const passInput = document.getElementById(inputId);
     const passIcon = document.getElementById(iconId);
@@ -86,7 +82,7 @@ function togglePassword(inputId, iconId) {
     }
 }
 
-// 2. Selector de Perfil (Hogar vs Comercio)
+// 2. Selector de Perfil (Hogar / Comercio)
 function seleccionarPerfil(tipo) {
     const btnHogar = document.getElementById('btn-perfil-hogar');
     const btnComercio = document.getElementById('btn-perfil-comercio');
@@ -101,75 +97,6 @@ function seleccionarPerfil(tipo) {
         btnComercio.className = "flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer";
         btnHogar.className = "flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer";
     }
-}
-
-// 3. Login Social Simulado
-function loginSocial(red) {
-    alert(`Iniciando sesión con ${red}... ¡Bienvenido a NO WASTE!`);
-    cerrarLogin();
-}
-
-// 4. Detección de Ubicación por GPS
-function obtenerUbicacion() {
-    const badgeUbicacion = document.getElementById('badge-ubicacion');
-    const textoCiudad = document.getElementById('texto-ciudad');
-    const btnGps = document.getElementById('btn-gps');
-
-    if (btnGps) {
-        btnGps.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-sm"></i>';
-    }
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-
-                // Consulta de reverse geocoding
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const ciudad = data.address?.city || data.address?.town || data.address?.state || "Ubicación activa";
-                        if (textoCiudad) textoCiudad.textContent = `📍 ${ciudad}`;
-                        if (badgeUbicacion) badgeUbicacion.classList.remove('hidden');
-                    })
-                    .catch(() => {
-                        if (textoCiudad) textoCiudad.textContent = `📍 Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
-                        if (badgeUbicacion) badgeUbicacion.classList.remove('hidden');
-                    })
-                    .finally(() => {
-                        if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
-                    });
-            },
-            () => {
-                if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
-                alert("Por favor habilita el permiso de ubicación GPS en tu navegador.");
-            }
-        );
-    } else {
-        if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
-        alert("Tu dispositivo o navegador no soporta geolocalización.");
-    }
-}
-
-// Procesar formulario
-function procesarFormulario(e) {
-    e.preventDefault();
-    if (modoModal === 'login') {
-        alert("¡Sesión iniciada con éxito!");
-    } else {
-        const check = document.getElementById('check-terminos');
-        if (check && !check.checked) {
-            alert("Debes aceptar los términos y condiciones para crear tu cuenta.");
-            return;
-        }
-        alert("¡Cuenta creada con éxito! Bienvenido a NO WASTE.");
-    }
-    cerrarLogin();
-}
-
-
-
 }
 
 // Transición entre Auth y Despensa
