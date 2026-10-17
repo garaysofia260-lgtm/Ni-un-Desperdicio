@@ -232,6 +232,80 @@
 
             </div>
 
+            <!-- VISTA 3: PESTAÑA DEDICADA PARA INFORMACIÓN DETALLADA Y BARRA DE FRESCURA -->
+            <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
+                <!-- ENCABEZADO CON VOLVER -->
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight">Detalle del Producto</h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+                    <!-- FOTO / ICONO GRANDE -->
+                    <div class="w-full h-44 rounded-3xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center shadow-inner relative">
+                        <img id="tab-detalle-img" src="" class="w-full h-full object-cover hidden">
+                        <span id="tab-detalle-emoji" class="text-6xl">🥑</span>
+                        <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm">
+                            Fresco
+                        </span>
+                    </div>
+
+                    <!-- TITULO Y CANTIDAD -->
+                    <div class="text-center">
+                        <h3 id="tab-detalle-nombre" class="text-lg font-bold text-slate-800">Nombre del Alimento</h3>
+                        <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
+                    </div>
+
+                    <!-- BARRA DE PORCENTAJE DE FRESCURA DE RESCATE -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold">
+                            <span class="text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gauge-high text-emerald-600"></i> Nivel de Frescura
+                            </span>
+                            <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold">100% Fresco</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                            <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500" style="width: 100%;"></div>
+                        </div>
+                        <p id="tab-detalle-dias-restantes" class="text-[10px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
+                    </div>
+
+                    <!-- TARJETAS CON INFORMACIÓN Y MÉTRICAS DE IMPACTO -->
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
+                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
+                        </div>
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN SUGERIR RECETA -->
+                    <button type="button" id="btn-receta-detalle" onclick="recetaDesdeDetalle()" class="w-full bg-amber-50 border border-amber-200 p-3 rounded-2xl flex items-center justify-between text-amber-800 active:scale-98 transition cursor-pointer shadow-sm">
+                        <div class="flex items-center gap-2 text-xs font-bold">
+                            <span class="text-lg">🍳</span>
+                            <span>Sugerir Receta de Aprovechamiento</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-amber-600"></i>
+                    </button>
+                </main>
+
+                <!-- BOTÓN DE ACCIÓN PRINCIPAL EN LA PARTE INFERIOR -->
+                <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="marcarComoConsumidoTab()" class="w-full btn-green text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Marcar como Consumido</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <!-- MODAL 1: INICIAR SESIÓN / CREAR CUENTA -->
@@ -337,7 +411,6 @@
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
                 
                 <div class="space-y-2.5">
-                    <!-- ÁREA DE SUBIR O TOMAR FOTO -->
                     <div>
                         <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
                         <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
@@ -373,34 +446,6 @@
                     </button>
                     <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
                         Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL 3: VER DETALLE DEL ALIMENTO CLIQUEADO -->
-        <div id="modal-detalle-alimento" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 text-center animate-scale-up">
-                
-                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden bg-emerald-50 border border-slate-200 flex items-center justify-center mb-3">
-                    <img id="detalle-img" src="" class="w-full h-full object-cover hidden">
-                    <span id="detalle-emoji" class="text-4xl">🥑</span>
-                </div>
-
-                <h3 id="detalle-nombre" class="text-base font-bold text-slate-800">Nombre Alimento</h3>
-                <p id="detalle-cantidad" class="text-xs text-emerald-700 font-semibold mb-2">Cantidad</p>
-
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-[11px] text-slate-600 space-y-1 mb-4">
-                    <p><b>Estado:</b> <span id="detalle-dias" class="font-bold">0 días restantes</span></p>
-                    <p><b>Ubicación:</b> Mi Despensa</p>
-                </div>
-
-                <div class="flex gap-2">
-                    <button type="button" onclick="cerrarDetalleAlimento()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
-                        Cerrar
-                    </button>
-                    <button type="button" onclick="marcarComoConsumido()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md hover:bg-emerald-700 transition cursor-pointer">
-                        Consumido ✓
                     </button>
                 </div>
             </div>
