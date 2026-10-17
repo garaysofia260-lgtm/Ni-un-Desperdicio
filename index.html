@@ -243,7 +243,7 @@
                         <span>Despensa</span>
                     </button>
 
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
@@ -375,22 +375,79 @@
                 </main>
 
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 text-[10px]">
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 text-[10px]">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                        <i class="fa-regular fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 5: MÓDULO DE RECETAS DE APROVECHAMIENTO -->
+            <div id="vista-recetas" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-amber-300"></i> Recetas de Rescate
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    <!-- TARJETA INFORMATIVA -->
+                    <div class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold">¡Cocina y Ahorra! 🍳</h3>
+                            <p class="text-[10px] text-emerald-100 mt-0.5">Sugerencias basadas en lo que tienes a punto de vencer.</p>
+                        </div>
+                        <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-200"></i>
+                    </div>
+
+                    <!-- RECOMENDACIONES SEGÚN LA DESPENSA -->
+                    <div class="space-y-2">
+                        <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-fire text-amber-500"></i> Recomendadas para hoy
+                        </h3>
+                        <div id="contenedor-recetas" class="space-y-2.5">
+                            <!-- Las recetas se renderizan dinámicamente -->
+                        </div>
+                    </div>
+                </main>
+
+                <!-- NAVEGACIÓN INFERIOR -->
+                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
                     </button>
@@ -590,86 +647,5 @@
 
     <!-- Archivo JS -->
     <script src="app.js"></script>
-    
 </body>
 </html>
-// Base de datos de recetas de aprovechamiento
-let recetasBase = [
-    {
-        id: 1,
-        titulo: 'Batido de Plátano y Leche',
-        ingredienteClave: 'Plátanos Maduros',
-        tiempo: '5 min',
-        dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
-        pasos: '1. Licúa los plátanos maduros con la leche fría.\n2. Agrega miel o canela al gusto.\n3. Sirve de inmediato.'
-    },
-    {
-        id: 2,
-        titulo: 'Salsa Casera de Tomate Fresco',
-        ingredienteClave: 'Tomates Frescos',
-        tiempo: '15 min',
-        dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
-        pasos: '1. Pica los tomates maduros y saltea con ajo y aceite de oliva.\n2. Cocina a fuego lento por 10 minutos.\n3. Agrega sal y albahaca.'
-    },
-    {
-        id: 3,
-        titulo: 'Guacamole Rápido de Rescate',
-        ingredienteClave: 'Aguacates',
-        tiempo: '8 min',
-        dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
-        pasos: '1. Muele los aguacates en un tazón.\n2. Añade limón, sal y cilantro picado.\n3. Mezcla bien y disfruta con tostatas.'
-    }
-];
-
-function abrirRecetas() {
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
-    document.getElementById('vista-lista-compras')?.classList.add('hidden');
-    document.getElementById('vista-recetas')?.classList.remove('hidden');
-
-    renderizarRecetas();
-}
-
-function renderizarRecetas() {
-    const contenedor = document.getElementById('contenedor-recetas');
-    if (!contenedor) return;
-
-    contenedor.innerHTML = '';
-
-    recetasBase.forEach(receta => {
-        // Verifica si el alimento clave existe en la despensa
-        const tieneIngrediente = inventario.some(i => i.nombre.toLowerCase().includes(receta.ingredienteClave.toLowerCase()));
-
-        contenedor.innerHTML += `
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-col gap-2">
-                <div class="flex gap-3 items-center">
-                    <img src="${receta.imagen}" class="w-16 h-16 rounded-xl object-cover shadow-xs">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xs font-bold text-slate-800">${receta.titulo}</h4>
-                            ${tieneIngrediente ? '<span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded-md">¡En tu despensa!</span>' : ''}
-                        </div>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Usa: <b class="text-emerald-700">${receta.ingredienteClave}</b></p>
-                        <div class="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
-                            <span>⏱️ ${receta.tiempo}</span>
-                            <span>📊 ${receta.dificultad}</span>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="verPasosReceta(${receta.id})" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación
-                </button>
-            </div>
-        `;
-    });
-}
-
-function verPasosReceta(id) {
-    const receta = recetasBase.find(r => r.id === id);
-    if (receta) {
-        alert(`👨‍🍳 ${receta.titulo}\n\nIngrediente principal: ${receta.ingredienteClave}\n\nPreparación:\n${receta.pasos}`);
-    }
-}
