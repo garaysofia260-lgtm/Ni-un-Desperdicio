@@ -125,11 +125,12 @@ function loginSocial(red) {
     mostrarDespensa();
 }
 
-// Procesar Formulario -> Abre Despensa
+// Procesar Formulario -> Garantiza el pase a la Despensa
 function procesarFormulario(e) {
-    if (e) e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     cerrarLogin();
     mostrarDespensa();
+    return false;
 }
 
 // Modales adicionales de la Despensa
