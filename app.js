@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
 });
 
-// GEOLOCALIZACIÓN GPS RESTAURADA
+// GEOLOCALIZACIÓN GPS
 function obtenerUbicacion() {
     const badge = document.getElementById('badge-ubicacion');
     const texto = document.getElementById('texto-ciudad');
@@ -91,7 +91,16 @@ function obtenerUbicacion() {
     }
 }
 
-// MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO)
+// AUTENTICACIÓN SOCIAL
+function loginSocial(red) {
+    const saludo = document.getElementById('saludo-usuario');
+    if (saludo) {
+        saludo.textContent = `¡Hola, Usuario ${red}! 👋`;
+    }
+    mostrarDespensa();
+}
+
+// MODAL DE AUTENTICACIÓN
 function abrirModalAuth(modo) {
     modoModal = modo;
     const modal = document.getElementById('modal-auth');
@@ -122,10 +131,10 @@ function seleccionarTipoCuenta(tipo) {
 }
 
 function ejecutarAuth() {
-    const email = document.getElementById('auth-email')?.value.trim();
+    let email = document.getElementById('auth-email')?.value.trim();
+    
     if (!email) {
-        alert("Por favor ingresa tu correo electrónico.");
-        return;
+        email = (tipoCuenta === 'empresa') ? 'empresa@nowaste.com' : 'sofia@nowaste.com';
     }
 
     const saludo = document.getElementById('saludo-usuario');
