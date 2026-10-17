@@ -7,48 +7,41 @@
     <!-- Framework Tailwind CSS & Iconos FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="antialiased w-full min-h-screen">
 
     <!-- CONTENEDOR GLOBAL -->
     <div class="app-screen">
-        
-        <!-- MARCO MÓVIL CENTRADO -->
         <div class="app-card relative overflow-hidden bg-slate-50">
             
-            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH (OCULTA) -->
-            <div id="vista-auth" class="w-full h-full flex flex-col justify-between hidden relative z-10">
+            <!-- VISTA 1: AUTH / INICIO (PANTALLA DE INICIO VISIBLE POR DEFECTO) -->
+            <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
-                        <button type="button" onclick="mostrarDespensa()" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 flex items-center justify-center text-slate-700 shadow-sm cursor-pointer">
+                        <button type="button" onclick="mostrarDespensa()" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm cursor-pointer">
                             <i class="fa-solid fa-xmark text-base"></i>
                         </button>
-                        <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
-                        <button type="button" id="btn-gps" onclick="obtenerUbicacion()" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center shadow-md cursor-pointer">
+                        <h1 class="text-[#1b3303] font-bold text-sm">Inicio o Registro</h1>
+                        <button type="button" id="btn-gps" onclick="alert('Ubicación detectada')" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center shadow-md cursor-pointer">
                             <i class="fa-solid fa-location-dot text-sm"></i>
                         </button>
                     </div>
                 </header>
 
                 <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full">
-                    <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center">
+                    <div class="bg-gradient-to-b from-white to-emerald-50 rounded-3xl p-5 border-2 border-emerald-300 shadow-lg flex flex-col items-center">
                         <span class="text-xl font-bold text-[#1b3303] tracking-wider">NO WASTE</span>
-                        <span class="text-[8px] uppercase font-bold tracking-wider text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
+                        <span class="text-[8px] uppercase font-bold text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
                     </div>
-
-                    <div class="w-full space-y-3 mt-5">
-                        <button type="button" onclick="mostrarDespensa()" class="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-full cursor-pointer">
-                            Ingresar a la App
-                        </button>
-                    </div>
+                    <button type="button" onclick="mostrarDespensa()" class="w-full mt-5 bg-emerald-600 text-white font-bold text-sm py-3 rounded-full cursor-pointer">
+                        Ingresar a la App
+                    </button>
                 </main>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL) -->
-            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between relative z-10 bg-slate-50">
+            <!-- VISTA 2: MI DESPENSA (OCULTA HASTA QUE SE INGRESE) -->
+            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
@@ -62,9 +55,9 @@
                             </div>
                         </div>
 
-                        <!-- BOTÓN DE LISTA DE PENDIENTES EN LA CABECERA -->
+                        <!-- ACCESO A LO QUE NECESITO + BOTÓN SALIR -->
                         <div class="flex items-center gap-2">
-                            <button type="button" id="btn-abrir-lista-header" onclick="abrirListaCompras()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Lo que necesito">
+                            <button type="button" onclick="abrirListaCompras()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Lo que necesito">
                                 <i class="fa-solid fa-list-check text-sm"></i>
                                 <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">0</span>
                             </button>
@@ -97,14 +90,14 @@
                     </div>
 
                     <!-- FILTROS POR ESTADO -->
-                    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs" id="contenedor-filtros-estado">
-                        <button type="button" onclick="filtrarCategoria('todos', this)" class="btn-estado-filtro px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
+                    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+                        <button type="button" id="btn-estado-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
                             Todos
                         </button>
-                        <button type="button" onclick="filtrarCategoria('pronto', this)" class="btn-estado-filtro px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                        <button type="button" id="btn-estado-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
                             🔴 Vence pronto
                         </button>
-                        <button type="button" onclick="filtrarCategoria('frescos', this)" class="btn-estado-filtro px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                        <button type="button" id="btn-estado-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
                             🟢 Frescos
                         </button>
                     </div>
@@ -113,11 +106,11 @@
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
                         <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
-                            <button type="button" onclick="filtrarTipo('todos', this)" class="btn-tipo-filtro px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer">Todas</button>
-                            <button type="button" onclick="filtrarTipo('Frutas y Verduras', this)" class="btn-tipo-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
-                            <button type="button" onclick="filtrarTipo('Lácteos', this)" class="btn-tipo-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
-                            <button type="button" onclick="filtrarTipo('Alacena/Secos', this)" class="btn-tipo-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
-                            <button type="button" onclick="filtrarTipo('Bebidas', this)" class="btn-tipo-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
+                            <button type="button" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
+                            <button type="button" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
+                            <button type="button" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
+                            <button type="button" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
                         </div>
                     </div>
 
@@ -125,10 +118,10 @@
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
                         <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
-                            <button type="button" onclick="filtrarUbicacion('todas', this)" class="btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer">Todas</button>
-                            <button type="button" onclick="filtrarUbicacion('Refrigerador', this)" class="btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
-                            <button type="button" onclick="filtrarUbicacion('Congelador', this)" class="btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
-                            <button type="button" onclick="filtrarUbicacion('Alacena', this)" class="btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
+                            <button type="button" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
+                            <button type="button" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
+                            <button type="button" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
                         </div>
                     </div>
 
@@ -151,7 +144,7 @@
                         <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
                     </div>
 
-                    <!-- MENSAJE DE LISTA VACÍA -->
+                    <!-- MENSAJE DE LISTA VACÍA POR FILTRO -->
                     <div id="mensaje-vacio" class="hidden text-center py-8">
                         <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
                         <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
@@ -159,27 +152,27 @@
                 </main>
 
                 <!-- BARRA INFERIOR DE NAVEGACIÓN -->
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
 
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
 
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
 
-                    <button type="button" onclick="alert('Red comunitaria de donación activa 🤝')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
 
-                    <button type="button" onclick="alert('Perfil de usuario en desarrollo 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] cursor-pointer">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
                     </button>
@@ -189,7 +182,7 @@
             <!-- VISTA 3: PESTAÑA DETALLE DEL ALIMENTO -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
-                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
                     <h2 class="text-sm font-bold">Detalle del Producto</h2>
@@ -207,12 +200,13 @@
                     <div class="text-center">
                         <h3 id="tab-detalle-nombre" class="text-xl font-bold text-slate-800">Nombre del Alimento</h3>
                         <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
-                        <span id="tab-detalle-ubicacion-tag" class="inline-block mt-1 bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                        <span id="tab-detalle-ubicacion-tag" class="inline-block mt-1 bg-slate-200 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md">
                             📍 Refrigerador
                         </span>
                     </div>
 
-                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5">
+                    <!-- BARRA DE FRESCURA GRANDE -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
                                 <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
@@ -224,18 +218,45 @@
                             <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
                         </div>
 
-                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes</p>
+                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
+                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
+                        </div>
                     </div>
                 </main>
 
+                <!-- BOTONES DE ACCIÓN: CONSUMIDO, DONAR, RECETA -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
-                    <button type="button" onclick="marcarComoConsumidoTab()" class="w-full bg-emerald-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md cursor-pointer">
-                        ✓ Marcar como Consumido
+                    <div class="flex gap-2">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Consumido</span>
+                        </button>
+
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Donar</span>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-amber-600"></i>
+                        <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
                 </div>
             </div>
 
-            <!-- VISTA 4: PESTAÑA LO QUE NECESITO (LISTA DE COMPRAS) -->
+            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS) -->
             <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
                 <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
@@ -269,7 +290,7 @@
                     </div>
                 </main>
 
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
@@ -281,7 +302,7 @@
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="alert('Red de donación activa 🤝')" class="flex flex-col items-center text-slate-400 text-[10px]">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
@@ -294,7 +315,7 @@
 
         </div>
 
-        <!-- MODAL AGREGAR -->
+        <!-- MODAL AGREGAR ALIMENTO -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -348,7 +369,7 @@
             </div>
         </div>
 
-        <!-- MODAL FILTROS DE ORDEN -->
+        <!-- MODAL ORDENAR -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-xs font-bold text-slate-800 mb-3 text-center">
@@ -374,7 +395,7 @@
 
     </div>
 
-    <!-- Archivo JS -->
+    <!-- Archivo JS principal -->
     <script src="app.js"></script>
 </body>
 </html>
