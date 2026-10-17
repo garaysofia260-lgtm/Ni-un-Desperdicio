@@ -167,3 +167,100 @@ function procesarFormulario(e) {
     }
     cerrarLogin();
 }
+
+
+
+}
+
+// Transición entre Auth y Despensa
+function mostrarDespensa() {
+    const vistaAuth = document.getElementById('vista-auth');
+    const vistaDespensa = document.getElementById('vista-despensa');
+    if (vistaAuth && vistaDespensa) {
+        vistaAuth.classList.add('hidden');
+        vistaDespensa.classList.remove('hidden');
+    }
+}
+
+function cerrarSesion() {
+    const vistaAuth = document.getElementById('vista-auth');
+    const vistaDespensa = document.getElementById('vista-despensa');
+    if (vistaAuth && vistaDespensa) {
+        vistaDespensa.classList.add('hidden');
+        vistaAuth.classList.remove('hidden');
+    }
+}
+
+// Login Social -> Abre Despensa
+function loginSocial(red) {
+    alert(`Iniciando sesión con ${red}... ¡Bienvenido a NO WASTE!`);
+    cerrarLogin();
+    mostrarDespensa();
+}
+
+// Procesar Formulario -> Abre Despensa
+function procesarFormulario(e) {
+    if (e) e.preventDefault();
+    cerrarLogin();
+    mostrarDespensa();
+}
+
+// Modales adicionales de la Despensa
+function sugerirReceta(alimento) {
+    alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
+}
+
+function abrirModalAgregar() {
+    const modal = document.getElementById('modal-agregar');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function cerrarModalAgregar() {
+    const modal = document.getElementById('modal-agregar');
+    if (modal) modal.classList.add('hidden');
+}
+
+function guardarAlimento() {
+    alert("¡Alimento guardado con éxito en tu despensa!");
+    cerrarModalAgregar();
+}
+
+// 4. Ubicación por GPS
+function obtenerUbicacion() {
+    const badgeUbicacion = document.getElementById('badge-ubicacion');
+    const textoCiudad = document.getElementById('texto-ciudad');
+    const btnGps = document.getElementById('btn-gps');
+
+    if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-sm"></i>';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const ciudad = data.address?.city || data.address?.town || data.address?.state || "Ubicación detectada";
+                        if (textoCiudad) textoCiudad.textContent = `📍 ${ciudad}`;
+                        if (badgeUbicacion) badgeUbicacion.classList.remove('hidden');
+                    })
+                    .catch(() => {
+                        if (textoCiudad) textoCiudad.textContent = `📍 Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+                        if (badgeUbicacion) badgeUbicacion.classList.remove('hidden');
+                    })
+                    .finally(() => {
+                        if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
+                    });
+            },
+            () => {
+                if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
+                alert("Por favor habilita el permiso de ubicación GPS.");
+            }
+        );
+    } else {
+        if (btnGps) btnGps.innerHTML = '<i class="fa-solid fa-location-dot text-sm"></i>';
+        alert("Geolocalización no soportada.");
+    }
+}
