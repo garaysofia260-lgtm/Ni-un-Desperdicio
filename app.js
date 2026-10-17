@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
 });
 
-// Renderizado principal
+// Renderizado principal con filtrado exacto
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -150,7 +150,7 @@ function renderizarDespensa() {
     }
 }
 
-// Lógica de Filtros
+// Filtros por Categoría, Tipo y Ubicación
 function filtrarCategoria(cat) {
     categoriaFiltro = cat;
     const btnTodos = document.getElementById('btn-estado-todos');
@@ -200,7 +200,7 @@ function filtrarUbicacion(ub) {
     renderizarDespensa();
 }
 
-// Pestaña de Detalle del Producto
+// Vista de Detalle y sus 3 acciones
 function abrirDetalleTab(id) {
     const item = inventario.find(i => i.id === id);
     if (!item) return;
@@ -239,7 +239,6 @@ function abrirDetalleTab(id) {
     document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
 }
 
-// Acciones desde Detalle
 function marcarComoConsumidoTab() {
     if (alimentoSeleccionadoId) {
         inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
@@ -369,7 +368,7 @@ function moverADespensaDesdeCompras(id) {
     }
 }
 
-// Modales
+// Modales y Auth
 function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
 function cerrarModalAgregar() { document.getElementById('modal-agregar')?.classList.add('hidden'); }
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
