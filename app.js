@@ -1,4 +1,4 @@
-// Variable de control del modal
+// Variables globales
 let modoModal = 'login';
 let fotoTemporal = null;
 let alimentoSeleccionadoId = null;
@@ -7,18 +7,17 @@ let ordenActual = 'vencimiento';
 
 // INVENTARIO INICIAL
 let inventario = [
-    { id: 1, nombre: 'Plátanos Maduros', cantidad: '4 unidades', dias: 0, emoji: '🍌', pronto: true, imagen: null },
-    { id: 2, nombre: 'Leche Entera', cantidad: '1 Litro', dias: 2, emoji: '🥛', pronto: true, imagen: null },
-    { id: 3, nombre: 'Aguacates', cantidad: '2 pcs', dias: 6, emoji: '🥑', pronto: false, imagen: null },
-    { id: 4, nombre: 'Tomates', cantidad: '5 pcs', dias: 5, emoji: '🍅', pronto: false, imagen: null }
+    { id: 1, nombre: 'Plátanos Maduros', cantidad: '4 unidades', dias: 0, emoji: '🍌', pronto: true, imagen: null, diasTotal: 7 },
+    { id: 2, nombre: 'Leche Entera', cantidad: '1 Litro', dias: 2, emoji: '🥛', pronto: true, imagen: null, diasTotal: 10 },
+    { id: 3, nombre: 'Aguacates', cantidad: '2 pcs', dias: 6, emoji: '🥑', pronto: false, imagen: null, diasTotal: 10 },
+    { id: 4, nombre: 'Tomates', cantidad: '5 pcs', dias: 5, emoji: '🍅', pronto: false, imagen: null, diasTotal: 8 }
 ];
 
-// Al cargar el documento, renderizamos la lista
 document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
 });
 
-// RENDERIZAR LA LISTA DE ALIMENTOS EN PANTALLA
+// RENDERIZAR INVENTARIO
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -32,7 +31,6 @@ function renderizarDespensa() {
 
     const termino = (document.getElementById('input-buscar')?.value || '').toLowerCase().trim();
 
-    // Filtrar por término de búsqueda y categoría
     let filtrados = inventario.filter(item => {
         const coincideNombre = item.nombre.toLowerCase().includes(termino);
         if (categoriaFiltro === 'pronto') return coincideNombre && item.pronto;
@@ -40,7 +38,6 @@ function renderizarDespensa() {
         return coincideNombre;
     });
 
-    // Ordenar
     if (ordenActual === 'vencimiento') {
         filtrados.sort((a, b) => a.dias - b.dias);
     } else if (ordenActual === 'nombre') {
@@ -54,7 +51,7 @@ function renderizarDespensa() {
         if (item.pronto) {
             contadorPronto++;
             listaPronto.innerHTML += `
-                <div onclick="abrirDetalle(${item.id})" class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400 transition">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400 transition">
                     <div class="flex items-center gap-3">
                         ${item.imagen ? `<img src="${item.imagen}" class="w-8 h-8 rounded-xl object-cover">` : `<span class="text-2xl">${item.emoji}</span>`}
                         <div>
@@ -70,7 +67,7 @@ function renderizarDespensa() {
         } else {
             contadorFrescos++;
             listaFrescos.innerHTML += `
-                <div onclick="abrirDetalle(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400 transition">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400 transition">
                     <div class="flex items-center gap-2 mb-2">
                         ${item.imagen ? `<img src="${item.imagen}" class="w-7 h-7 rounded-lg object-cover">` : `<span class="text-xl">${item.emoji}</span>`}
                         <div>
@@ -88,14 +85,88 @@ function renderizarDespensa() {
     if (seccionFrescos) seccionFrescos.style.display = (contadorFrescos > 0 || categoriaFiltro === 'frescos') ? 'block' : 'none';
 }
 
-// FILTRADO POR BÚSQUEDA Y CATEGORÍAS
-function filtrarAlimentos() {
-    renderizarDespensa();
+// PESTAÑA DEDICADA DE DETALLE CON CÁLCULO DE FRESCURA
+function abrirDetalleTab(id) {
+    const item = inventario.find(i => i.id === id);
+    if (!item) return;
+
+    alimentoSeleccionadoId = id;
+
+    // Asignar textos
+    document.getElementById('tab-detalle-nombre').textContent = item.nombre;
+    document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
+    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para su fecha límite`;
+
+    // Manejar Imagen / Emoji
+    const imgEl = document.getElementById('tab-detalle-img');
+    const emojiEl = document.getElementById('tab-detalle-emoji');
+
+    if (item.imagen) {
+        imgEl.src = item.imagen;
+        imgEl.classList.remove('hidden');
+        emojiEl.classList.add('hidden');
+    } else {
+        imgEl.classList.add('hidden');
+        emojiEl.classList.remove('hidden');
+        emojiEl.textContent = item.emoji || '🥑';
+    }
+
+    // Calcular Porcentaje de Frescura (0% - 100%)
+    const diasTotal = item.diasTotal || 7;
+    let pct = Math.min(100, Math.max(10, Math.round((item.dias / diasTotal) * 100)));
+    if (item.dias === 0) pct = 5;
+
+    const barEl = document.getElementById('tab-detalle-bar');
+    const pctTxt = document.getElementById('tab-detalle-porcentaje');
+    const badgeEl = document.getElementById('tab-detalle-badge');
+    const estadoTxt = document.getElementById('tab-detalle-estado');
+
+    if (barEl) barEl.style.width = `${pct}%`;
+    if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
+
+    // Ajustar Colores según Nivel de Frescura
+    if (pct > 50) {
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500";
+        if (badgeEl) { badgeEl.textContent = 'Fresco 🟢'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-emerald-600"; }
+        if (estadoTxt) estadoTxt.textContent = "Óptimo estado";
+    } else if (pct > 20) {
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500";
+        if (badgeEl) { badgeEl.textContent = 'Consumir pronto 🟡'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-amber-600"; }
+        if (estadoTxt) estadoTxt.textContent = "Atención requerida";
+    } else {
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500";
+        if (badgeEl) { badgeEl.textContent = '¡Urgente! 🔴'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-sm bg-red-600"; }
+        if (estadoTxt) estadoTxt.textContent = "Prioridad máxima";
+    }
+
+    // Transición de pestañas
+    document.getElementById('vista-despensa')?.classList.add('hidden');
+    document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
 }
+
+function volverADespensa() {
+    document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
+    document.getElementById('vista-despensa')?.classList.remove('hidden');
+}
+
+function marcarComoConsumidoTab() {
+    if (alimentoSeleccionadoId) {
+        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
+        renderizarDespensa();
+    }
+    volverADespensa();
+}
+
+function recetaDesdeDetalle() {
+    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
+    if (item) sugerirReceta(item.nombre);
+}
+
+// BÚSQUEDA Y FILTROS
+function filtrarAlimentos() { renderizarDespensa(); }
 
 function filtrarCategoria(cat) {
     categoriaFiltro = cat;
-
     const btnTodos = document.getElementById('btn-cat-todos');
     const btnPronto = document.getElementById('btn-cat-pronto');
     const btnFrescos = document.getElementById('btn-cat-frescos');
@@ -111,60 +182,11 @@ function filtrarCategoria(cat) {
     renderizarDespensa();
 }
 
-// SLIDERS / MODAL FILTROS DE ORDEN
-function abrirModalFiltros() {
-    document.getElementById('modal-filtros')?.classList.remove('hidden');
-}
+function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
+function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
+function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
 
-function cerrarModalFiltros() {
-    document.getElementById('modal-filtros')?.classList.add('hidden');
-}
-
-function cambiarOrden(orden) {
-    ordenActual = orden;
-    renderizarDespensa();
-}
-
-// VER DETALLE DEL ALIMENTO
-function abrirDetalle(id) {
-    const item = inventario.find(i => i.id === id);
-    if (!item) return;
-
-    alimentoSeleccionadoId = id;
-
-    document.getElementById('detalle-nombre').textContent = item.nombre;
-    document.getElementById('detalle-cantidad').textContent = item.cantidad;
-    document.getElementById('detalle-dias').textContent = `${item.dias} días restantes`;
-
-    const imgEl = document.getElementById('detalle-img');
-    const emojiEl = document.getElementById('detalle-emoji');
-
-    if (item.imagen) {
-        imgEl.src = item.imagen;
-        imgEl.classList.remove('hidden');
-        emojiEl.classList.add('hidden');
-    } else {
-        imgEl.classList.add('hidden');
-        emojiEl.classList.remove('hidden');
-        emojiEl.textContent = item.emoji || '🥑';
-    }
-
-    document.getElementById('modal-detalle-alimento')?.classList.remove('hidden');
-}
-
-function cerrarDetalleAlimento() {
-    document.getElementById('modal-detalle-alimento')?.classList.add('hidden');
-}
-
-function marcarComoConsumido() {
-    if (alimentoSeleccionadoId) {
-        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
-        renderizarDespensa();
-    }
-    cerrarDetalleAlimento();
-}
-
-// SUBIR Y PREVISUALIZAR FOTO
+// CÁMARA Y FOTO
 function previsualizarFoto(e) {
     const file = e.target.files[0];
     if (file) {
@@ -183,16 +205,12 @@ function previsualizarFoto(e) {
     }
 }
 
-// AGREGAR NUEVO ALIMENTO
 function guardarAlimento() {
     const nom = document.getElementById('input-nombre-alimento')?.value.trim();
     const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
     const fecha = document.getElementById('input-fecha-alimento')?.value;
 
-    if (!nom) {
-        alert("Por favor ingresa un nombre.");
-        return;
-    }
+    if (!nom) return alert("Por favor ingresa un nombre.");
 
     let dias = 3;
     if (fecha) {
@@ -210,14 +228,14 @@ function guardarAlimento() {
         dias: dias,
         emoji: '🥑',
         pronto: dias <= 2,
-        imagen: fotoTemporal
+        imagen: fotoTemporal,
+        diasTotal: Math.max(dias + 2, 7)
     };
 
     inventario.unshift(nuevo);
     renderizarDespensa();
     cerrarModalAgregar();
 
-    // Limpiar campos
     document.getElementById('input-nombre-alimento').value = '';
     document.getElementById('input-cantidad-alimento').value = '';
     document.getElementById('input-fecha-alimento').value = '';
@@ -226,7 +244,7 @@ function guardarAlimento() {
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
 }
 
-// MANEJO DE AUTENTICACIÓN
+// MODAL LOGIN / AUTH
 function abrirModal(modo) {
     modoModal = modo || 'login';
     document.getElementById('modal-login')?.classList.remove('hidden');
