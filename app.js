@@ -1,5 +1,5 @@
 // Variables globales
-let modoModal = 'login';
+let modoFormulario = 'login';
 let fotoTemporal = null;
 let alimentoSeleccionadoId = null;
 
@@ -68,6 +68,86 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
 });
 
+// FUNCIONES DE CONTROL DEL MODAL DE INICIO DE SESIÓN / REGISTRO
+function abrirModalLogin(modo = 'login') {
+    modoFormulario = modo;
+    cambiarTabLogin(modo);
+    document.getElementById('modal-login')?.classList.remove('hidden');
+}
+
+function cerrarModalLogin() {
+    document.getElementById('modal-login')?.classList.add('hidden');
+}
+
+function cambiarTabLogin(modo) {
+    modoFormulario = modo;
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegistro = document.getElementById('tab-registro');
+    const titulo = document.getElementById('titulo-modal-form');
+    const btnSubmit = document.getElementById('btn-submit-form');
+
+    if (modo === 'login') {
+        tabLogin.className = "flex-1 py-2 rounded-xl text-[#0f5132] bg-white shadow-sm transition-all duration-200";
+        tabRegistro.className = "flex-1 py-2 rounded-xl text-slate-500 hover:text-slate-800 transition-all duration-200";
+        if (titulo) titulo.textContent = 'Iniciar Sesión';
+        if (btnSubmit) btnSubmit.textContent = 'Iniciar sesión';
+    } else {
+        tabRegistro.className = "flex-1 py-2 rounded-xl text-[#0f5132] bg-white shadow-sm transition-all duration-200";
+        tabLogin.className = "flex-1 py-2 rounded-xl text-slate-500 hover:text-slate-800 transition-all duration-200";
+        if (titulo) titulo.textContent = 'Crear Cuenta';
+        if (btnSubmit) btnSubmit.textContent = 'Crear cuenta';
+    }
+}
+
+function togglePasswordVisible() {
+    const inputPass = document.getElementById('login-password');
+    const icono = document.getElementById('icono-ojo');
+    
+    if (inputPass.type === 'password') {
+        inputPass.type = 'text';
+        icono.className = 'fa-regular fa-eye-slash text-xs';
+    } else {
+        inputPass.type = 'password';
+        icono.className = 'fa-regular fa-eye text-xs';
+    }
+}
+
+function ejecutarLogin() {
+    const correo = document.getElementById('login-correo')?.value.trim();
+    if (!correo) return;
+
+    // Extraer un nombre visible a partir del correo
+    const nombreUsuario = correo.split('@')[0];
+    const saludoEl = document.getElementById('saludo-usuario');
+    if (saludoEl) saludoEl.textContent = `¡Hola, ${nombreUsuario}! 👋`;
+
+    cerrarModalLogin();
+    mostrarDespensa();
+}
+
+function loginSocial(red) {
+    alert(`Autenticando con ${red}...`);
+    const saludoEl = document.getElementById('saludo-usuario');
+    if (saludoEl) saludoEl.textContent = `¡Hola, Usuario ${red}! 👋`;
+    
+    cerrarModalLogin();
+    mostrarDespensa();
+}
+
+function obtenerUbicacion() {
+    const txt = document.getElementById('texto-ciudad');
+    if (txt) txt.textContent = '📍 Detectando ubicación...';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            () => { if (txt) txt.textContent = '📍 Bogotá ciudad'; },
+            () => { if (txt) txt.textContent = '📍 Ubicación detectada'; }
+        );
+    } else {
+        if (txt) txt.textContent = '📍 Bogotá ciudad';
+    }
+}
+
 // RENDERIZAR INVENTARIO
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
@@ -104,7 +184,7 @@ function renderizarDespensa() {
         if (item.pronto) {
             contadorPronto++;
             listaPronto.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400 transition">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-xs cursor-pointer hover:border-red-400 transition">
                     <div class="flex items-center gap-3">
                         <img src="${item.imagen}" class="w-9 h-9 rounded-xl object-cover shadow-xs">
                         <div>
@@ -113,7 +193,7 @@ function renderizarDespensa() {
                             <span class="text-[9px] bg-white border border-slate-200 px-1.5 py-0.2 rounded text-slate-500 font-medium">📍 ${item.ubicacion}</span>
                         </div>
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
+                    <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs active:scale-95 transition cursor-pointer">
                         ¿Qué cocinar?
                     </button>
                 </div>
@@ -121,7 +201,7 @@ function renderizarDespensa() {
         } else {
             contadorFrescos++;
             listaFrescos.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400 transition">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-xs cursor-pointer hover:border-emerald-400 transition">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${item.imagen}" class="w-8 h-8 rounded-lg object-cover shadow-xs">
                         <div>
@@ -171,10 +251,10 @@ function abrirDetalleTab(id) {
     if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
 
     if (pct > 50) {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm";
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-xs";
         if (badgeEl) { badgeEl.textContent = 'Fresco 🟢'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-emerald-600"; }
     } else {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500 shadow-sm";
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500 shadow-xs";
         if (badgeEl) { badgeEl.textContent = '¡Urgente! 🔴'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-red-600"; }
     }
 
@@ -360,10 +440,12 @@ function guardarAlimento() {
 function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
 function cerrarModalAgregar() { document.getElementById('modal-agregar')?.classList.add('hidden'); }
 function sugerirReceta(alimento) { alert(`🍳 Receta sugerida con ${alimento}`); }
+
 function mostrarDespensa() {
     document.getElementById('vista-auth')?.classList.add('hidden');
     document.getElementById('vista-despensa')?.classList.remove('hidden');
 }
+
 function cerrarSesion() {
     document.getElementById('vista-despensa')?.classList.add('hidden');
     document.getElementById('vista-auth')?.classList.remove('hidden');
