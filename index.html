@@ -19,7 +19,7 @@
         <!-- MARCO MÓVIL CENTRADO -->
         <div class="app-card">
             
-            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH (INTACTA) -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 
                 <!-- DECORACIONES SVG INTERNAS -->
@@ -128,7 +128,7 @@
                 <div class="pb-3"></div>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL) -->
+            <!-- VISTA 2: MI DESPENSA (CON BÚSQUEDA Y MULTI-FILTROS) -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
@@ -138,14 +138,21 @@
                                 🥑
                             </div>
                             <div>
-                                <h2 class="text-xs font-semibold text-emerald-200">¡Hola, Sofía! 👋</h2>
+                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola, Sofía! 👋</h2>
                                 <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
                             </div>
                         </div>
 
-                        <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
-                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
+                                <i class="fa-solid fa-list-check text-xs"></i>
+                                <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                            </button>
+
+                            <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
@@ -157,19 +164,19 @@
                     </div>
                 </header>
 
-                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-                    <!-- BUSCADOR EN TIEMPO REAL -->
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    <!-- BUSCADOR -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
-                            <input type="text" id="input-buscar" oninput="filtrarAlimentos()" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <input type="text" id="input-buscar" oninput="renderizarDespensa()" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
                         </div>
                         <button type="button" onclick="abrirModalFiltros()" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 active:bg-slate-100 transition cursor-pointer">
                             <i class="fa-solid fa-sliders text-xs"></i>
                         </button>
                     </div>
 
-                    <!-- CATEGORÍAS -->
+                    <!-- FILTROS POR ESTADO -->
                     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
                         <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
                             Todos
@@ -182,6 +189,29 @@
                         </button>
                     </div>
 
+                    <!-- FILTROS POR TIPO DE ALIMENTO -->
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
+                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
+                            <button type="button" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
+                            <button type="button" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
+                            <button type="button" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
+                            <button type="button" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
+                        </div>
+                    </div>
+
+                    <!-- FILTROS POR UBICACIÓN -->
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
+                        <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
+                            <button type="button" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
+                            <button type="button" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
+                            <button type="button" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
+                        </div>
+                    </div>
+
                     <!-- SECCIÓN: CONSUMIR PRONTO -->
                     <div id="seccion-pronto">
                         <div class="flex justify-between items-center mb-2">
@@ -190,7 +220,6 @@
                             </h3>
                             <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-full border border-red-200">¡Prioridad!</span>
                         </div>
-
                         <div id="lista-pronto" class="space-y-2"></div>
                     </div>
 
@@ -199,8 +228,12 @@
                         <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
                         </h3>
-
                         <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+
+                    <div id="mensaje-vacio" class="hidden text-center py-8">
+                        <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
                     </div>
                 </main>
 
@@ -234,7 +267,6 @@
 
             <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE CON BARRA MÁS GRANDE Y BOTONES -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
-                <!-- ENCABEZADO CON VOLVER -->
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
@@ -244,7 +276,6 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-                    <!-- FOTO REAL DEL ALIMENTO -->
                     <div class="w-full h-48 rounded-3xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center shadow-md relative">
                         <img id="tab-detalle-img" src="" class="w-full h-full object-cover">
                         <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md">
@@ -252,13 +283,14 @@
                         </span>
                     </div>
 
-                    <!-- TITULO Y CANTIDAD -->
                     <div class="text-center">
                         <h3 id="tab-detalle-nombre" class="text-xl font-bold text-slate-800">Nombre del Alimento</h3>
                         <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
+                        <span id="tab-detalle-ubicacion-tag" class="inline-block mt-1 bg-slate-200 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md">
+                            📍 Refrigerador
+                        </span>
                     </div>
 
-                    <!-- BARRA DE PORCENTAJE DE FRESCURA MÁS GRANDE -->
                     <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
@@ -267,7 +299,6 @@
                             <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold text-sm">100% Fresco</span>
                         </div>
 
-                        <!-- BARRA MÁS ALTA Y VISIBLE (h-5) -->
                         <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 shadow-inner">
                             <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
                         </div>
@@ -275,7 +306,6 @@
                         <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
                     </div>
 
-                    <!-- TARJETAS DE MÉTRICAR -->
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
@@ -290,7 +320,6 @@
                     </div>
                 </main>
 
-                <!-- BOTONES DE ACCIÓN: CONSUMIDO, DONAR, RECETA -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
                         <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 btn-green text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -311,9 +340,66 @@
                 </div>
             </div>
 
+            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS) -->
+            <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
+                <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check"></i> Lo que necesito
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex gap-2">
+                        <input type="text" id="input-item-compra" placeholder="Ej. Huevos, Harina..." class="flex-1 text-xs px-3 outline-none text-slate-700">
+                        <button type="button" onclick="agregarItemCompra()" class="bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">
+                            + Añadir
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-clipboard-list text-emerald-600"></i> Alimentos Faltantes
+                            </span>
+                            <span id="resumen-compras-pendientes" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+                                0 pendientes
+                            </span>
+                        </div>
+
+                        <div id="contenedor-lista-compras" class="space-y-2"></div>
+                    </div>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 text-[10px]">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 text-[10px]">
+                        <i class="fa-regular fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
+                    </button>
+                </nav>
+            </div>
+
         </div>
 
-        <!-- MODAL 1: INICIAR SESIÓN / CREAR CUENTA -->
+        <!-- MODAL 1: INICIAR SESIÓN / CREAR CUENTA (INTACTO) -->
         <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
                 
@@ -332,7 +418,7 @@
                     <div id="campos-login" class="space-y-2.5 mb-3">
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
-                            <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                            <input type="email" id="input-login-email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
                         </div>
 
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
@@ -410,7 +496,7 @@
             </div>
         </div>
 
-        <!-- MODAL 2: AGREGAR NUEVO ALIMENTO -->
+        <!-- MODAL 2: AGREGAR NUEVO ALIMENTO (CON TIPO Y UBICACIÓN) -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -431,6 +517,26 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
                         <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Tipo:</label>
+                            <select id="select-tipo-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
+                                <option value="Frutas y Verduras">Frutas y Verduras</option>
+                                <option value="Lácteos">Lácteos</option>
+                                <option value="Alacena/Secos">Alacena/Secos</option>
+                                <option value="Bebidas">Bebidas</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Ubicación:</label>
+                            <select id="select-ubicacion-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
+                                <option value="Refrigerador">Refrigerador</option>
+                                <option value="Congelador">Congelador</option>
+                                <option value="Alacena">Alacena</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="flex gap-2">
