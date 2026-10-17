@@ -15,7 +15,7 @@
     <div class="app-screen">
         <div class="app-card relative overflow-hidden bg-slate-50">
             
-            <!-- VISTA 1: AUTH / INICIO (INICIO POR DEFECTO) -->
+            <!-- VISTA 1: AUTH / INICIO (INTACTO COMO ESTABA ORIGINALMENTE) -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
@@ -55,6 +55,7 @@
                             </div>
                         </div>
 
+                        <!-- ÍCONO DE LISTA EN LA CABECERA -->
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="abrirListaCompras()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Lo que necesito">
                                 <i class="fa-solid fa-list-check text-sm"></i>
@@ -150,7 +151,7 @@
                     </div>
                 </main>
 
-                <!-- NAVEGACIÓN INFERIOR -->
+                <!-- NAVEGACIÓN INFERIOR CON RECETAS -->
                 <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
@@ -178,7 +179,7 @@
                 </nav>
             </div>
 
-            <!-- VISTA 3: DETALLE DEL ALIMENTO -->
+            <!-- VISTA 3: DETALLE DEL ALIMENTO CON LOS 3 BOTONES -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white cursor-pointer">
@@ -204,6 +205,7 @@
                         </span>
                     </div>
 
+                    <!-- BARRA DE FRESCURA -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
@@ -233,7 +235,7 @@
                     </div>
                 </main>
 
-                <!-- LOS 3 BOTONES DE ACCIÓN (CONSUMIDO, DONAR, RECETA) -->
+                <!-- BOTONES DE ACCIÓN RESTAURADOS EN DETALLE -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
                         <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -293,17 +295,21 @@
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
+
                     <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
+
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
+
                     <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
+
                     <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
@@ -313,7 +319,7 @@
 
         </div>
 
-        <!-- MODAL AGREGAR -->
+        <!-- MODAL AGREGAR ALIMENTO -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -367,7 +373,7 @@
             </div>
         </div>
 
-        <!-- MODAL FILTROS -->
+        <!-- MODAL ORDENAR -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-xs font-bold text-slate-800 mb-3 text-center">
@@ -393,7 +399,7 @@
 
     </div>
 
-    <!-- Archivo JS -->
+    <!-- Archivo JS principal -->
     <script src="app.js"></script>
 </body>
 </html>
