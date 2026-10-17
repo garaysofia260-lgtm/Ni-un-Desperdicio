@@ -22,7 +22,6 @@
             <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 
-                <!-- DECORACIONES SVG INTERNAS -->
                 <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
                     <svg class="absolute -top-6 -right-10 w-44 h-44 opacity-90" viewBox="0 0 100 100">
                         <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
@@ -45,13 +44,8 @@
                         <path d="M90 80 Q60 90 50 50 Q80 60 90 80 Z" fill="#3b630b"/>
                         <path d="M95 50 Q65 70 40 30 Q75 30 95 50 Z" fill="#2d4c08"/>
                     </svg>
-
-                    <i class="fa-solid fa-heart absolute top-20 left-6 text-emerald-600/30 text-sm"></i>
-                    <i class="fa-solid fa-heart absolute top-1/2 right-4 text-emerald-600/30 text-xs"></i>
-                    <i class="fa-solid fa-heart absolute bottom-24 left-10 text-emerald-600/30 text-xs"></i>
                 </div>
 
-                <!-- ENCABEZADO -->
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
                         <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
@@ -70,9 +64,7 @@
                     </div>
                 </header>
 
-                <!-- CONTENIDO CENTRAL DE BIENVENIDA -->
                 <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
-                    
                     <div class="relative my-2 w-full max-w-[220px] animate-float">
                         <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
                             <div class="relative w-24 h-20 flex items-center justify-center drop-shadow-sm">
@@ -92,7 +84,6 @@
                         </div>
                     </div>
 
-                    <!-- BOTONES QUE ABREN EL MODAL -->
                     <div class="w-full space-y-3 mt-3">
                         <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
                             Iniciar sesion
@@ -128,9 +119,8 @@
                 <div class="pb-3"></div>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (CON BÚSQUEDA Y MULTI-FILTROS) -->
+            <!-- VISTA 2: MI DESPENSA -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
-                
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-3">
@@ -165,7 +155,6 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                    <!-- BUSCADOR -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
@@ -176,7 +165,6 @@
                         </button>
                     </div>
 
-                    <!-- FILTROS POR ESTADO -->
                     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
                         <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
                             Todos
@@ -189,7 +177,6 @@
                         </button>
                     </div>
 
-                    <!-- FILTROS POR TIPO DE ALIMENTO -->
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
                         <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
@@ -201,7 +188,6 @@
                         </div>
                     </div>
 
-                    <!-- FILTROS POR UBICACIÓN -->
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
                         <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
@@ -212,7 +198,6 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN: CONSUMIR PRONTO -->
                     <div id="seccion-pronto">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -223,7 +208,6 @@
                         <div id="lista-pronto" class="space-y-2"></div>
                     </div>
 
-                    <!-- SECCIÓN: EN BUEN ESTADO -->
                     <div id="seccion-frescos">
                         <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
@@ -262,7 +246,6 @@
                         <span>Perfil</span>
                     </button>
                 </nav>
-
             </div>
 
             <!-- VISTA 3: DETALLE DEL ALIMENTO -->
@@ -397,48 +380,44 @@
                 </nav>
             </div>
 
-            <!-- VISTA 5: MÓDULO DE RECETAS DE APROVECHAMIENTO (DINÁMICO) -->
+            <!-- VISTA 5: MÓDULO DE RECETAS INTELIGENTES ADAPTABLES -->
             <div id="vista-recetas" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
                     <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
-                        <i class="fa-solid fa-utensils text-amber-300"></i> Recetas Inteligentes
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Recetas Generadas
                     </h2>
                     <div class="w-9"></div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                    <!-- TARJETA INFORMATIVA -->
                     <div class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
                         <div>
-                            <h3 class="text-xs font-bold">¡Cocina con tu Despensa! 🍳</h3>
-                            <p class="text-[10px] text-emerald-100 mt-0.5">Recomendaciones generadas según lo que tienes en stock.</p>
+                            <h3 class="text-xs font-bold">¡Recetas Adaptadas! 🍳</h3>
+                            <p class="text-[10px] text-emerald-100 mt-0.5">Se actualizan automáticamente con lo que agregues a tu despensa.</p>
                         </div>
-                        <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-200"></i>
+                        <i class="fa-solid fa-kitchen-set text-2xl text-amber-200"></i>
                     </div>
 
-                    <!-- RESUMEN DE INGREDIENTES EN STOCK -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Ingredientes detectados:</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Insumos actuales en despensa:</p>
                         <div id="chips-despensa-recetas" class="flex flex-wrap gap-1">
-                            <!-- Chips agregados por JS -->
+                            <!-- Chips con los ingredientes agregados -->
                         </div>
                     </div>
 
-                    <!-- LISTA DE RECETAS ORDENADAS POR COINCIDENCIA -->
                     <div class="space-y-2">
                         <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-fire text-amber-500"></i> Sugerencias de Aprovechamiento
+                            <i class="fa-solid fa-fire text-amber-500"></i> Sugerencias creadas para ti
                         </h3>
                         <div id="contenedor-recetas" class="space-y-2.5">
-                            <!-- Recetas renderizadas por JS -->
+                            <!-- Recetas generadas dinámicamente -->
                         </div>
                     </div>
                 </main>
 
-                <!-- NAVEGACIÓN INFERIOR -->
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
@@ -464,7 +443,7 @@
 
         </div>
 
-        <!-- MODAL DETALLE DE RECETA COMPLETA -->
+        <!-- MODAL DETALLE DE RECETA GENERADA -->
         <div id="modal-receta-detalle" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[340px] max-h-[85vh] overflow-y-auto shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarModalReceta()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">
@@ -480,19 +459,19 @@
 
                 <hr class="my-2 border-slate-100">
 
-                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes requeridos:</h4>
+                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes utilizados de tu despensa:</h4>
                 <ul id="modal-receta-ingredientes" class="text-xs space-y-1 mb-3"></ul>
 
                 <h4 class="text-xs font-bold text-slate-700 mb-1">Preparación paso a paso:</h4>
                 <ol id="modal-receta-pasos" class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100"></ol>
 
                 <button type="button" id="btn-cocinar-receta" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
-                    👨‍🍳 Marcar como Cocinada
+                    👨‍🍳 Marcar como Preparada
                 </button>
             </div>
         </div>
 
-        <!-- MODALES PREVIOS -->
+        <!-- MODALES DE LOGIN Y AGREGAR (INTACTOS) -->
         <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
                 <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
@@ -572,7 +551,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
-                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Peras, Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
                     </div>
                     <div class="flex gap-2">
                         <div class="flex-1">
