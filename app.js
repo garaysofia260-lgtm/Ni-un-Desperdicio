@@ -7,7 +7,7 @@ let tipoFiltro = 'todos';
 let ubicacionFiltro = 'todas';
 let ordenActual = 'vencimiento';
 
-// Datos de prueba iniciales
+// Datos iniciales
 let inventario = [
     { 
         id: 1, 
@@ -60,13 +60,12 @@ let listaCompras = [
     { id: 102, nombre: 'Queso Parmesano', comprado: false }
 ];
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
     renderizarListaCompras();
 });
 
-// Renderizar lista principal
+// Renderizado principal
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -105,7 +104,7 @@ function renderizarDespensa() {
         if (item.pronto) {
             cPronto++;
             listaPronto.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/80 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-red-50/80 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer hover:border-red-400 transition">
                     <div class="flex items-center gap-3">
                         <img src="${item.imagen}" class="w-10 h-10 rounded-xl object-cover">
                         <div>
@@ -114,15 +113,15 @@ function renderizarDespensa() {
                             <span class="text-[9px] bg-white border border-slate-200 px-1.5 py-0.2 rounded text-slate-500 font-medium">📍 ${item.ubicacion}</span>
                         </div>
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); alert('Receta rápida: Salteado express con ${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-xl shadow-xs">
-                        Receta
+                    <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs">
+                        ¿Qué cocinar?
                     </button>
                 </div>
             `;
         } else {
             cFrescos++;
             listaFrescos.innerHTML += `
-                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400">
+                <div onclick="abrirDetalleTab(${item.id})" class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm cursor-pointer hover:border-emerald-400 transition">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${item.imagen}" class="w-8 h-8 rounded-lg object-cover">
                         <div>
@@ -151,41 +150,129 @@ function renderizarDespensa() {
     }
 }
 
-// Filtros con actualización de estilos
-function filtrarCategoria(cat, btn) {
+// Lógica de Filtros
+function filtrarCategoria(cat) {
     categoriaFiltro = cat;
-    if (btn) {
-        document.querySelectorAll('.btn-estado-filtro').forEach(b => {
-            b.className = "btn-estado-filtro px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
-        });
-        btn.className = "btn-estado-filtro px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    }
+    const btnTodos = document.getElementById('btn-estado-todos');
+    const btnPronto = document.getElementById('btn-estado-pronto');
+    const btnFrescos = document.getElementById('btn-estado-frescos');
+
+    [btnTodos, btnPronto, btnFrescos].forEach(b => {
+        if(b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
+    });
+
+    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+
     renderizarDespensa();
 }
 
-function filtrarTipo(tipo, btn) {
+function filtrarTipo(tipo) {
     tipoFiltro = tipo;
-    if (btn) {
-        document.querySelectorAll('.btn-tipo-filtro').forEach(b => {
-            b.className = "btn-tipo-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+    const contenedor = document.getElementById('contenedor-filtros-tipo');
+    if (contenedor) {
+        const botones = contenedor.querySelectorAll('button');
+        botones.forEach(b => {
+            if (b.getAttribute('onclick').includes(`'${tipo}'`)) {
+                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
+            } else {
+                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+            }
         });
-        btn.className = "btn-tipo-filtro px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
     }
     renderizarDespensa();
 }
 
-function filtrarUbicacion(ub, btn) {
+function filtrarUbicacion(ub) {
     ubicacionFiltro = ub;
-    if (btn) {
-        document.querySelectorAll('.btn-ubicacion-filtro').forEach(b => {
-            b.className = "btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
+    const contenedor = document.getElementById('contenedor-filtros-ubicacion');
+    if (contenedor) {
+        const botones = contenedor.querySelectorAll('button');
+        botones.forEach(b => {
+            if (b.getAttribute('onclick').includes(`'${ub}'`)) {
+                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
+            } else {
+                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
+            }
         });
-        btn.className = "btn-ubicacion-filtro px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
     }
     renderizarDespensa();
 }
 
-// Navegación de vistas
+// Pestaña de Detalle del Producto
+function abrirDetalleTab(id) {
+    const item = inventario.find(i => i.id === id);
+    if (!item) return;
+
+    alimentoSeleccionadoId = id;
+
+    document.getElementById('tab-detalle-nombre').textContent = item.nombre;
+    document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
+    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para su vencimiento`;
+    document.getElementById('tab-detalle-ubicacion-tag').textContent = `📍 ${item.ubicacion} • ${item.tipo}`;
+
+    const imgEl = document.getElementById('tab-detalle-img');
+    if (imgEl) imgEl.src = item.imagen;
+
+    const diasTotal = item.diasTotal || 7;
+    let pct = Math.min(100, Math.max(10, Math.round((item.dias / diasTotal) * 100)));
+    if (item.dias === 0) pct = 5;
+
+    const barEl = document.getElementById('tab-detalle-bar');
+    const pctTxt = document.getElementById('tab-detalle-porcentaje');
+    const badgeEl = document.getElementById('tab-detalle-badge');
+
+    if (barEl) barEl.style.width = `${pct}%`;
+    if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
+
+    if (pct > 50) {
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm";
+        if (badgeEl) { badgeEl.textContent = 'Fresco 🟢'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-emerald-600"; }
+    } else {
+        if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500 shadow-sm";
+        if (badgeEl) { badgeEl.textContent = '¡Urgente! 🔴'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-red-600"; }
+    }
+
+    document.getElementById('vista-despensa')?.classList.add('hidden');
+    document.getElementById('vista-lista-compras')?.classList.add('hidden');
+    document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
+}
+
+// Acciones desde Detalle
+function marcarComoConsumidoTab() {
+    if (alimentoSeleccionadoId) {
+        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
+        renderizarDespensa();
+        alert("¡Felicidades! Has evitado el desperdicio de este alimento. 🎉");
+    }
+    volverADespensa();
+}
+
+function donarAlimentoDetalle() {
+    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
+    if (item) {
+        alert(`🤝 ¡Excelente iniciativa! Tu producto "${item.nombre}" ha sido registrado para donación en la red comunitaria.`);
+        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
+        renderizarDespensa();
+    }
+    volverADespensa();
+}
+
+function recetaDesdeDetalle() {
+    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
+    if (item) sugerirReceta(item.nombre);
+}
+
+function sugerirReceta(alimento) {
+    alert(`🍳 Idea de receta de aprovechamiento con ${alimento}:\n- Crema o batido nutritivo\n- Salteado vegetal express\n- Tortilla / Guiso casero`);
+}
+
+function donarAlimentoGenerico() {
+    alert("🤝 Red de Donación: Selecciona un alimento de tu despensa para enviarlo a la comunidad.");
+}
+
+// Navegación
 function abrirListaCompras() {
     document.getElementById('vista-despensa')?.classList.add('hidden');
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
@@ -196,42 +283,6 @@ function volverADespensa() {
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
     document.getElementById('vista-lista-compras')?.classList.add('hidden');
     document.getElementById('vista-despensa')?.classList.remove('hidden');
-}
-
-function abrirDetalleTab(id) {
-    const item = inventario.find(i => i.id === id);
-    if (!item) return;
-
-    alimentoSeleccionadoId = id;
-
-    document.getElementById('tab-detalle-nombre').textContent = item.nombre;
-    document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
-    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes`;
-    document.getElementById('tab-detalle-ubicacion-tag').textContent = `📍 ${item.ubicacion} • ${item.tipo}`;
-
-    const imgEl = document.getElementById('tab-detalle-img');
-    if (imgEl) imgEl.src = item.imagen;
-
-    const barEl = document.getElementById('tab-detalle-bar');
-    const pctTxt = document.getElementById('tab-detalle-porcentaje');
-
-    let pct = Math.min(100, Math.max(10, Math.round((item.dias / (item.diasTotal || 7)) * 100)));
-    if (item.dias === 0) pct = 5;
-
-    if (barEl) barEl.style.width = `${pct}%`;
-    if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
-
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-lista-compras')?.classList.add('hidden');
-    document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
-}
-
-function marcarComoConsumidoTab() {
-    if (alimentoSeleccionadoId) {
-        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
-        renderizarDespensa();
-    }
-    volverADespensa();
 }
 
 // Lista de compras
@@ -261,10 +312,10 @@ function renderizarListaCompras() {
                     <span>${item.nombre}</span>
                 </label>
                 <div class="flex gap-1">
-                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg">
+                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg cursor-pointer">
                         + Despensa
                     </button>
-                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1">
+                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1 cursor-pointer">
                         <i class="fa-solid fa-trash text-xs"></i>
                     </button>
                 </div>
@@ -314,6 +365,7 @@ function moverADespensaDesdeCompras(id) {
         listaCompras = listaCompras.filter(i => i.id !== id);
         renderizarListaCompras();
         renderizarDespensa();
+        alert(`🛒 ¡"${item.nombre}" se movió a tu Despensa!`);
     }
 }
 
