@@ -22,7 +22,7 @@
             <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 
-                <!-- DECORACIONES SVG INTERNAS DENTRO DEL MARCO -->
+                <!-- DECORACIONES SVG INTERNAS -->
                 <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
                     <svg class="absolute -top-6 -right-10 w-44 h-44 opacity-90" viewBox="0 0 100 100">
                         <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
@@ -151,36 +151,39 @@
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
-                            <span>Has salvado <b>3.2 kg</b> este mes</span>
+                            <span>Has salvado <b id="stat-salvados">3.2 kg</b> este mes</span>
                         </div>
                         <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 2 🌟</span>
                     </div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                    <!-- BUSCADOR CON FILTRO EN TIEMPO REAL -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
-                            <input type="text" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <input type="text" id="input-buscar" oninput="filtrarAlimentos()" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
                         </div>
-                        <button type="button" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 active:bg-slate-100 transition cursor-pointer">
+                        <button type="button" onclick="abrirModalFiltros()" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 active:bg-slate-100 transition cursor-pointer">
                             <i class="fa-solid fa-sliders text-xs"></i>
                         </button>
                     </div>
 
+                    <!-- PESTAÑAS DE CATEGORÍA DE FILTRO -->
                     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-                        <button type="button" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
-                            Todos (6)
+                        <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
+                            Todos
                         </button>
-                        <button type="button" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
-                            🔴 Vence hoy (2)
+                        <button type="button" id="btn-cat-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🔴 Vence pronto
                         </button>
-                        <button type="button" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
-                            🟢 Frescos (4)
+                        <button type="button" id="btn-cat-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🟢 Frescos
                         </button>
                     </div>
 
-                    <div>
+                    <!-- SECCIÓN: CONSUMIR PRONTO -->
+                    <div id="seccion-pronto">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-red-500"></span> Consumir Pronto
@@ -188,63 +191,16 @@
                             <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-full border border-red-200">¡Prioridad!</span>
                         </div>
 
-                        <div class="space-y-2">
-                            <div class="bg-red-50/60 border border-red-200 rounded-2xl p-3 flex items-center justify-between shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-2xl">🍌</span>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Plátanos Maduros</h4>
-                                        <p class="text-[10px] text-red-600 font-semibold">Vence hoy • 4 unidades</p>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="sugerirReceta('Plátanos')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                                    ¿Qué cocinar?
-                                </button>
-                            </div>
-
-                            <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-3 flex items-center justify-between shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-2xl">🥛</span>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Leche Entera</h4>
-                                        <p class="text-[10px] text-amber-700 font-semibold">Vence en 2 días • 1 Litro</p>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="sugerirReceta('Leche')" class="bg-amber-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                                    ¿Qué cocinar?
-                                </button>
-                            </div>
-                        </div>
+                        <div id="lista-pronto" class="space-y-2"></div>
                     </div>
 
-                    <div>
+                    <!-- SECCIÓN: EN BUEN ESTADO -->
+                    <div id="seccion-frescos">
                         <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
                         </h3>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🥑</span>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Aguacates</h4>
-                                        <p class="text-[9px] text-emerald-600 font-medium">Vence en 6 días</p>
-                                    </div>
-                                </div>
-                                <span class="text-[10px] text-slate-400">Cantidad: 2 pcs</span>
-                            </div>
-
-                            <div class="bg-white border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between shadow-sm">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🍅</span>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Tomates</h4>
-                                        <p class="text-[9px] text-emerald-600 font-medium">Vence en 5 días</p>
-                                    </div>
-                                </div>
-                                <span class="text-[10px] text-slate-400">Cantidad: 5 pcs</span>
-                            </div>
-                        </div>
+                        <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
                     </div>
                 </main>
 
@@ -293,7 +249,6 @@
 
                 <h2 id="modal-titulo" class="font-serif-custom text-green-custom text-lg font-bold mb-3">Iniciar Sesión</h2>
 
-                <!-- FORMULARIO CORREGIDO CON RETURN PROCESARFORMULARIO -->
                 <form onsubmit="return procesarFormulario(event)">
                     <div id="campos-login" class="space-y-2.5 mb-3">
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
@@ -359,4 +314,125 @@
                     </button>
                 </form>
 
-                <a href="#" id="link-
+                <a href="#" id="link-olvidaste" class="block text-green-custom font-serif-custom text-[11px] hover:underline mb-2">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+                <p class="text-slate-500 font-serif-custom text-[10px] mb-2">o continuar con:</p>
+                <div class="flex justify-center items-center gap-4">
+                    <button type="button" onclick="loginSocial('Google')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-google text-base text-red-500"></i></button>
+                    <button type="button" onclick="loginSocial('Facebook')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-facebook text-base text-blue-600"></i></button>
+                    <button type="button" onclick="loginSocial('Apple')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-apple text-base text-black"></i></button>
+                </div>
+
+                <button type="button" onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL 2: AGREGAR NUEVO ALIMENTO (CON CÁMARA/FOTO) -->
+        <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
+                
+                <div class="space-y-2.5">
+                    <!-- ÁREA DE SUBIR O TOMAR FOTO -->
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
+                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
+                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
+                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="flex flex-col items-center">
+                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
+                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
+                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 Litro" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
+                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 3: VER DETALLE DEL ALIMENTO CLIQUEADO -->
+        <div id="modal-detalle-alimento" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 text-center animate-scale-up">
+                
+                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden bg-emerald-50 border border-slate-200 flex items-center justify-center mb-3">
+                    <img id="detalle-img" src="" class="w-full h-full object-cover hidden">
+                    <span id="detalle-emoji" class="text-4xl">🥑</span>
+                </div>
+
+                <h3 id="detalle-nombre" class="text-base font-bold text-slate-800">Nombre Alimento</h3>
+                <p id="detalle-cantidad" class="text-xs text-emerald-700 font-semibold mb-2">Cantidad</p>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-[11px] text-slate-600 space-y-1 mb-4">
+                    <p><b>Estado:</b> <span id="detalle-dias" class="font-bold">0 días restantes</span></p>
+                    <p><b>Ubicación:</b> Mi Despensa</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button" onclick="cerrarDetalleAlimento()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
+                        Cerrar
+                    </button>
+                    <button type="button" onclick="marcarComoConsumido()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md hover:bg-emerald-700 transition cursor-pointer">
+                        Consumido ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 4: ORDENAR Y FILTRAR (SLIDERS) -->
+        <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-xs font-bold text-slate-800 mb-3 text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-emerald-700"></i> Ordenar inventario
+                </h3>
+
+                <div class="space-y-2 text-xs">
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="vencimiento" checked onchange="cambiarOrden('vencimiento')">
+                        <span>📅 Próximos a vencer</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="nombre" onchange="cambiarOrden('nombre')">
+                        <span>🔤 Nombre (A - Z)</span>
+                    </label>
+                </div>
+
+                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    Aplicar
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Archivo JS -->
+    <script src="app.js"></script>
+</body>
+</html>
