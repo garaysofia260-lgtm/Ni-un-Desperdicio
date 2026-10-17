@@ -205,7 +205,7 @@
                 </main>
 
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
@@ -232,7 +232,7 @@
 
             </div>
 
-            <!-- VISTA 3: PESTAÑA DEDICADA PARA INFORMACIÓN DETALLADA Y BARRA DE FRESCURA -->
+            <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE DEL ALIMENTO Y BARRA DE FRESCURA -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
                 <!-- ENCABEZADO CON VOLVER -->
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
@@ -259,7 +259,7 @@
                         <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
                     </div>
 
-                    <!-- BARRA DE PORCENTAJE DE FRESCURA DE RESCATE -->
+                    <!-- BARRA DE PORCENTAJE DE FRESCURA -->
                     <div class="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm space-y-2">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
