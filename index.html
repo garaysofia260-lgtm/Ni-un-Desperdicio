@@ -19,7 +19,7 @@
         <!-- MARCO MÓVIL CENTRADO -->
         <div class="app-card">
             
-            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH (OCULTA INICIALMENTE) -->
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between hidden relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
@@ -55,7 +55,7 @@
                 </main>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL) -->
+            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL VISIBLE) -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between relative z-10 bg-slate-50">
                 
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
@@ -70,9 +70,17 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
-                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
-                        </button>
+                        <!-- ICONO DE LISTA EN LA DESPENSA + BOTÓN CERRAR SESIÓN -->
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
+                                <i class="fa-solid fa-list-check text-xs"></i>
+                                <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                            </button>
+
+                            <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
@@ -109,7 +117,7 @@
                         </button>
                     </div>
 
-                    <!-- NUEVO: FILTROS POR TIPO DE ALIMENTO -->
+                    <!-- FILTROS POR TIPO DE ALIMENTO -->
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
                         <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]">
@@ -121,7 +129,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVO: FILTROS POR UBICACIÓN EN CASA -->
+                    <!-- FILTROS POR UBICACIÓN -->
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
                         <div class="flex gap-1.5 text-[11px]">
@@ -154,17 +162,16 @@
                     </div>
                 </main>
 
-                <!-- BARRA INFERIOR DE NAVEGACIÓN -->
+                <!-- BARRA INFERIOR DE NAVEGACIÓN CON "RECETAS" RESTAURADO -->
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
 
-                    <button type="button" onclick="abrirListaCompras()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer relative">
-                        <i class="fa-solid fa-cart-shopping text-base mb-0.5"></i>
-                        <span>Compras</span>
-                        <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
                     </button>
 
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
@@ -183,7 +190,7 @@
                 </nav>
             </div>
 
-            <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE CON BARRA MÁS GRANDE Y BOTONES -->
+            <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE CON BARRA MÁS GRANDE -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
@@ -258,30 +265,30 @@
                 </div>
             </div>
 
-            <!-- VISTA 4: NUEVA LISTA DE COMPRAS ESTILO SUPERMERCADO -->
+            <!-- VISTA 4: PESTAÑA LISTA DE PENDIENTES / LO QUE NECESITO -->
             <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100 animate-fade-in">
                 <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
-                    <h2 class="text-sm font-bold">🛒 Lista de Compras</h2>
+                    <h2 class="text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check"></i> Lo que necesito
+                    </h2>
                     <div class="w-9"></div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto p-4 space-y-3">
-                    <!-- INPUT PARA AGREGAR ÍTEM RÁPIDO -->
                     <div class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex gap-2">
-                        <input type="text" id="input-item-compra" placeholder="Ej. Comprar Huevos, Arroz..." class="flex-1 text-xs px-3 outline-none text-slate-700">
+                        <input type="text" id="input-item-compra" placeholder="Ej. Huevos, Harina..." class="flex-1 text-xs px-3 outline-none text-slate-700">
                         <button type="button" onclick="agregarItemCompra()" class="bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-xs cursor-pointer">
                             + Añadir
                         </button>
                     </div>
 
-                    <!-- HOJA DE BLOC DE NOTAS -->
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3 relative">
                         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                             <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                                <i class="fa-solid fa-clipboard-list text-emerald-600"></i> Alimentos Necesarios
+                                <i class="fa-solid fa-clipboard-list text-emerald-600"></i> Alimentos Faltantes
                             </span>
                             <span id="resumen-compras-pendientes" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
                                 0 pendientes
@@ -293,13 +300,13 @@
                 </main>
 
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-                    <button type="button" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
-                        <i class="fa-solid fa-cart-shopping text-base mb-0.5"></i>
-                        <span>Compras</span>
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
                     </button>
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50">
                         <i class="fa-solid fa-plus text-lg"></i>
