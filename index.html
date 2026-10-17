@@ -7,19 +7,15 @@
     <!-- Framework Tailwind CSS & Iconos FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="antialiased w-full min-h-screen">
 
     <!-- CONTENEDOR GLOBAL -->
     <div class="app-screen">
-        
-        <!-- MARCO MÓVIL CENTRADO -->
-        <div class="app-card">
+        <div class="app-card relative overflow-hidden bg-slate-50">
             
-            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH (ORIGINAL RESTAURADA) -->
+            <!-- VISTA 1: INICIO / AUTH (CON GPS Y DISTINCIÓN PERSONAL / EMPRESA) -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
@@ -31,8 +27,9 @@
                             <i class="fa-solid fa-location-dot text-sm"></i>
                         </button>
                     </div>
+                    <!-- BADGE GPS DE UBICACIÓN -->
                     <div id="badge-ubicacion" class="hidden animate-fade-in mt-1 px-3 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-bold text-emerald-900 shadow-sm">
-                        <span id="texto-ciudad">📍 Detectando ciudad...</span>
+                        <span id="texto-ciudad">📍 Detectando ubicación...</span>
                     </div>
                 </header>
 
@@ -45,10 +42,10 @@
                     </div>
 
                     <div class="w-full space-y-3 mt-3">
-                        <button type="button" onclick="mostrarDespensa()" class="w-full bg-emerald-600 text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer shadow-md">
+                        <button type="button" onclick="abrirModalAuth('login')" class="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-full transition cursor-pointer shadow-md">
                             Iniciar sesión
                         </button>
-                        <button type="button" onclick="mostrarDespensa()" class="w-full bg-emerald-600 text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer shadow-md">
+                        <button type="button" onclick="abrirModalAuth('registro')" class="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-full transition cursor-pointer shadow-md">
                             Crear cuenta
                         </button>
                     </div>
@@ -57,7 +54,6 @@
 
             <!-- VISTA 2: MI DESPENSA -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
-                
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-3">
@@ -65,12 +61,11 @@
                                 🥑
                             </div>
                             <div>
-                                <h2 class="text-xs font-semibold text-emerald-200">¡Hola, Sofía! 👋</h2>
+                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola, Sofía! 👋</h2>
                                 <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
                             </div>
                         </div>
 
-                        <!-- ICONO DE LISTA EN LA DESPENSA + BOTÓN CERRAR SESIÓN -->
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
                                 <i class="fa-solid fa-list-check text-xs"></i>
@@ -106,13 +101,13 @@
 
                     <!-- FILTROS POR ESTADO -->
                     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-                        <button type="button" id="btn-estado-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
+                        <button type="button" id="btn-estado-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap cursor-pointer">
                             Todos
                         </button>
-                        <button type="button" id="btn-estado-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                        <button type="button" id="btn-estado-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">
                             🔴 Vence pronto
                         </button>
-                        <button type="button" id="btn-estado-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                        <button type="button" id="btn-estado-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">
                             🟢 Frescos
                         </button>
                     </div>
@@ -140,7 +135,6 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN: CONSUMIR PRONTO -->
                     <div id="seccion-pronto">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -148,55 +142,52 @@
                             </h3>
                             <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-full border border-red-200">¡Prioridad!</span>
                         </div>
-
                         <div id="lista-pronto" class="space-y-2"></div>
                     </div>
 
-                    <!-- SECCIÓN: EN BUEN ESTADO -->
                     <div id="seccion-frescos">
                         <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
                         </h3>
-
                         <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+
+                    <div id="mensaje-vacio" class="hidden text-center py-8">
+                        <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
                     </div>
                 </main>
 
-                <!-- BARRA INFERIOR DE NAVEGACIÓN -->
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
-
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-
-                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-
-                    <button type="button" onclick="alert('Perfil de usuario en desarrollo 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
                     </button>
                 </nav>
             </div>
 
-            <!-- VISTA 3: PESTAÑA DEDICADA DE DETALLE CON LOS 3 BOTONES -->
-            <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
+            <!-- VISTA 3: DETALLE DEL ALIMENTO CON LOS 3 BOTONES -->
+            <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
-                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
-                    <h2 class="text-sm font-bold tracking-tight">Detalle del Producto</h2>
+                    <h2 class="text-sm font-bold">Detalle del Producto</h2>
                     <div class="w-9"></div>
                 </header>
 
@@ -245,29 +236,28 @@
                     </div>
                 </main>
 
-                <!-- CONTENEDOR INFERIOR CON LOS 3 BOTONES COMPLETOS -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
-                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Consumido</span>
                         </button>
 
-                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-hand-holding-heart"></i>
                             <span>Donar</span>
                         </button>
                     </div>
 
-                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-utensils text-amber-600"></i>
                         <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
                 </div>
             </div>
 
-            <!-- VISTA 4: PESTAÑA LISTA DE PENDIENTES / LO QUE NECESITO -->
-            <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100 animate-fade-in">
+            <!-- VISTA 4: LO QUE NECESITO -->
+            <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
                 <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
@@ -281,12 +271,12 @@
                 <main class="flex-1 overflow-y-auto p-4 space-y-3">
                     <div class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex gap-2">
                         <input type="text" id="input-item-compra" placeholder="Ej. Huevos, Harina..." class="flex-1 text-xs px-3 outline-none text-slate-700">
-                        <button type="button" onclick="agregarItemCompra()" class="bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-xs cursor-pointer">
+                        <button type="button" onclick="agregarItemCompra()" class="bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">
                             + Añadir
                         </button>
                     </div>
 
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3 relative">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
                         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                             <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
                                 <i class="fa-solid fa-clipboard-list text-emerald-600"></i> Alimentos Faltantes
@@ -305,18 +295,18 @@
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="alert('Módulo de Recetas en desarrollo 🍳')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50">
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="alert('Perfil de usuario en desarrollo 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 text-[10px]">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
                         <span>Perfil</span>
                     </button>
@@ -325,32 +315,56 @@
 
         </div>
 
-        <!-- MODALS -->
+        <!-- MODAL DE INICIO DE SESIÓN / REGISTRO (PERSONAL VS EMPRESA) -->
+        <div id="modal-auth" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
+                <h3 id="titulo-modal-auth" class="text-sm font-bold text-slate-800 mb-2 text-center">Iniciar Sesión</h3>
+
+                <div class="flex bg-slate-100 p-1 rounded-xl mb-3 text-xs">
+                    <button type="button" id="tab-tipo-personal" onclick="seleccionarTipoCuenta('personal')" class="flex-1 py-1 rounded-lg font-bold bg-emerald-600 text-white cursor-pointer transition">
+                        Personal
+                    </button>
+                    <button type="button" id="tab-tipo-empresa" onclick="seleccionarTipoCuenta('empresa')" class="flex-1 py-1 rounded-lg font-medium text-slate-600 cursor-pointer transition">
+                        Empresa
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block">Correo electrónico:</label>
+                        <input type="email" id="auth-email" placeholder="usuario@ejemplo.com" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block">Contraseña:</label>
+                        <input type="password" id="auth-password" placeholder="••••••••" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="cerrarModalAuth()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="ejecutarAuth()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer">
+                        Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL AGREGAR -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
                 
                 <div class="space-y-2.5">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
-                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
-                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
-                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                            <div id="placeholder-foto" class="flex flex-col items-center">
-                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
-                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
                         <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
-                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none">
                     </div>
 
                     <div class="flex gap-2">
                         <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-600">Tipo de Alimento:</label>
+                            <label class="text-[10px] font-bold text-slate-600">Tipo:</label>
                             <select id="select-tipo-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
                                 <option value="Frutas y Verduras">Frutas y Verduras</option>
                                 <option value="Lácteos">Lácteos</option>
@@ -371,29 +385,30 @@
                     <div class="flex gap-2">
                         <div class="flex-1">
                             <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
-                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 L" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 L" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none">
                         </div>
                         <div class="flex-1">
                             <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
-                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none">
                         </div>
                     </div>
                 </div>
 
                 <div class="flex gap-2 mt-4">
-                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
+                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="button" onclick="guardarAlimento()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer">
                         Guardar
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- MODAL FILTROS -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up">
-                <h3 class="text-xs font-bold text-slate-800 mb-3 text-center flex items-center justify-center gap-1.5">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100">
+                <h3 class="text-xs font-bold text-slate-800 mb-3 text-center">
                     <i class="fa-solid fa-sliders text-emerald-700"></i> Ordenar inventario
                 </h3>
 
@@ -408,7 +423,7 @@
                     </label>
                 </div>
 
-                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold cursor-pointer">
                     Aplicar
                 </button>
             </div>
@@ -416,7 +431,7 @@
 
     </div>
 
-    <!-- Archivo JS -->
+    <!-- Script JS -->
     <script src="app.js"></script>
 </body>
 </html>
