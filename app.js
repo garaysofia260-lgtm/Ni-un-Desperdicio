@@ -62,68 +62,70 @@ let listaCompras = [
     { id: 102, nombre: 'Queso Parmesano', comprado: false }
 ];
 
-// Base de datos de recetas de aprovechamiento con lista de ingredientes
-let recetasBase = [
+// PLANTILLAS DE RECETAS ADAPTABLES (COMODÍN)
+const plantillasRecetas = [
     {
-        id: 1,
-        titulo: 'Batido de Plátano y Leche',
-        ingredientes: ['Plátanos Maduros', 'Leche Entera', 'Miel'],
+        idTipo: 'batido',
+        nombreBase: 'Batido Cremoso de Rescate',
+        aplicableA: ['Frutas y Verduras', 'Lácteos', 'Bebidas'],
         tiempo: '5 min',
         dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
-        pasos: [
-            'Licúa los plátanos maduros con la leche fría.',
-            'Agrega una cucharadita de miel o canela al gusto.',
-            'Sirve inmediatamente bien frío.'
+        imagenDefault: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
+        pasosTemplate: (ing) => [
+            `Corta en trozos pequeños los/las ${ing}.`,
+            `Agrégalos a la licuadora con agua, leche o yogur.`,
+            `Licúa bien por 2 minutos, añade endulzante opcional y sirve bien frío.`
         ]
     },
     {
-        id: 2,
-        titulo: 'Salsa Casera de Tomate',
-        ingredientes: ['Tomates Frescos', 'Ajo', 'Aceite de oliva'],
-        tiempo: '15 min',
-        dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
-        pasos: [
-            'Pica los tomates y saltea con ajo picado en aceite de oliva.',
-            'Cocina a fuego lento durante 10 a 12 minutos.',
-            'Sazona con sal, pimienta y sal al gusto.'
-        ]
-    },
-    {
-        id: 3,
-        titulo: 'Guacamole Express de Rescate',
-        ingredientes: ['Aguacates', 'Tomates Frescos', 'Limón'],
-        tiempo: '8 min',
-        dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
-        pasos: [
-            'Tritura los aguacates maduros en un tazón.',
-            'Agrega tomates en cubitos, un chorrito de limón y sal.',
-            'Mezcla y sirve con nachos o tostadas.'
-        ]
-    },
-    {
-        id: 4,
-        titulo: 'Tortilla de Verduras y Tomate',
-        ingredientes: ['Tomates Frescos', 'Huevos', 'Cebolla'],
+        idTipo: 'compota',
+        nombreBase: 'Compota / Postre Dulce de',
+        aplicableA: ['Frutas y Verduras'],
         tiempo: '12 min',
         dificultad: 'Fácil',
-        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500',
-        pasos: [
-            'Pica las verduras y sofríelas 5 minutos.',
-            'Bate 2-3 huevos y viértelos sobre las verduras.',
-            'Cocina por ambos lados hasta dorar.'
+        imagenDefault: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
+        pasosTemplate: (ing) => [
+            `Pela y pica en cubitos los/las ${ing}.`,
+            `Llévalos a una olla pequeña con un chorrito de agua y canela a fuego lento por 10 minutos.`,
+            `Cuando estén suaves, tritura ligeramente y disfruta caliente o frío.`
+        ]
+    },
+    {
+        idTipo: 'salteado',
+        nombreBase: 'Salteado Express de',
+        aplicableA: ['Frutas y Verduras', 'Alacena/Secos'],
+        tiempo: '10 min',
+        dificultad: 'Fácil',
+        imagenDefault: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
+        pasosTemplate: (ing) => [
+            `Corta los/las ${ing} en tiras o rodajas delgadas.`,
+            `Calienta una sartén con un poco de aceite de oliva o mantequilla.`,
+            `Saltea a fuego vivo durante 5-7 minutos y condimenta con sal y pimienta.`
+        ]
+    },
+    {
+        idTipo: 'tarta',
+        nombreBase: 'Tarta o Bizcocho Saludable con',
+        aplicableA: ['Frutas y Verduras', 'Alacena/Secos', 'Lácteos'],
+        tiempo: '25 min',
+        dificultad: 'Media',
+        imagenDefault: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500',
+        pasosTemplate: (ing) => [
+            `Mezcla 1 huevo, harina, avena y los/las ${ing} triturados o troceados.`,
+            `Vierte la mezcla en un molde pequeño o sartén antiadherente.`,
+            `Cocina a fuego lento tapado por 15 minutos hasta que esté firme y dorado.`
         ]
     }
 ];
+
+let recetaDetalleActual = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
     renderizarListaCompras();
 });
 
-// RENDERIZAR INVENTARIO
+// RENDERIZAR DESPENSA
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -208,14 +210,14 @@ function renderizarDespensa() {
     }
 }
 
-// MÓDULO DE RECETAS BASADO EN DESPENSA EN TIEMPO REAL
+// MÓDULO DE RECETAS GENERADAS 100% DINÁMICAMENTE CON LO QUE HAYA EN LA DESPENSA
 function abrirRecetas() {
     ocultarTodasLasVistas();
     document.getElementById('vista-recetas')?.classList.remove('hidden');
-    renderizarRecetasDinamicas();
+    generarRecetasDinamicas();
 }
 
-function renderizarRecetasDinamicas() {
+function generarRecetasDinamicas() {
     const contenedor = document.getElementById('contenedor-recetas');
     const chipsCont = document.getElementById('chips-despensa-recetas');
     if (!contenedor) return;
@@ -223,52 +225,57 @@ function renderizarRecetasDinamicas() {
     contenedor.innerHTML = '';
     if (chipsCont) chipsCont.innerHTML = '';
 
-    // Muestra los ingredientes actuales en forma de etiquetas
     if (inventario.length === 0) {
-        if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">Tu despensa está vacía</span>`;
-    } else {
-        inventario.forEach(i => {
-            if (chipsCont) {
-                chipsCont.innerHTML += `
-                    <span class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
-                        ${i.pronto ? '🔴' : '🟢'} ${i.nombre}
-                    </span>
-                `;
-            }
-        });
+        if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">No hay ingredientes en tu despensa. Agrega peras, manzanas o cualquier producto para sugerir recetas.</span>`;
+        contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Agrega alimentos en tu despensa para crear recetas automáticas 🎉</div>`;
+        return;
     }
 
-    // Algoritmo: Analiza coincidencias con la despensa
-    const recetasEvaluadas = recetasBase.map(receta => {
-        let coincidencias = 0;
-        let tieneUrgente = false;
+    // Renderiza etiquetas con todos los productos actuales
+    inventario.forEach(i => {
+        if (chipsCont) {
+            chipsCont.innerHTML += `
+                <span class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    ${i.pronto ? '🔴' : '🟢'} ${i.nombre}
+                </span>
+            `;
+        }
+    });
 
-        receta.ingredientes.forEach(ing => {
-            const encontrado = inventario.find(inv => inv.nombre.toLowerCase().includes(ing.toLowerCase()) || ing.toLowerCase().includes(inv.nombre.toLowerCase()));
-            if (encontrado) {
-                coincidencias++;
-                if (encontrado.pronto) tieneUrgente = true;
+    // GENERADOR: Para cada alimento de la despensa, busca qué plantillas aplican
+    let recetasGeneradas = [];
+
+    inventario.forEach(item => {
+        plantillasRecetas.forEach(plantilla => {
+            // Verificar si el alimento encaja en el tipo de la plantilla
+            if (plantilla.aplicableA.includes(item.tipo) || plantilla.aplicableA.includes('Frutas y Verduras')) {
+                let tituloCompleto = `${plantilla.nombreBase} ${item.nombre}`;
+                
+                // Si la plantilla es compota pero el alimento no es fruta dulce, ajusta el nombre a salteado/crema
+                if (plantilla.idTipo === 'compota' && (item.nombre.toLowerCase().includes('tomate') || item.nombre.toLowerCase().includes('aguacate'))) {
+                    tituloCompleto = `Crema / Puré de ${item.nombre}`;
+                }
+
+                recetasGeneradas.push({
+                    id: `${item.id}-${plantilla.idTipo}`,
+                    titulo: tituloCompleto,
+                    ingredienteEstrella: item.nombre,
+                    imagen: item.imagen || plantilla.imagenDefault,
+                    tiempo: plantilla.tiempo,
+                    dificultad: plantilla.dificultad,
+                    esUrgente: item.pronto,
+                    diasRestantes: item.dias,
+                    pasos: plantilla.pasosTemplate(item.nombre)
+                });
             }
         });
-
-        const porcentajeMatch = Math.round((coincidencias / receta.ingredientes.length) * 100);
-
-        return {
-            ...receta,
-            coincidencias,
-            porcentajeMatch,
-            tieneUrgente
-        };
     });
 
-    // Ordenar: Primero recetas con insumos urgentes, luego por mayor % de ingredientes disponibles
-    recetasEvaluadas.sort((a, b) => {
-        if (a.tieneUrgente !== b.tieneUrgente) return b.tieneUrgente ? 1 : -1;
-        return b.porcentajeMatch - a.porcentajeMatch;
-    });
+    // Ordenar: Alimentos que vencen pronto van de primeros
+    recetasGeneradas.sort((a, b) => a.diasRestantes - b.diasRestantes);
 
-    // Renderizar tarjetas
-    recetasEvaluadas.forEach(receta => {
+    // Renderizar tarjetas dinámicas
+    recetasGeneradas.forEach(receta => {
         contenedor.innerHTML += `
             <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-col gap-2">
                 <div class="flex gap-3 items-center">
@@ -276,29 +283,30 @@ function renderizarRecetasDinamicas() {
                     <div class="flex-1">
                         <div class="flex justify-between items-start gap-1">
                             <h4 class="text-xs font-bold text-slate-800">${receta.titulo}</h4>
-                            <span class="${receta.porcentajeMatch > 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'} text-[9px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                                ${receta.porcentajeMatch}% de insumos
-                            </span>
+                            ${receta.esUrgente ? '<span class="bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap">🔥 ¡Vence pronto!</span>' : ''}
                         </div>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Usa: ${receta.ingredientes.join(', ')}</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Ingrediente principal: <b class="text-emerald-700">${receta.ingredienteEstrella}</b></p>
                         <div class="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
                             <span>⏱️ ${receta.tiempo}</span>
                             <span>📊 ${receta.dificultad}</span>
-                            ${receta.tieneUrgente ? '<span class="text-red-600 font-bold">🔥 Rescata ingrediente</span>' : ''}
                         </div>
                     </div>
                 </div>
-                <button type="button" onclick="verDetalleReceta(${receta.id})" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación Completa
+                <button type="button" onclick="verPasosRecetaDinamica('${receta.id}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación
                 </button>
             </div>
         `;
     });
+
+    window.recetasGeneradasCache = recetasGeneradas;
 }
 
-function verDetalleReceta(id) {
-    const receta = recetasBase.find(r => r.id === id);
+function verPasosRecetaDinamica(idReceta) {
+    const receta = window.recetasGeneradasCache?.find(r => r.id === idReceta);
     if (!receta) return;
+
+    recetaDetalleActual = receta;
 
     document.getElementById('modal-receta-img').src = receta.imagen;
     document.getElementById('modal-receta-titulo').textContent = receta.titulo;
@@ -308,16 +316,16 @@ function verDetalleReceta(id) {
     `;
 
     const ingList = document.getElementById('modal-receta-ingredientes');
-    ingList.innerHTML = '';
-    receta.ingredientes.forEach(ing => {
-        const disponible = inventario.some(i => i.nombre.toLowerCase().includes(ing.toLowerCase()));
-        ingList.innerHTML += `
-            <li class="flex items-center gap-2 ${disponibles ? 'text-emerald-700 font-semibold' : 'text-slate-500'}">
-                <i class="fa-solid ${disponible ? 'fa-circle-check text-emerald-600' : 'fa-circle-minus text-slate-300'} text-xs"></i>
-                <span>${ing} ${disponible ? '(En despensa)' : '(Te falta)'}</span>
-            </li>
-        `;
-    });
+    ingList.innerHTML = `
+        <li class="flex items-center gap-2 text-emerald-700 font-semibold">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+            <span>${receta.ingredienteEstrella} (De tu despensa)</span>
+        </li>
+        <li class="flex items-center gap-2 text-slate-500">
+            <i class="fa-solid fa-circle-info text-slate-300 text-xs"></i>
+            <span>Opcionales: Miel, aceite, sal o especias al gusto.</span>
+        </li>
+    `;
 
     const pasosList = document.getElementById('modal-receta-pasos');
     pasosList.innerHTML = '';
@@ -327,7 +335,7 @@ function verDetalleReceta(id) {
 
     const btnCocinar = document.getElementById('btn-cocinar-receta');
     btnCocinar.onclick = () => {
-        alert(`🎉 ¡Felicidades! Preparaste "${receta.titulo}".`);
+        alert(`🎉 ¡Excelente! Has preparado "${receta.titulo}" aprovechando tu despensa.`);
         cerrarModalReceta();
     };
 
@@ -446,7 +454,6 @@ function ocultarTodasLasVistas() {
     document.getElementById('vista-recetas')?.classList.add('hidden');
 }
 
-// FUNCIONES DE ACCIONES
 function marcarComoConsumidoTab() {
     if (alimentoSeleccionadoId) {
         inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
@@ -586,6 +593,7 @@ function previsualizarFoto(e) {
     }
 }
 
+// AL GUARDAR UN NUEVO ALIMENTO (P. EJ. PERAS), SE ACTUALIZAN LA DESPENSA Y LAS RECETAS AUTOMÁTICAMENTE
 function guardarAlimento() {
     const nom = document.getElementById('input-nombre-alimento')?.value.trim();
     const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
@@ -620,15 +628,18 @@ function guardarAlimento() {
     renderizarDespensa();
     cerrarModalAgregar();
 
+    // Limpiar modal
     document.getElementById('input-nombre-alimento').value = '';
     document.getElementById('input-cantidad-alimento').value = '';
     document.getElementById('input-fecha-alimento').value = '';
     fotoTemporal = null;
     document.getElementById('preview-foto')?.classList.add('hidden');
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
+
+    alert(`🥑 "${nom}" agregado con éxito. ¡Revisa la sección de Recetas para ver sugerencias creadas con este alimento!`);
 }
 
-// INICIO DE SESIÓN
+// INICIO DE SESIÓN / REGISTRO
 function abrirModal(modo) {
     modoModal = modo || 'login';
     document.getElementById('modal-login')?.classList.remove('hidden');
