@@ -19,8 +19,8 @@
         <!-- MARCO MÓVIL CENTRADO -->
         <div class="app-card">
             
-            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
-            <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH (OCULTA INICIALMENTE PARA ACCESO DIRECTO) -->
+            <div id="vista-auth" class="w-full h-full flex flex-col justify-between hidden relative z-10">
                 
                 <!-- DECORACIONES SVG INTERNAS -->
                 <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -54,7 +54,7 @@
                 <!-- ENCABEZADO -->
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
-                        <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
+                        <button type="button" onclick="mostrarDespensa()" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
                             <i class="fa-solid fa-xmark text-base"></i>
                         </button>
                         
@@ -72,7 +72,6 @@
 
                 <!-- CONTENIDO CENTRAL DE BIENVENIDA -->
                 <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
-                    
                     <div class="relative my-2 w-full max-w-[220px] animate-float">
                         <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
                             <div class="relative w-24 h-20 flex items-center justify-center drop-shadow-sm">
@@ -92,7 +91,6 @@
                         </div>
                     </div>
 
-                    <!-- BOTONES QUE ABREN EL MODAL -->
                     <div class="w-full space-y-3 mt-3">
                         <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
                             Iniciar sesion
@@ -128,8 +126,8 @@
                 <div class="pb-3"></div>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL) -->
-            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+            <!-- VISTA 2: MI DESPENSA (PANTALLA PRINCIPAL VISIBLE) -->
+            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between relative z-10 bg-slate-50">
                 
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
@@ -158,7 +156,7 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-                    <!-- BUSCADOR EN TIEMPO REAL -->
+                    <!-- BUSCADOR -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
@@ -293,7 +291,7 @@
                 <!-- BOTONES DE ACCIÓN: CONSUMIDO, DONAR, RECETA -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
-                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 btn-green text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Consumido</span>
                         </button>
@@ -388,12 +386,12 @@
                         </label>
                     </div>
 
-                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">
+                    <button type="submit" id="btn-submit-modal" class="w-full bg-emerald-600 text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">
                         Iniciar sesión
                     </button>
                 </form>
 
-                <a href="#" id="link-olvidaste" class="block text-green-custom font-serif-custom text-[11px] hover:underline mb-2">
+                <a href="#" id="link-olvidaste" class="block text-emerald-700 font-serif-custom text-[11px] hover:underline mb-2">
                     ¿Olvidaste tu contraseña?
                 </a>
 
@@ -449,7 +447,7 @@
                     <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
                         Guardar
                     </button>
                 </div>
@@ -474,7 +472,7 @@
                     </label>
                 </div>
 
-                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
                     Aplicar
                 </button>
             </div>
