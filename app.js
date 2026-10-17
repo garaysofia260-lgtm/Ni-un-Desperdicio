@@ -2,10 +2,14 @@
 let modoModal = 'login';
 let fotoTemporal = null;
 let alimentoSeleccionadoId = null;
+
+// Filtros
 let categoriaFiltro = 'todos';
+let tipoFiltro = 'todos';
+let ubicacionFiltro = 'todas';
 let ordenActual = 'vencimiento';
 
-// INVENTARIO CON IMÁGENES REALES
+// INVENTARIO CON CATEGORÍAS Y UBICACIÓN
 let inventario = [
     { 
         id: 1, 
@@ -13,6 +17,8 @@ let inventario = [
         cantidad: '4 unidades', 
         dias: 0, 
         pronto: true, 
+        tipo: 'Frutas y Verduras',
+        ubicacion: 'Alacena',
         imagen: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500', 
         diasTotal: 7 
     },
@@ -22,6 +28,8 @@ let inventario = [
         cantidad: '1 Litro', 
         dias: 2, 
         pronto: true, 
+        tipo: 'Lácteos',
+        ubicacion: 'Refrigerador',
         imagen: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500', 
         diasTotal: 10 
     },
@@ -31,6 +39,8 @@ let inventario = [
         cantidad: '2 pcs', 
         dias: 6, 
         pronto: false, 
+        tipo: 'Frutas y Verduras',
+        ubicacion: 'Alacena',
         imagen: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=500', 
         diasTotal: 10 
     },
@@ -40,21 +50,30 @@ let inventario = [
         cantidad: '5 pcs', 
         dias: 5, 
         pronto: false, 
+        tipo: 'Frutas y Verduras',
+        ubicacion: 'Refrigerador',
         imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500', 
         diasTotal: 8 
     }
 ];
 
+let listaCompras = [
+    { id: 101, nombre: 'Huevos docena', comprado: false },
+    { id: 102, nombre: 'Queso Parmesano', comprado: false }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
+    renderizarListaCompras();
 });
 
-// RENDERIZAR INVENTARIO
+// RENDERIZAR INVENTARIO CON FILTROS AVANZADOS
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
     const seccionPronto = document.getElementById('seccion-pronto');
     const seccionFrescos = document.getElementById('seccion-frescos');
+    const mensajeVacio = document.getElementById('mensaje-vacio');
 
     if (!listaPronto || !listaFrescos) return;
 
@@ -65,9 +84,13 @@ function renderizarDespensa() {
 
     let filtrados = inventario.filter(item => {
         const coincideNombre = item.nombre.toLowerCase().includes(termino);
-        if (categoriaFiltro === 'pronto') return coincideNombre && item.pronto;
-        if (categoriaFiltro === 'frescos') return coincideNombre && !item.pronto;
-        return coincideNombre;
+        const coincideEstado = categoriaFiltro === 'todos' || 
+                              (categoriaFiltro === 'pronto' && item.pronto) || 
+                              (categoriaFiltro === 'frescos' && !item.pronto);
+        const coincideTipo = tipoFiltro === 'todos' || item.tipo === tipoFiltro;
+        const coincideUbicacion = ubicacionFiltro === 'todas' || item.ubicacion === ubicacionFiltro;
+
+        return coincideNombre && coincideEstado && coincideTipo && coincideUbicacion;
     });
 
     if (ordenActual === 'vencimiento') {
@@ -89,6 +112,7 @@ function renderizarDespensa() {
                         <div>
                             <h4 class="text-xs font-bold text-slate-800">${item.nombre}</h4>
                             <p class="text-[10px] text-red-600 font-semibold">${item.dias === 0 ? 'Vence hoy' : 'Vence en ' + item.dias + ' días'} • ${item.cantidad}</p>
+                            <span class="text-[9px] bg-white border border-slate-200 px-1.5 py-0.2 rounded text-slate-500 font-medium">📍 ${item.ubicacion}</span>
                         </div>
                     </div>
                     <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
@@ -107,14 +131,77 @@ function renderizarDespensa() {
                             <p class="text-[9px] text-emerald-600 font-medium">Vence en ${item.dias} días</p>
                         </div>
                     </div>
-                    <span class="text-[10px] text-slate-400">Cantidad: ${item.cantidad}</span>
+                    <div class="flex justify-between items-center text-[9px] text-slate-400">
+                        <span>Cant: ${item.cantidad}</span>
+                        <span class="bg-slate-100 px-1 rounded text-slate-500">📍 ${item.ubicacion}</span>
+                    </div>
                 </div>
             `;
         }
     });
 
-    if (seccionPronto) seccionPronto.style.display = (contadorPronto > 0 || categoriaFiltro === 'pronto') ? 'block' : 'none';
-    if (seccionFrescos) seccionFrescos.style.display = (contadorFrescos > 0 || categoriaFiltro === 'frescos') ? 'block' : 'none';
+    if (seccionPronto) seccionPronto.style.display = (contadorPronto > 0) ? 'block' : 'none';
+    if (seccionFrescos) seccionFrescos.style.display = (contadorFrescos > 0) ? 'block' : 'none';
+
+    if (mensajeVacio) {
+        if (contadorPronto === 0 && contadorFrescos === 0) {
+            mensajeVacio.classList.remove('hidden');
+        } else {
+            mensajeVacio.classList.add('hidden');
+        }
+    }
+}
+
+// BÚSQUEDA Y FILTROS POR CATEGORÍA/TIPO/UBICACIÓN
+function filtrarAlimentos() { renderizarDespensa(); }
+
+function filtrarCategoria(cat) {
+    categoriaFiltro = cat;
+    const btnTodos = document.getElementById('btn-cat-todos');
+    const btnPronto = document.getElementById('btn-cat-pronto');
+    const btnFrescos = document.getElementById('btn-cat-frescos');
+
+    [btnTodos, btnPronto, btnFrescos].forEach(b => {
+        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
+    });
+
+    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+
+    renderizarDespensa();
+}
+
+function filtrarTipo(tipo) {
+    tipoFiltro = tipo;
+    const contenedor = document.getElementById('contenedor-filtros-tipo');
+    if (contenedor) {
+        const botones = contenedor.querySelectorAll('button');
+        botones.forEach(b => {
+            if (b.getAttribute('onclick').includes(`'${tipo}'`)) {
+                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
+            } else {
+                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+            }
+        });
+    }
+    renderizarDespensa();
+}
+
+function filtrarUbicacion(ub) {
+    ubicacionFiltro = ub;
+    const contenedor = document.getElementById('contenedor-filtros-ubicacion');
+    if (contenedor) {
+        const botones = contenedor.querySelectorAll('button');
+        botones.forEach(b => {
+            if (b.getAttribute('onclick').includes(`'${ub}'`)) {
+                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
+            } else {
+                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
+            }
+        });
+    }
+    renderizarDespensa();
 }
 
 // PESTAÑA DEDICADA DE DETALLE DEL ALIMENTO
@@ -124,16 +211,14 @@ function abrirDetalleTab(id) {
 
     alimentoSeleccionadoId = id;
 
-    // Asignar datos a los elementos de la vista
     document.getElementById('tab-detalle-nombre').textContent = item.nombre;
     document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
     document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para su fecha límite`;
+    document.getElementById('tab-detalle-ubicacion-tag').textContent = `📍 ${item.ubicacion} • ${item.tipo}`;
 
-    // Imagen
     const imgEl = document.getElementById('tab-detalle-img');
     if (imgEl) imgEl.src = item.imagen;
 
-    // Calcular Porcentaje
     const diasTotal = item.diasTotal || 7;
     let pct = Math.min(100, Math.max(10, Math.round((item.dias / diasTotal) * 100)));
     if (item.dias === 0) pct = 5;
@@ -160,13 +245,14 @@ function abrirDetalleTab(id) {
         if (estadoTxt) estadoTxt.textContent = "Prioridad máxima";
     }
 
-    // Transición de pantallas
     document.getElementById('vista-despensa')?.classList.add('hidden');
+    document.getElementById('vista-lista-compras')?.classList.add('hidden');
     document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
 }
 
 function volverADespensa() {
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
+    document.getElementById('vista-lista-compras')?.classList.add('hidden');
     document.getElementById('vista-despensa')?.classList.remove('hidden');
 }
 
@@ -199,31 +285,106 @@ function recetaDesdeDetalle() {
     if (item) sugerirReceta(item.nombre);
 }
 
-// BÚSQUEDA Y FILTROS
-function filtrarAlimentos() { renderizarDespensa(); }
-
-function filtrarCategoria(cat) {
-    categoriaFiltro = cat;
-    const btnTodos = document.getElementById('btn-cat-todos');
-    const btnPronto = document.getElementById('btn-cat-pronto');
-    const btnFrescos = document.getElementById('btn-cat-frescos');
-
-    [btnTodos, btnPronto, btnFrescos].forEach(b => {
-        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
-    });
-
-    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-
-    renderizarDespensa();
+function sugerirReceta(alimento) {
+    alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
 }
 
+// LISTA DE COMPRAS ("LO QUE NECESITO")
+function abrirListaCompras() {
+    document.getElementById('vista-despensa')?.classList.add('hidden');
+    document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
+    document.getElementById('vista-lista-compras')?.classList.remove('hidden');
+}
+
+function renderizarListaCompras() {
+    const cont = document.getElementById('contenedor-lista-compras');
+    const badge = document.getElementById('badge-compras-count');
+    const resumen = document.getElementById('resumen-compras-pendientes');
+
+    if (!cont) return;
+
+    cont.innerHTML = '';
+    const pendientes = listaCompras.filter(i => !i.comprado).length;
+
+    if (badge) badge.textContent = pendientes;
+    if (resumen) resumen.textContent = `${pendientes} pendientes`;
+
+    if (listaCompras.length === 0) {
+        cont.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Tu lista está vacía 🎉</p>`;
+        return;
+    }
+
+    listaCompras.forEach(item => {
+        cont.innerHTML += `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <label class="flex items-center gap-2 cursor-pointer flex-1 ${item.comprado ? 'line-through text-slate-400' : 'text-slate-800 font-semibold'}">
+                    <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleItemCompra(${item.id})" class="rounded text-emerald-600">
+                    <span>${item.nombre}</span>
+                </label>
+                <div class="flex gap-1">
+                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg">
+                        + Despensa
+                    </button>
+                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function agregarItemCompra() {
+    const input = document.getElementById('input-item-compra');
+    const txt = input?.value.trim();
+
+    if (!txt) return;
+
+    listaCompras.unshift({ id: Date.now(), nombre: txt, comprado: false });
+    input.value = '';
+    renderizarListaCompras();
+}
+
+function toggleItemCompra(id) {
+    const item = listaCompras.find(i => i.id === id);
+    if (item) {
+        item.comprado = !item.comprado;
+        renderizarListaCompras();
+    }
+}
+
+function eliminarItemCompra(id) {
+    listaCompras = listaCompras.filter(i => i.id !== id);
+    renderizarListaCompras();
+}
+
+function moverADespensaDesdeCompras(id) {
+    const item = listaCompras.find(i => i.id === id);
+    if (item) {
+        inventario.unshift({
+            id: Date.now(),
+            nombre: item.nombre,
+            cantidad: '1 unidad',
+            dias: 7,
+            pronto: false,
+            tipo: 'Alacena/Secos',
+            ubicacion: 'Alacena',
+            imagen: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
+            diasTotal: 10
+        });
+        listaCompras = listaCompras.filter(i => i.id !== id);
+        renderizarListaCompras();
+        renderizarDespensa();
+        alert(`🛒 ¡"${item.nombre}" se movió a tu Despensa!`);
+    }
+}
+
+// MODAL Y MÉTODOS DE FILTROS
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
 function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
 function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
 
-// CÁMARA Y AGREGAR
+// CÁMARA Y AGREGAR CON TIPO Y UBICACIÓN
 function previsualizarFoto(e) {
     const file = e.target.files[0];
     if (file) {
@@ -246,6 +407,8 @@ function guardarAlimento() {
     const nom = document.getElementById('input-nombre-alimento')?.value.trim();
     const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
     const fecha = document.getElementById('input-fecha-alimento')?.value;
+    const tipo = document.getElementById('select-tipo-alimento')?.value || 'Alacena/Secos';
+    const ub = document.getElementById('select-ubicacion-alimento')?.value || 'Alacena';
 
     if (!nom) return alert("Por favor ingresa un nombre.");
 
@@ -264,6 +427,8 @@ function guardarAlimento() {
         cantidad: cant,
         dias: dias,
         pronto: dias <= 2,
+        tipo: tipo,
+        ubicacion: ub,
         imagen: fotoTemporal || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
         diasTotal: Math.max(dias + 2, 7)
     };
@@ -280,7 +445,7 @@ function guardarAlimento() {
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
 }
 
-// AUTH Y LOGIN
+// INICIO DE SESIÓN / REGISTRO (INTACTOS)
 function abrirModal(modo) {
     modoModal = modo || 'login';
     document.getElementById('modal-login')?.classList.remove('hidden');
@@ -368,13 +533,16 @@ function loginSocial(red) {
 
 function procesarFormulario(e) {
     if (e && e.preventDefault) e.preventDefault();
+    
+    const email = document.getElementById('input-login-email')?.value.trim();
+    if (email) {
+        const saludo = document.getElementById('saludo-usuario');
+        if (saludo) saludo.textContent = `¡Hola, ${email.split('@')[0]}! 👋`;
+    }
+
     cerrarLogin();
     mostrarDespensa();
     return false;
-}
-
-function sugerirReceta(alimento) {
-    alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
 }
 
 function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
