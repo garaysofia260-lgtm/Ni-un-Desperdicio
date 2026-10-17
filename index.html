@@ -180,6 +180,8 @@
             </div>
 
             <!-- VISTA 3: PESTAÑA DETALLE DEL ALIMENTO -->
+         
+<!-- VISTA 3: PESTAÑA DETALLE DEL ALIMENTO CON TODOS LOS BOTONES -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white cursor-pointer">
@@ -192,7 +194,7 @@
                 <main class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
                     <div class="w-full h-48 rounded-3xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center shadow-md relative">
                         <img id="tab-detalle-img" src="" class="w-full h-full object-cover">
-                        <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md">
+                        <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-emerald-600">
                             Fresco
                         </span>
                     </div>
@@ -205,6 +207,56 @@
                         </span>
                     </div>
 
+                    <!-- BARRA DE FRESCURA -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
+                        <div class="flex justify-between items-center text-xs font-bold">
+                            <span class="text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
+                            </span>
+                            <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold text-sm">100% Fresco</span>
+                        </div>
+
+                        <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 shadow-inner">
+                            <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
+                        </div>
+
+                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
+                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- CONTENEDOR INFERIOR CON LOS 3 BOTONES -->
+                <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Consumido</span>
+                        </button>
+
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Donar</span>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-amber-600"></i>
+                        <span>Sugerir Receta de Aprovechamiento</span>
+                    </button>
+                </div>
+            </div>
                     <!-- BARRA DE FRESCURA GRANDE -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
