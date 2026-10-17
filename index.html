@@ -13,7 +13,7 @@
 </head>
 <body class="antialiased w-full min-h-screen">
 
-    <!-- CONTENEDOR GLOBAL -->
+    <!-- CONTENEDOR GLOBAL CON FONDO OSCURO DE REFERENCIA -->
     <div class="app-screen">
         
         <!-- MARCO MÓVIL CENTRADO -->
@@ -36,7 +36,7 @@
 
                 <!-- Aguacate inferior izquierdo -->
                 <svg class="absolute -bottom-12 -left-12 w-48 h-48 opacity-90" viewBox="0 0 100 100">
-                    <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C68 95 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08"/>
+                    <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
                     <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#c3e296"/>
                     <circle cx="50" cy="65" r="14" fill="#5d4037"/>
                 </svg>
@@ -56,28 +56,28 @@
             <!-- ENCABEZADO -->
             <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                 <div class="flex justify-between items-center w-full">
-                    <button class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
+                    <button class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition">
                         <i class="fa-solid fa-xmark text-base"></i>
                     </button>
                     
                     <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
                     
-                    <!-- BOTÓN DE GEOLOCALIZACIÓN -->
-                    <button id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition cursor-pointer">
+                    <!-- 4. BOTÓN DE GEOLOCALIZACIÓN -->
+                    <button id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition">
                         <i class="fa-solid fa-location-dot text-sm"></i>
                     </button>
                 </div>
 
-                <!-- ETIQUETA DE CIUDAD DETECTADA -->
+                <!-- 4. ETIQUETA FLOTANTE CON CIUDAD DETECTADA -->
                 <div id="badge-ubicacion" class="hidden animate-fade-in mt-1 px-3 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-bold text-emerald-900 shadow-sm">
                     <span id="texto-ciudad">📍 Detectando ciudad...</span>
                 </div>
             </header>
 
-            <!-- CONTENIDO CENTRAL -->
+            <!-- CONTENIDO CENTRAL (ELEVADO CON -mt-5) -->
             <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
                 
-                <!-- TARJETA DEL LOGO DE AGUACATE -->
+                <!-- TARJETA DEL LOGO -->
                 <div class="relative my-2 w-full max-w-[220px] animate-float">
                     <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
                         
@@ -98,13 +98,13 @@
                     </div>
                 </div>
 
-                <!-- BOTONES PRINCIPALES -->
+                <!-- BOTONES PRINCIPALES QUE ABREN EL MODAL EN SU RESPECTIVO MODO -->
                 <div class="w-full space-y-3 mt-3">
-                    <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                    <button onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition">
                         Iniciar sesion
                     </button>
                     
-                    <button type="button" onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                    <button onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition">
                         Crear cuenta
                     </button>
                 </div>
@@ -112,9 +112,9 @@
                 <!-- CONTINUAR CON -->
                 <p class="text-slate-600 font-serif-custom text-[11px] my-3">o continuar con:</p>
 
-                <!-- ICONOS DE REDES SOCIALES -->
+                <!-- 3. REGISTRO SOCIAL FUNCIONAL CON SIMULACIÓN -->
                 <div class="flex justify-center items-center gap-5">
-                    <button type="button" onclick="loginSocial('Google')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Google">
+                    <button onclick="loginSocial('Google')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition" title="Iniciar con Google">
                         <svg class="w-5 h-5" viewBox="0 0 24 24">
                             <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
                             <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
@@ -123,11 +123,11 @@
                         </svg>
                     </button>
 
-                    <button type="button" onclick="loginSocial('Facebook')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Facebook">
+                    <button onclick="loginSocial('Facebook')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition" title="Iniciar con Facebook">
                         <i class="fa-brands fa-facebook text-xl text-blue-600"></i>
                     </button>
 
-                    <button type="button" onclick="loginSocial('Apple')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Apple">
+                    <button onclick="loginSocial('Apple')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition" title="Iniciar con Apple">
                         <i class="fa-brands fa-apple text-xl text-black"></i>
                     </button>
                 </div>
@@ -136,16 +136,16 @@
             <div class="pb-3"></div>
         </div>
 
-        <!-- MODAL INTERACTIVO UNIFICADO (LOGIN / CREAR CUENTA) -->
+        <!-- 5. MODAL INTERACTIVO UNIFICADO (LOGIN / CREAR CUENTA) -->
         <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
                 
                 <!-- Pestañas de Conmutación Superior -->
                 <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
-                    <button type="button" id="tab-login" onclick="cambiarModoModal('login')" class="flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer">
+                    <button id="tab-login" onclick="cambiarModoModal('login')" class="flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition">
                         Iniciar Sesión
                     </button>
-                    <button type="button" id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                    <button id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition">
                         Crear Cuenta
                     </button>
                 </div>
@@ -158,13 +158,13 @@
                     <div id="campos-login" class="space-y-2.5 mb-3">
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
-                            <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                            <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom" required>
                         </div>
 
-                        <!-- CAMPO DE CONTRASEÑA CON OJO -->
+                        <!-- 1. CAMPO CON BOTÓN DE OJO PARA VER/OCULTAR CONTRASEÑA -->
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
-                            <input type="password" id="pass-login" placeholder="Ingresa tu contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <input type="password" id="pass-login" placeholder="Ingresa tu contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none" required>
                             <button type="button" onclick="togglePassword('pass-login', 'eye-login')" class="p-1 cursor-pointer">
                                 <i id="eye-login" class="fa-solid fa-eye text-slate-400 text-xs"></i>
                             </button>
@@ -174,14 +174,14 @@
                     <!-- CAMPOS DE CREAR CUENTA -->
                     <div id="campos-registro" class="space-y-2.5 mb-3 hidden text-left">
                         
-                        <!-- SELECTOR DE PERFIL -->
+                        <!-- 2. SELECTOR DE PERFIL (HOGAR VS COMERCIO) -->
                         <p class="text-[11px] font-bold text-slate-600 mb-1">Tipo de usuario:</p>
                         <input type="hidden" id="perfil-tipo-input" value="hogar">
                         <div class="flex gap-2 mb-2">
-                            <button type="button" id="btn-perfil-hogar" onclick="seleccionarPerfil('hogar')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                            <button type="button" id="btn-perfil-hogar" onclick="seleccionarPerfil('hogar')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition">
                                 <i class="fa-solid fa-house text-xs"></i> Hogar
                             </button>
-                            <button type="button" id="btn-perfil-comercio" onclick="seleccionarPerfil('comercio')" class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                            <button type="button" id="btn-perfil-comercio" onclick="seleccionarPerfil('comercio')" class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition">
                                 <i class="fa-solid fa-store text-xs"></i> Comercio
                             </button>
                         </div>
@@ -223,8 +223,8 @@
                         </label>
                     </div>
 
-                    <!-- BOTÓN PRINCIPAL -->
-                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">
+                    <!-- BOTÓN PRINCIPAL DE ACCIÓN -->
+                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5">
                         Iniciar sesión
                     </button>
                 </form>
@@ -235,12 +235,12 @@
 
                 <p class="text-slate-500 font-serif-custom text-[10px] mb-2">o continuar con:</p>
                 <div class="flex justify-center items-center gap-4">
-                    <button type="button" onclick="loginSocial('Google')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-google text-base text-red-500"></i></button>
-                    <button type="button" onclick="loginSocial('Facebook')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-facebook text-base text-blue-600"></i></button>
-                    <button type="button" onclick="loginSocial('Apple')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-apple text-base text-black"></i></button>
+                    <button onclick="loginSocial('Google')" class="w-7 h-7 flex items-center justify-center"><i class="fa-brands fa-google text-base text-red-500"></i></button>
+                    <button onclick="loginSocial('Facebook')" class="w-7 h-7 flex items-center justify-center"><i class="fa-brands fa-facebook text-base text-blue-600"></i></button>
+                    <button onclick="loginSocial('Apple')" class="w-7 h-7 flex items-center justify-center"><i class="fa-brands fa-apple text-base text-black"></i></button>
                 </div>
 
-                <button type="button" onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer">
+                <button onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline">
                     Cerrar
                 </button>
             </div>
