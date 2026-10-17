@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;600;700&family=Georgia&display=swap');
+
+/* --- REGLAS GLOBALES Y OPTIMIZACIÓN TÁCTIL --- */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #283134; /* Fondo gris pizarra */
+    
+    /* Suavizado de tipografías en móviles y Mac */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    
+    /* Evita rebotes molestos al hacer scroll */
+    overscroll-behavior: none;
+}
+
+/* Ocultar barra de desplazamiento manteniendo la función de scroll */
+::-webkit-scrollbar {
+    display: none;
+}
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Color verde institucional al seleccionar texto */
+::selection {
+    background-color: #3b630b;
+    color: #ffffff;
+}
+
+/* --- TIPOGRAFÍAS DE MARCA --- */
+.font-serif-custom {
+    font-family: 'Georgia', serif;
+}
+
+.font-brand {
+    font-family: 'Fredoka', sans-serif;
+}
+
+/* --- PANTALLA CONTENEDORA Y MARCO SIMULADOR --- */
+.app-screen {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #283134;
+}
+
+.app-card {
+    width: 100%;
+    max-width: 380px;
+    height: 100vh;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 35%, #f7faf4 0%, #e8f2df 60%, #daeac9 100%);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+    will-change: transform;
+}
+
+/* Bordes redondeados y efecto de cristal en computadoras */
+@media (min-width: 640px) {
+    .app-card {
+        border-radius: 32px;
+        margin: 20px 0;
+        height: 750px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* --- BOTONES Y COMPONENTES --- */
+.btn-green {
+    background-color: #3b630b;
+    box-shadow: 0 4px 12px rgba(59, 99, 11, 0.25);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-green:hover {
+    background-color: #325409;
+    box-shadow: 0 6px 16px rgba(59, 99, 11, 0.35);
+}
+
+.btn-green:active {
+    transform: scale(0.97);
+    background-color: #2d4c08;
+}
+
+.text-green-custom {
+    color: #3b630b;
+}
+
+/* --- ANIMACIONES SUAVES Y RENDIMIENTO (GPU) --- */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scale-up {
+    animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
