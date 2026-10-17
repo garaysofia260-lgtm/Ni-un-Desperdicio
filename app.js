@@ -62,6 +62,37 @@ let listaCompras = [
     { id: 102, nombre: 'Queso Parmesano', comprado: false }
 ];
 
+// Base de datos de recetas de aprovechamiento
+let recetasBase = [
+    {
+        id: 1,
+        titulo: 'Batido de Plátano y Leche',
+        ingredienteClave: 'Plátanos Maduros',
+        tiempo: '5 min',
+        dificultad: 'Fácil',
+        imagen: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
+        pasos: '1. Licúa los plátanos maduros con la leche fría.\n2. Agrega miel o canela al gusto.\n3. Sirve de inmediato.'
+    },
+    {
+        id: 2,
+        titulo: 'Salsa Casera de Tomate Fresco',
+        ingredienteClave: 'Tomates Frescos',
+        tiempo: '15 min',
+        dificultad: 'Fácil',
+        imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
+        pasos: '1. Pica los tomates maduros y saltea con ajo y aceite de oliva.\n2. Cocina a fuego lento por 10 minutos.\n3. Agrega sal y albahaca.'
+    },
+    {
+        id: 3,
+        titulo: 'Guacamole Rápido de Rescate',
+        ingredienteClave: 'Aguacates',
+        tiempo: '8 min',
+        dificultad: 'Fácil',
+        imagen: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
+        pasos: '1. Muele los aguacates en un tazón.\n2. Añade limón, sal y cilantro picado.\n3. Mezcla bien y disfruta con tostatas.'
+    }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
     renderizarListaCompras();
@@ -245,15 +276,21 @@ function abrirDetalleTab(id) {
         if (estadoTxt) estadoTxt.textContent = "Prioridad máxima";
     }
 
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-lista-compras')?.classList.add('hidden');
+    ocultarTodasLasVistas();
     document.getElementById('vista-detalle-alimento')?.classList.remove('hidden');
 }
 
 function volverADespensa() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-despensa')?.classList.remove('hidden');
+}
+
+function ocultarTodasLasVistas() {
+    document.getElementById('vista-auth')?.classList.add('hidden');
+    document.getElementById('vista-despensa')?.classList.add('hidden');
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
     document.getElementById('vista-lista-compras')?.classList.add('hidden');
-    document.getElementById('vista-despensa')?.classList.remove('hidden');
+    document.getElementById('vista-recetas')?.classList.add('hidden');
 }
 
 // FUNCIONES DE LOS TRES BOTONES DE DETALLE
@@ -289,10 +326,56 @@ function sugerirReceta(alimento) {
     alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
 }
 
+// MÓDULO DE RECETAS DE APROVECHAMIENTO
+function abrirRecetas() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-recetas')?.classList.remove('hidden');
+    renderizarRecetas();
+}
+
+function renderizarRecetas() {
+    const contenedor = document.getElementById('contenedor-recetas');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = '';
+
+    recetasBase.forEach(receta => {
+        const tieneIngrediente = inventario.some(i => i.nombre.toLowerCase().includes(receta.ingredienteClave.toLowerCase()));
+
+        contenedor.innerHTML += `
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-col gap-2">
+                <div class="flex gap-3 items-center">
+                    <img src="${receta.imagen}" class="w-16 h-16 rounded-xl object-cover shadow-xs">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xs font-bold text-slate-800">${receta.titulo}</h4>
+                            ${tieneIngrediente ? '<span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded-md">¡En tu despensa!</span>' : ''}
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Usa: <b class="text-emerald-700">${receta.ingredienteClave}</b></p>
+                        <div class="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
+                            <span>⏱️ ${receta.tiempo}</span>
+                            <span>📊 ${receta.dificultad}</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="verPasosReceta(${receta.id})" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación
+                </button>
+            </div>
+        `;
+    });
+}
+
+function verPasosReceta(id) {
+    const receta = recetasBase.find(r => r.id === id);
+    if (receta) {
+        alert(`👨‍🍳 ${receta.titulo}\n\nIngrediente principal: ${receta.ingredienteClave}\n\nPreparación:\n${receta.pasos}`);
+    }
+}
+
 // LISTA DE COMPRAS ("LO QUE NECESITO")
 function abrirListaCompras() {
-    document.getElementById('vista-despensa')?.classList.add('hidden');
-    document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
+    ocultarTodasLasVistas();
     document.getElementById('vista-lista-compras')?.classList.remove('hidden');
 }
 
@@ -516,12 +599,12 @@ function seleccionarPerfil(tipo) {
 }
 
 function mostrarDespensa() {
-    document.getElementById('vista-auth')?.classList.add('hidden');
+    ocultarTodasLasVistas();
     document.getElementById('vista-despensa')?.classList.remove('hidden');
 }
 
 function cerrarSesion() {
-    document.getElementById('vista-despensa')?.classList.add('hidden');
+    ocultarTodasLasVistas();
     document.getElementById('vista-auth')?.classList.remove('hidden');
 }
 
