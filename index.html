@@ -15,7 +15,7 @@
     <div class="app-screen">
         <div class="app-card relative overflow-hidden bg-slate-50">
             
-            <!-- VISTA 1: AUTH / INICIO (PANTALLA DE INICIO VISIBLE POR DEFECTO) -->
+            <!-- VISTA 1: AUTH / INICIO (INICIO POR DEFECTO) -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
                 <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
                     <div class="flex justify-between items-center w-full">
@@ -40,7 +40,7 @@
                 </main>
             </div>
 
-            <!-- VISTA 2: MI DESPENSA (OCULTA HASTA QUE SE INGRESE) -->
+            <!-- VISTA 2: MI DESPENSA -->
             <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
@@ -55,7 +55,6 @@
                             </div>
                         </div>
 
-                        <!-- ACCESO A LO QUE NECESITO + BOTÓN SALIR -->
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="abrirListaCompras()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Lo que necesito">
                                 <i class="fa-solid fa-list-check text-sm"></i>
@@ -144,14 +143,14 @@
                         <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
                     </div>
 
-                    <!-- MENSAJE DE LISTA VACÍA POR FILTRO -->
+                    <!-- MENSAJE DE VACÍO -->
                     <div id="mensaje-vacio" class="hidden text-center py-8">
                         <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
                         <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
                     </div>
                 </main>
 
-                <!-- BARRA INFERIOR DE NAVEGACIÓN -->
+                <!-- NAVEGACIÓN INFERIOR -->
                 <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
                     <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
@@ -179,9 +178,7 @@
                 </nav>
             </div>
 
-            <!-- VISTA 3: PESTAÑA DETALLE DEL ALIMENTO -->
-         
-<!-- VISTA 3: PESTAÑA DETALLE DEL ALIMENTO CON TODOS LOS BOTONES -->
+            <!-- VISTA 3: DETALLE DEL ALIMENTO -->
             <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white cursor-pointer">
@@ -207,7 +204,6 @@
                         </span>
                     </div>
 
-                    <!-- BARRA DE FRESCURA -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
                         <div class="flex justify-between items-center text-xs font-bold">
                             <span class="text-slate-700 flex items-center gap-1.5">
@@ -237,57 +233,7 @@
                     </div>
                 </main>
 
-                <!-- CONTENEDOR INFERIOR CON LOS 3 BOTONES -->
-                <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
-                    <div class="flex gap-2">
-                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>Consumido</span>
-                        </button>
-
-                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-hand-holding-heart"></i>
-                            <span>Donar</span>
-                        </button>
-                    </div>
-
-                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-utensils text-amber-600"></i>
-                        <span>Sugerir Receta de Aprovechamiento</span>
-                    </button>
-                </div>
-            </div>
-                    <!-- BARRA DE FRESCURA GRANDE -->
-                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2.5">
-                        <div class="flex justify-between items-center text-xs font-bold">
-                            <span class="text-slate-700 flex items-center gap-1.5">
-                                <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
-                            </span>
-                            <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold text-sm">100% Fresco</span>
-                        </div>
-
-                        <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 shadow-inner">
-                            <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
-                        </div>
-
-                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
-                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
-                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
-                        </div>
-                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
-                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
-                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
-                        </div>
-                    </div>
-                </main>
-
-                <!-- BOTONES DE ACCIÓN: CONSUMIDO, DONAR, RECETA -->
+                <!-- LOS 3 BOTONES DE ACCIÓN (CONSUMIDO, DONAR, RECETA) -->
                 <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
                     <div class="flex gap-2">
                         <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -308,7 +254,7 @@
                 </div>
             </div>
 
-            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS) -->
+            <!-- VISTA 4: LO QUE NECESITO -->
             <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
                 <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
@@ -367,7 +313,7 @@
 
         </div>
 
-        <!-- MODAL AGREGAR ALIMENTO -->
+        <!-- MODAL AGREGAR -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -421,7 +367,7 @@
             </div>
         </div>
 
-        <!-- MODAL ORDENAR -->
+        <!-- MODAL FILTROS -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100">
                 <h3 class="text-xs font-bold text-slate-800 mb-3 text-center">
@@ -447,7 +393,7 @@
 
     </div>
 
-    <!-- Archivo JS principal -->
+    <!-- Archivo JS -->
     <script src="app.js"></script>
 </body>
 </html>
