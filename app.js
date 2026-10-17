@@ -62,34 +62,59 @@ let listaCompras = [
     { id: 102, nombre: 'Queso Parmesano', comprado: false }
 ];
 
-// Base de datos de recetas de aprovechamiento
+// Base de datos de recetas de aprovechamiento con lista de ingredientes
 let recetasBase = [
     {
         id: 1,
         titulo: 'Batido de Plátano y Leche',
-        ingredienteClave: 'Plátanos Maduros',
+        ingredientes: ['Plátanos Maduros', 'Leche Entera', 'Miel'],
         tiempo: '5 min',
         dificultad: 'Fácil',
         imagen: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
-        pasos: '1. Licúa los plátanos maduros con la leche fría.\n2. Agrega miel o canela al gusto.\n3. Sirve de inmediato.'
+        pasos: [
+            'Licúa los plátanos maduros con la leche fría.',
+            'Agrega una cucharadita de miel o canela al gusto.',
+            'Sirve inmediatamente bien frío.'
+        ]
     },
     {
         id: 2,
-        titulo: 'Salsa Casera de Tomate Fresco',
-        ingredienteClave: 'Tomates Frescos',
+        titulo: 'Salsa Casera de Tomate',
+        ingredientes: ['Tomates Frescos', 'Ajo', 'Aceite de oliva'],
         tiempo: '15 min',
         dificultad: 'Fácil',
         imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
-        pasos: '1. Pica los tomates maduros y saltea con ajo y aceite de oliva.\n2. Cocina a fuego lento por 10 minutos.\n3. Agrega sal y albahaca.'
+        pasos: [
+            'Pica los tomates y saltea con ajo picado en aceite de oliva.',
+            'Cocina a fuego lento durante 10 a 12 minutos.',
+            'Sazona con sal, pimienta y sal al gusto.'
+        ]
     },
     {
         id: 3,
-        titulo: 'Guacamole Rápido de Rescate',
-        ingredienteClave: 'Aguacates',
+        titulo: 'Guacamole Express de Rescate',
+        ingredientes: ['Aguacates', 'Tomates Frescos', 'Limón'],
         tiempo: '8 min',
         dificultad: 'Fácil',
         imagen: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
-        pasos: '1. Muele los aguacates en un tazón.\n2. Añade limón, sal y cilantro picado.\n3. Mezcla bien y disfruta con tostatas.'
+        pasos: [
+            'Tritura los aguacates maduros en un tazón.',
+            'Agrega tomates en cubitos, un chorrito de limón y sal.',
+            'Mezcla y sirve con nachos o tostadas.'
+        ]
+    },
+    {
+        id: 4,
+        titulo: 'Tortilla de Verduras y Tomate',
+        ingredientes: ['Tomates Frescos', 'Huevos', 'Cebolla'],
+        tiempo: '12 min',
+        dificultad: 'Fácil',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500',
+        pasos: [
+            'Pica las verduras y sofríelas 5 minutos.',
+            'Bate 2-3 huevos y viértelos sobre las verduras.',
+            'Cocina por ambos lados hasta dorar.'
+        ]
     }
 ];
 
@@ -98,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
 });
 
-// RENDERIZAR INVENTARIO CON FILTROS AVANZADOS
+// RENDERIZAR INVENTARIO
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -146,7 +171,7 @@ function renderizarDespensa() {
                             <span class="text-[9px] bg-white border border-slate-200 px-1.5 py-0.2 rounded text-slate-500 font-medium">📍 ${item.ubicacion}</span>
                         </div>
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); sugerirReceta('${item.nombre}')" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
+                    <button type="button" onclick="event.stopPropagation(); abrirRecetas()" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
                         ¿Qué cocinar?
                     </button>
                 </div>
@@ -183,9 +208,137 @@ function renderizarDespensa() {
     }
 }
 
-// BÚSQUEDA Y FILTROS POR CATEGORÍA/TIPO/UBICACIÓN
-function filtrarAlimentos() { renderizarDespensa(); }
+// MÓDULO DE RECETAS BASADO EN DESPENSA EN TIEMPO REAL
+function abrirRecetas() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-recetas')?.classList.remove('hidden');
+    renderizarRecetasDinamicas();
+}
 
+function renderizarRecetasDinamicas() {
+    const contenedor = document.getElementById('contenedor-recetas');
+    const chipsCont = document.getElementById('chips-despensa-recetas');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = '';
+    if (chipsCont) chipsCont.innerHTML = '';
+
+    // Muestra los ingredientes actuales en forma de etiquetas
+    if (inventario.length === 0) {
+        if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">Tu despensa está vacía</span>`;
+    } else {
+        inventario.forEach(i => {
+            if (chipsCont) {
+                chipsCont.innerHTML += `
+                    <span class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                        ${i.pronto ? '🔴' : '🟢'} ${i.nombre}
+                    </span>
+                `;
+            }
+        });
+    }
+
+    // Algoritmo: Analiza coincidencias con la despensa
+    const recetasEvaluadas = recetasBase.map(receta => {
+        let coincidencias = 0;
+        let tieneUrgente = false;
+
+        receta.ingredientes.forEach(ing => {
+            const encontrado = inventario.find(inv => inv.nombre.toLowerCase().includes(ing.toLowerCase()) || ing.toLowerCase().includes(inv.nombre.toLowerCase()));
+            if (encontrado) {
+                coincidencias++;
+                if (encontrado.pronto) tieneUrgente = true;
+            }
+        });
+
+        const porcentajeMatch = Math.round((coincidencias / receta.ingredientes.length) * 100);
+
+        return {
+            ...receta,
+            coincidencias,
+            porcentajeMatch,
+            tieneUrgente
+        };
+    });
+
+    // Ordenar: Primero recetas con insumos urgentes, luego por mayor % de ingredientes disponibles
+    recetasEvaluadas.sort((a, b) => {
+        if (a.tieneUrgente !== b.tieneUrgente) return b.tieneUrgente ? 1 : -1;
+        return b.porcentajeMatch - a.porcentajeMatch;
+    });
+
+    // Renderizar tarjetas
+    recetasEvaluadas.forEach(receta => {
+        contenedor.innerHTML += `
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-col gap-2">
+                <div class="flex gap-3 items-center">
+                    <img src="${receta.imagen}" class="w-16 h-16 rounded-xl object-cover shadow-xs">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start gap-1">
+                            <h4 class="text-xs font-bold text-slate-800">${receta.titulo}</h4>
+                            <span class="${receta.porcentajeMatch > 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'} text-[9px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                                ${receta.porcentajeMatch}% de insumos
+                            </span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Usa: ${receta.ingredientes.join(', ')}</p>
+                        <div class="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
+                            <span>⏱️ ${receta.tiempo}</span>
+                            <span>📊 ${receta.dificultad}</span>
+                            ${receta.tieneUrgente ? '<span class="text-red-600 font-bold">🔥 Rescata ingrediente</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="verDetalleReceta(${receta.id})" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación Completa
+                </button>
+            </div>
+        `;
+    });
+}
+
+function verDetalleReceta(id) {
+    const receta = recetasBase.find(r => r.id === id);
+    if (!receta) return;
+
+    document.getElementById('modal-receta-img').src = receta.imagen;
+    document.getElementById('modal-receta-titulo').textContent = receta.titulo;
+    document.getElementById('modal-receta-meta').innerHTML = `
+        <span>⏱️ Tiempo: ${receta.tiempo}</span>
+        <span>📊 Dificultad: ${receta.dificultad}</span>
+    `;
+
+    const ingList = document.getElementById('modal-receta-ingredientes');
+    ingList.innerHTML = '';
+    receta.ingredientes.forEach(ing => {
+        const disponible = inventario.some(i => i.nombre.toLowerCase().includes(ing.toLowerCase()));
+        ingList.innerHTML += `
+            <li class="flex items-center gap-2 ${disponibles ? 'text-emerald-700 font-semibold' : 'text-slate-500'}">
+                <i class="fa-solid ${disponible ? 'fa-circle-check text-emerald-600' : 'fa-circle-minus text-slate-300'} text-xs"></i>
+                <span>${ing} ${disponible ? '(En despensa)' : '(Te falta)'}</span>
+            </li>
+        `;
+    });
+
+    const pasosList = document.getElementById('modal-receta-pasos');
+    pasosList.innerHTML = '';
+    receta.pasos.forEach(p => {
+        pasosList.innerHTML += `<li>${p}</li>`;
+    });
+
+    const btnCocinar = document.getElementById('btn-cocinar-receta');
+    btnCocinar.onclick = () => {
+        alert(`🎉 ¡Felicidades! Preparaste "${receta.titulo}".`);
+        cerrarModalReceta();
+    };
+
+    document.getElementById('modal-receta-detalle').classList.remove('hidden');
+}
+
+function cerrarModalReceta() {
+    document.getElementById('modal-receta-detalle').classList.add('hidden');
+}
+
+// BÚSQUEDA Y FILTROS POR CATEGORÍA/TIPO/UBICACIÓN
 function filtrarCategoria(cat) {
     categoriaFiltro = cat;
     const btnTodos = document.getElementById('btn-cat-todos');
@@ -293,7 +446,7 @@ function ocultarTodasLasVistas() {
     document.getElementById('vista-recetas')?.classList.add('hidden');
 }
 
-// FUNCIONES DE LOS TRES BOTONES DE DETALLE
+// FUNCIONES DE ACCIONES
 function marcarComoConsumidoTab() {
     if (alimentoSeleccionadoId) {
         inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
@@ -306,7 +459,7 @@ function marcarComoConsumidoTab() {
 function donarAlimentoDetalle() {
     const item = inventario.find(i => i.id === alimentoSeleccionadoId);
     if (item) {
-        alert(`🤝 ¡Excelente iniciativa! Tu producto "${item.nombre}" ha sido registrado para donación a la red comunitaria.`);
+        alert(`🤝 ¡Excelente iniciativa! Tu producto "${item.nombre}" ha sido registrado para donación.`);
         inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
         renderizarDespensa();
     }
@@ -318,62 +471,10 @@ function donarAlimentoGenerico() {
 }
 
 function recetaDesdeDetalle() {
-    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
-    if (item) sugerirReceta(item.nombre);
+    abrirRecetas();
 }
 
-function sugerirReceta(alimento) {
-    alert(`🍳 Idea de receta de rescate con ${alimento}:\n- Batido o crema casera\n- Salteado vegetal express\n- Tarta / Tortilla de aprovechamiento`);
-}
-
-// MÓDULO DE RECETAS DE APROVECHAMIENTO
-function abrirRecetas() {
-    ocultarTodasLasVistas();
-    document.getElementById('vista-recetas')?.classList.remove('hidden');
-    renderizarRecetas();
-}
-
-function renderizarRecetas() {
-    const contenedor = document.getElementById('contenedor-recetas');
-    if (!contenedor) return;
-
-    contenedor.innerHTML = '';
-
-    recetasBase.forEach(receta => {
-        const tieneIngrediente = inventario.some(i => i.nombre.toLowerCase().includes(receta.ingredienteClave.toLowerCase()));
-
-        contenedor.innerHTML += `
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-col gap-2">
-                <div class="flex gap-3 items-center">
-                    <img src="${receta.imagen}" class="w-16 h-16 rounded-xl object-cover shadow-xs">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xs font-bold text-slate-800">${receta.titulo}</h4>
-                            ${tieneIngrediente ? '<span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded-md">¡En tu despensa!</span>' : ''}
-                        </div>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Usa: <b class="text-emerald-700">${receta.ingredienteClave}</b></p>
-                        <div class="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
-                            <span>⏱️ ${receta.tiempo}</span>
-                            <span>📊 ${receta.dificultad}</span>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="verPasosReceta(${receta.id})" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-book-open text-xs"></i> Ver Preparación
-                </button>
-            </div>
-        `;
-    });
-}
-
-function verPasosReceta(id) {
-    const receta = recetasBase.find(r => r.id === id);
-    if (receta) {
-        alert(`👨‍🍳 ${receta.titulo}\n\nIngrediente principal: ${receta.ingredienteClave}\n\nPreparación:\n${receta.pasos}`);
-    }
-}
-
-// LISTA DE COMPRAS ("LO QUE NECESITO")
+// LISTA DE COMPRAS
 function abrirListaCompras() {
     ocultarTodasLasVistas();
     document.getElementById('vista-lista-compras')?.classList.remove('hidden');
@@ -462,12 +563,11 @@ function moverADespensaDesdeCompras(id) {
     }
 }
 
-// MODAL Y MÉTODOS DE FILTROS
+// MODALES Y UTILIDADES
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
 function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
 function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
 
-// CÁMARA Y AGREGAR CON TIPO Y UBICACIÓN
 function previsualizarFoto(e) {
     const file = e.target.files[0];
     if (file) {
@@ -528,7 +628,7 @@ function guardarAlimento() {
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
 }
 
-// INICIO DE SESIÓN / REGISTRO (INTACTOS)
+// INICIO DE SESIÓN
 function abrirModal(modo) {
     modoModal = modo || 'login';
     document.getElementById('modal-login')?.classList.remove('hidden');
