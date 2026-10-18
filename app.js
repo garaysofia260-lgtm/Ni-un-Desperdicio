@@ -5,11 +5,15 @@ let alimentoSeleccionadoId = null;
 let usuarioActual = 'mi_cuenta@nowaste.com';
 let redSocialSeleccionada = 'Google';
 
-// Filtros
+// Filtros Despensa
 let categoriaFiltro = 'todos';
 let tipoFiltro = 'todos';
 let ubicacionFiltro = 'todas';
 let ordenActual = 'vencimiento';
+
+// Filtros Donaciones
+let donacionSubtab = 'red';
+let donacionFiltro = 'cerca';
 
 // INVENTARIO BASE POR DEFECTO
 const inventarioDefault = [
@@ -64,8 +68,63 @@ const listaComprasDefault = [
     { id: 102, nombre: 'Queso Parmesano', comprado: false }
 ];
 
+// DONACIONES BASE DE LA COMUNIDAD (RED SOLIDARIA)
+const donacionesBaseDefault = [
+    {
+        id: 201,
+        donante: '@maria_gomez',
+        nombre: 'Pan Artesanal de Masa Madre',
+        cantidad: '2 barras',
+        ubicacion: 'A 300m (Barrio Centro)',
+        urgente: true,
+        dias: 0,
+        fechaLimite: 'Hoy hasta las 19:00',
+        imagen: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
+        reservadoPor: null
+    },
+    {
+        id: 202,
+        donante: '@panaderia_la_rosa',
+        nombre: 'Caja de Manzanas Verdes',
+        cantidad: '3.5 kg',
+        ubicacion: 'A 800m (Sector Norte)',
+        urgente: false,
+        dias: 2,
+        fechaLimite: 'Mañana hasta las 18:00',
+        imagen: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500',
+        reservadoPor: null
+    }
+];
+
+// PUNTOS FIJOS DE RECOLECCIÓN (BANCOS Y COMEDORES)
+const puntosRecoleccionDefault = [
+    {
+        id: 301,
+        nombre: 'Banco de Alimentos Central',
+        tipo: 'Comedor y Banco Social',
+        direccion: 'Calle 45 # 12-34',
+        horario: '8:00 AM - 5:00 PM',
+        estado: 'Abierto ahora',
+        aceptacion: 'Acepta refrigerados y no perecederos',
+        necesidadUrgente: '🍞 Buscando pan y cereales',
+        distancia: '1.2 km'
+    },
+    {
+        id: 302,
+        nombre: 'Refugio San Francisco',
+        tipo: 'Hogar y Comedor Comunitario',
+        direccion: 'Av. Las Palmas # 89',
+        horario: '9:00 AM - 6:00 PM',
+        estado: 'Abierto ahora',
+        aceptacion: 'Acepta frutas, verduras y lácteos',
+        necesidadUrgente: '🍎 Buscando fruta fresca',
+        distancia: '2.5 km'
+    }
+];
+
 let inventario = [];
 let listaCompras = [];
+let redDonaciones = [];
 
 // PLANTILLAS DE RECETAS COMODÍN
 const plantillasRecetas = [
@@ -125,7 +184,7 @@ const plantillasRecetas = [
 
 let recetaDetalleActual = null;
 
-// PERSISTENCIA DE DATOS AUTOMÁTICA EN LOCALSTORAGE
+// PERSISTENCIA DE DATOS AUTOMÁTICA
 function cargarDatosUsuario() {
     const sesionGuardada = localStorage.getItem('nowaste_usuario_activo');
     if (sesionGuardada) {
@@ -147,27 +206,27 @@ function cargarDatosUsuario() {
 
     const despensaGuardada = localStorage.getItem(`nowaste_despensa_${usuarioActual}`);
     const comprasGuardadas = localStorage.getItem(`nowaste_compras_${usuarioActual}`);
+    const donacionesGuardadas = localStorage.getItem(`nowaste_donaciones_red`);
 
     if (despensaGuardada) {
-        try {
-            inventario = JSON.parse(despensaGuardada);
-        } catch (e) {
-            inventario = [...inventarioDefault];
-        }
+        try { inventario = JSON.parse(despensaGuardada); } catch (e) { inventario = [...inventarioDefault]; }
     } else {
         inventario = [...inventarioDefault];
         guardarEnLocalStorage();
     }
 
     if (comprasGuardadas) {
-        try {
-            listaCompras = JSON.parse(comprasGuardadas);
-        } catch (e) {
-            listaCompras = [...listaComprasDefault];
-        }
+        try { listaCompras = JSON.parse(comprasGuardadas); } catch (e) { listaCompras = [...listaComprasDefault]; }
     } else {
         listaCompras = [...listaComprasDefault];
         guardarEnLocalStorage();
+    }
+
+    if (donacionesGuardadas) {
+        try { redDonaciones = JSON.parse(donacionesGuardadas); } catch (e) { redDonaciones = [...donacionesBaseDefault]; }
+    } else {
+        redDonaciones = [...donacionesBaseDefault];
+        localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
     }
 }
 
@@ -175,16 +234,16 @@ function guardarEnLocalStorage() {
     try {
         localStorage.setItem(`nowaste_despensa_${usuarioActual}`, JSON.stringify(inventario));
         localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
+        localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
         localStorage.setItem('nowaste_autenticado', 'true');
     } catch (e) {
-        console.warn("Límite de almacenamiento alcanzado en localStorage", e);
+        console.warn("Límite de almacenamiento alcanzado", e);
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosUsuario();
     
-    // Entra siempre a la despensa si ya está autenticado
     const vistaAuth = document.getElementById('vista-auth');
     const vistaDespensa = document.getElementById('vista-despensa');
     
@@ -195,24 +254,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderizarDespensa();
     renderizarListaCompras();
+    renderizarRedDonaciones();
+    renderizarPuntosRecoleccion();
 });
 
-// PANTALLA DE CARGA CON CONEJO SALTANDO Y ZANAHORIAS
+// PANTALLA DE CARGA CON CONEJO Y ZANAHORIAS
 function ejecutarPantallaDeCarga(callback) {
     const loader = document.getElementById('pantalla-carga');
     if (loader) {
         loader.classList.remove('hidden');
-        
         setTimeout(() => {
             loader.classList.add('hidden');
             if (callback) callback();
-        }, 2000); // 2 segundos de animación
+        }, 1800);
     } else {
         if (callback) callback();
     }
 }
 
-// MODAL SELECCIÓN DE CUENTA SOCIAL Y NOMBRE DE USUARIO EDITABLE
+// MODAL SELECCIÓN DE CUENTA SOCIAL Y NOMBRE DE USUARIO
 function abrirModalSocial(red) {
     redSocialSeleccionada = red;
     const modal = document.getElementById('modal-social');
@@ -233,9 +293,7 @@ function abrirModalSocial(red) {
         if (title) title.textContent = 'Continuar con Apple ID';
     }
 
-    if (select) {
-        select.value = select.options[0].value;
-    }
+    if (select) select.value = select.options[0].value;
 
     document.getElementById('campo-correo-custom')?.classList.add('hidden');
     actualizarUsuarioDesdeSelect();
@@ -292,7 +350,6 @@ function confirmarLoginSocial() {
     });
 }
 
-// PROCESAR FORMULARIO LOGIN / REGISTRO TRADICIONAL
 function procesarFormulario(e) {
     if (e && e.preventDefault) e.preventDefault();
     
@@ -319,7 +376,6 @@ function procesarFormulario(e) {
     return false;
 }
 
-// NOTIFICACIONES PUSH Y ALERTAS AL PRESIONAR LA CAMPANITA
 function activarNotificacionesPush() {
     const icono = document.getElementById('icono-notificacion');
 
@@ -337,11 +393,11 @@ function activarNotificacionesPush() {
             if (porVencer.length > 0) {
                 porVencer.forEach(item => {
                     new Notification("⚠️ ¡Insumo Próximo a Vencer!", {
-                        body: `Tu alimento "${item.nombre}" vence en ${item.dias === 0 ? 'hoy' : item.dias + ' días'}. ¡Aprovéchalo en tus recetas!`,
+                        body: `Tu alimento "${item.nombre}" vence en ${item.dias === 0 ? 'hoy' : item.dias + ' días'}. ¡Aprovéchalo o dónalo!`,
                         icon: item.imagen
                     });
                 });
-                alert(`🔔 ¡Notificaciones activadas! Tienes ${porVencer.length} alimento(s) por vencer pronto. Te hemos enviado las alertas.`);
+                alert(`🔔 ¡Notificaciones activadas! Tienes ${porVencer.length} alimento(s) por vencer pronto.`);
             } else {
                 alert("🔔 ¡Notificaciones activadas correctamente! Todos tus alimentos están frescos por ahora.");
             }
@@ -351,7 +407,7 @@ function activarNotificacionesPush() {
     });
 }
 
-// RENDERIZAR DESPENSA Y FILTRADO EXACTO
+// RENDERIZAR DESPENSA
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -400,9 +456,14 @@ function renderizarDespensa() {
                             <span class="text-[9px] bg-white border border-slate-200 px-1.5 py-0.2 rounded text-slate-500 font-medium">📍 ${item.ubicacion}</span>
                         </div>
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); abrirRecetas()" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                        ¿Qué cocinar?
-                    </button>
+                    <div class="flex gap-1">
+                        <button type="button" onclick="event.stopPropagation(); donarAlimentoDirecto(${item.id})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
+                            🤝 Donar
+                        </button>
+                        <button type="button" onclick="event.stopPropagation(); abrirRecetas()" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
+                            🍳 Recetas
+                        </button>
+                    </div>
                 </div>
             `;
         } else {
@@ -437,7 +498,7 @@ function renderizarDespensa() {
     }
 }
 
-// FILTROS
+// FILTROS DESPENSA
 function filtrarTipo(tipo) {
     tipoFiltro = tipo;
     const botones = document.querySelectorAll('#contenedor-filtros-tipo .btn-tipo');
@@ -483,7 +544,6 @@ function filtrarCategoria(cat) {
     renderizarDespensa();
 }
 
-// FOTO COMPRIMIDA PARA EVITAR LIMITE EN LOCALSTORAGE
 function previsualizarFoto(e) {
     const file = e.target.files[0];
     if (file) {
@@ -516,7 +576,6 @@ function previsualizarFoto(e) {
     }
 }
 
-// GUARDAR ALIMENTO
 function guardarAlimento() {
     const nom = document.getElementById('input-nombre-alimento')?.value.trim();
     const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
@@ -560,7 +619,7 @@ function guardarAlimento() {
     document.getElementById('preview-foto')?.classList.add('hidden');
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
 
-    alert(`🥑 "${nom}" guardado con éxito. ¡Se mantendrá guardado en tu despensa!`);
+    alert(`🥑 "${nom}" guardado con éxito.`);
 }
 
 // RECETAS DINÁMICAS
@@ -579,7 +638,7 @@ function generarRecetasDinamicas() {
     if (chipsCont) chipsCont.innerHTML = '';
 
     if (inventario.length === 0) {
-        if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">No hay ingredientes en tu despensa. Agrega productos para sugerir recetas.</span>`;
+        if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">No hay ingredientes en tu despensa.</span>`;
         contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Agrega alimentos en tu despensa para crear recetas automáticas 🎉</div>`;
         return;
     }
@@ -669,10 +728,6 @@ function verPasosRecetaDinamica(idReceta) {
             <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
             <span>${receta.ingredienteEstrella} (De tu despensa)</span>
         </li>
-        <li class="flex items-center gap-2 text-slate-500">
-            <i class="fa-solid fa-circle-info text-slate-300 text-xs"></i>
-            <span>Opcionales: Miel, aceite, sal o especias al gusto.</span>
-        </li>
     `;
 
     const pasosList = document.getElementById('modal-receta-pasos');
@@ -692,11 +747,10 @@ function verPasosRecetaDinamica(idReceta) {
                 const cantidadNueva = parseInt(numeros[0]) - 1;
                 const textoUnidad = itemP.cantidad.replace(/\d+/g, '').trim();
                 itemP.cantidad = `${cantidadNueva} ${textoUnidad}`.trim();
-                alert(`👨‍🍳 Preparaste "${receta.titulo}".\n\nSe descontó 1 de "${itemP.nombre}". Ahora te quedan ${itemP.cantidad}.`);
+                alert(`👨‍🍳 Preparaste "${receta.titulo}". Te quedan ${itemP.cantidad}.`);
             } else {
                 inventario = inventario.filter(i => i.id !== itemP.id);
-                
-                const agregarACompras = confirm(`🎉 ¡Se agotó "${itemP.nombre}" al preparar la receta!\n\n¿Deseas agregar "${itemP.nombre}" a tu lista de pendientes "Lo que necesito"?`);
+                const agregarACompras = confirm(`🎉 ¡Se agotó "${itemP.nombre}"!\n\n¿Deseas agregarlo a la lista "Lo que necesito"?`);
                 if (agregarACompras) {
                     listaCompras.unshift({ id: Date.now(), nombre: itemP.nombre, comprado: false });
                 }
@@ -727,7 +781,7 @@ function abrirDetalleTab(id) {
 
     document.getElementById('tab-detalle-nombre').textContent = item.nombre;
     document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
-    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para su fecha límite`;
+    document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para vencimiento`;
     document.getElementById('tab-detalle-ubicacion-tag').textContent = `📍 ${item.ubicacion} • ${item.tipo}`;
 
     const imgEl = document.getElementById('tab-detalle-img');
@@ -740,7 +794,6 @@ function abrirDetalleTab(id) {
     const barEl = document.getElementById('tab-detalle-bar');
     const pctTxt = document.getElementById('tab-detalle-porcentaje');
     const badgeEl = document.getElementById('tab-detalle-badge');
-    const estadoTxt = document.getElementById('tab-detalle-estado');
 
     if (barEl) barEl.style.width = `${pct}%`;
     if (pctTxt) pctTxt.textContent = `${pct}% Fresco`;
@@ -748,15 +801,9 @@ function abrirDetalleTab(id) {
     if (pct > 50) {
         if (barEl) barEl.className = "h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm";
         if (badgeEl) { badgeEl.textContent = 'Fresco 🟢'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-emerald-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Óptimo estado";
-    } else if (pct > 20) {
-        if (barEl) barEl.className = "h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500 shadow-sm";
-        if (badgeEl) { badgeEl.textContent = 'Consumir pronto 🟡'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-amber-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Atención requerida";
     } else {
         if (barEl) barEl.className = "h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500 shadow-sm";
         if (badgeEl) { badgeEl.textContent = '¡Urgente! 🔴'; badgeEl.className = "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-red-600"; }
-        if (estadoTxt) estadoTxt.textContent = "Prioridad máxima";
     }
 
     ocultarTodasLasVistas();
@@ -774,6 +821,8 @@ function ocultarTodasLasVistas() {
     document.getElementById('vista-detalle-alimento')?.classList.add('hidden');
     document.getElementById('vista-lista-compras')?.classList.add('hidden');
     document.getElementById('vista-recetas')?.classList.add('hidden');
+    document.getElementById('vista-donaciones')?.classList.add('hidden');
+    document.getElementById('vista-comunidades')?.classList.add('hidden');
 }
 
 function marcarComoConsumidoTab() {
@@ -787,22 +836,257 @@ function marcarComoConsumidoTab() {
 }
 
 function donarAlimentoDetalle() {
-    const item = inventario.find(i => i.id === alimentoSeleccionadoId);
-    if (item) {
-        alert(`🤝 ¡Excelente iniciativa! Tu producto "${item.nombre}" ha sido registrado para donación.`);
-        inventario = inventario.filter(i => i.id !== alimentoSeleccionadoId);
-        guardarEnLocalStorage();
-        renderizarDespensa();
+    if (alimentoSeleccionadoId) {
+        donarAlimentoDirecto(alimentoSeleccionadoId);
     }
-    volverADespensa();
 }
 
-function donarAlimentoGenerico() {
-    alert("🤝 Red de Donación: Selecciona un alimento de tu despensa para publicarlo en el mapa de recolección.");
+function recetaDesdeDetalle() { abrirRecetas(); }
+
+// ----------------------------------------------------
+// 🤝 MÓDULO INTEGRADO DE DONACIONES SOCIALES & RED VECINAL
+// ----------------------------------------------------
+function abrirDonaciones() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-donaciones')?.classList.remove('hidden');
+    renderizarRedDonaciones();
+    renderizarPuntosRecoleccion();
 }
 
-function recetaDesdeDetalle() {
-    abrirRecetas();
+function abrirComunidades() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-comunidades')?.classList.remove('hidden');
+}
+
+function cambiarSubtabDonacion(tab) {
+    donacionSubtab = tab;
+    const btnRed = document.getElementById('tab-donar-red');
+    const btnPuntos = document.getElementById('tab-donar-puntos');
+    const contRed = document.getElementById('subtab-contenido-red');
+    const contPuntos = document.getElementById('subtab-contenido-puntos');
+
+    if (tab === 'red') {
+        btnRed.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnPuntos.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contRed.classList.remove('hidden');
+        contPuntos.classList.add('hidden');
+    } else {
+        btnPuntos.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnRed.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contPuntos.classList.remove('hidden');
+        contRed.classList.add('hidden');
+    }
+}
+
+function filtrarDonaciones(filtro) {
+    donacionFiltro = filtro;
+    const btnCerca = document.getElementById('btn-don-filtro-cerca');
+    const btnUrgente = document.getElementById('btn-don-filtro-urgente');
+
+    if (filtro === 'cerca') {
+        btnCerca.className = "px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold text-[10px] shadow-xs cursor-pointer";
+        btnUrgente.className = "px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[10px] cursor-pointer";
+    } else {
+        btnUrgente.className = "px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold text-[10px] shadow-xs cursor-pointer";
+        btnCerca.className = "px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[10px] cursor-pointer";
+    }
+    renderizarRedDonaciones();
+}
+
+function renderizarRedDonaciones() {
+    const cont = document.getElementById('contenedor-red-donaciones');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+
+    let filtrados = [...redDonaciones];
+    if (donacionFiltro === 'urgente') {
+        filtrados = filtrados.filter(d => d.urgente);
+    }
+
+    if (filtrados.length === 0) {
+        cont.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">No hay alimentos publicados en esta categoría actualmente. ¡Sé el primero en donar!</div>`;
+        return;
+    }
+
+    const miUsername = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
+
+    filtrados.forEach(item => {
+        const esReservado = item.reservadoPor !== null;
+        const reservadoPorMi = item.reservadoPor === miUsername;
+
+        cont.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
+                <div class="flex gap-3 items-center">
+                    <img src="${item.imagen}" class="w-14 h-14 rounded-xl object-cover shadow-xs">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xs font-bold text-slate-800">${item.nombre}</h4>
+                            ${item.urgente ? '<span class="bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded-md">🔴 Urgente</span>' : ''}
+                        </div>
+                        <p class="text-[10px] text-slate-500">Ofrecido por <b class="text-emerald-700">${item.donante}</b> • ${item.cantidad}</p>
+                        <p class="text-[9px] text-slate-400 mt-0.5">📍 ${item.ubicacion}</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 px-2.5 py-1.5 rounded-xl border border-amber-200/60 flex justify-between items-center text-[10px] text-amber-900 font-semibold">
+                    <span>⏰ Rango límite: ${item.fechaLimite}</span>
+                    <span class="text-[9px] bg-amber-200/80 text-amber-900 px-1.5 py-0.2 rounded font-bold">Disponible</span>
+                </div>
+
+                ${esReservado ? `
+                    <button type="button" disabled class="w-full bg-slate-100 text-slate-500 text-xs font-bold py-2 rounded-xl border border-slate-200 cursor-not-allowed flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-lock text-slate-400"></i> ${reservadoPorMi ? '✅ Apartado por ti (Contacto abierto)' : 'Reservado por otro vecino'}
+                    </button>
+                ` : `
+                    <button type="button" onclick="reservarDonacion(${item.id})" class="w-full btn-green text-white text-xs font-bold py-2 rounded-xl shadow-xs transition active:scale-98 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-handshake"></i> Solicitar / Reservar Alimento
+                    </button>
+                `}
+            </div>
+        `;
+    });
+}
+
+function renderizarPuntosRecoleccion() {
+    const cont = document.getElementById('contenedor-puntos-recoleccion');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+
+    puntosRecoleccionDefault.forEach(p => {
+        cont.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800">${p.nombre}</h4>
+                        <p class="text-[10px] text-emerald-700 font-bold">${p.tipo} • ${p.distancia}</p>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                        🟢 ${p.estado}
+                    </span>
+                </div>
+
+                <div class="text-[10px] text-slate-600 space-y-1">
+                    <p>📍 <b>Dirección:</b> ${p.direccion}</p>
+                    <p>⏰ <b>Horario de recepción:</b> ${p.horario}</p>
+                    <p class="text-emerald-800 font-semibold">📦 ${p.aceptacion}</p>
+                    <p class="text-red-600 font-bold bg-red-50 p-1.5 rounded-lg border border-red-100">${p.necesidadUrgente}</p>
+                </div>
+
+                <button type="button" onclick="alert('📍 Abriendo ruta GPS hacia: ${p.nombre}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-map-location-dot text-emerald-700"></i> Ver Ruta en GPS
+                </button>
+            </div>
+        `;
+    });
+}
+
+// PUBLICAR DONACIÓN EN 1-CLIC DESDE TU DESPENSA
+function donarAlimentoDirecto(idAlimento) {
+    const item = inventario.find(i => i.id === idAlimento);
+    if (!item) return;
+
+    abrirModalPublicarDonacion(item);
+}
+
+function abrirModalPublicarDonacion(itemPreseleccionado = null) {
+    const modal = document.getElementById('modal-publicar-donacion');
+    const select = document.getElementById('select-donar-despensa');
+    if (!modal || !select) return;
+
+    select.innerHTML = '<option value="">-- Seleccionar de mi despensa --</option>';
+    
+    inventario.forEach(i => {
+        select.innerHTML += `<option value="${i.id}">${i.nombre} (${i.cantidad}) - ${i.pronto ? '🔴 Próximo a vencer' : '🟢 Fresco'}</option>`;
+    });
+
+    if (itemPreseleccionado) {
+        select.value = itemPreseleccionado.id;
+        autocompletarDonacionDesdeDespensa();
+    } else {
+        document.getElementById('input-donar-nombre').value = '';
+        document.getElementById('input-donar-cantidad').value = '';
+    }
+
+    const hoy = new Date();
+    const hoyTxt = hoy.toISOString().split('T')[0];
+    const fechaInput = document.getElementById('input-donar-fecha-limite');
+    if (fechaInput) fechaInput.value = hoyTxt;
+
+    modal.classList.remove('hidden');
+}
+
+function cerrarModalPublicarDonacion() {
+    document.getElementById('modal-publicar-donacion')?.classList.add('hidden');
+}
+
+function autocompletarDonacionDesdeDespensa() {
+    const select = document.getElementById('select-donar-despensa');
+    const idSel = parseInt(select.value);
+
+    const item = inventario.find(i => i.id === idSel);
+    if (item) {
+        document.getElementById('input-donar-nombre').value = item.nombre;
+        document.getElementById('input-donar-cantidad').value = item.cantidad;
+        document.getElementById('input-donar-ubicacion').value = `📍 Mi Casa (Barrio Centro)`;
+    }
+}
+
+function confirmarPublicarDonacion() {
+    const select = document.getElementById('select-donar-despensa');
+    const idDespensa = parseInt(select.value);
+    const nombre = document.getElementById('input-donar-nombre')?.value.trim();
+    const cantidad = document.getElementById('input-donar-cantidad')?.value.trim();
+    const ubicacion = document.getElementById('input-donar-ubicacion')?.value.trim() || 'A 200m de ti';
+    const fechaLim = document.getElementById('input-donar-fecha-limite')?.value;
+    const horaLim = document.getElementById('input-donar-hora-limite')?.value || '18:00';
+
+    if (!nombre) return alert("Por favor ingresa el nombre del alimento a donar.");
+
+    const miUsername = localStorage.getItem(`nowaste_username_${usuarioActual}`) || `@${usuarioActual.split('@')[0]}`;
+
+    let itemOriginal = inventario.find(i => i.id === idDespensa);
+
+    const nuevaDonacion = {
+        id: Date.now(),
+        donante: miUsername.startsWith('@') ? miUsername : `@${miUsername}`,
+        nombre: nombre,
+        cantidad: cantidad || '1 paquete',
+        ubicacion: ubicacion,
+        urgente: itemOriginal ? itemOriginal.pronto : true,
+        dias: itemOriginal ? itemOriginal.dias : 1,
+        fechaLimite: `${fechaLim || 'Hoy'} hasta las ${horaLim}`,
+        imagen: itemOriginal ? itemOriginal.imagen : 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
+        reservadoPor: null
+    };
+
+    redDonaciones.unshift(nuevaDonacion);
+
+    if (itemOriginal) {
+        inventario = inventario.filter(i => i.id !== idDespensa);
+    }
+
+    guardarEnLocalStorage();
+    renderizarDespensa();
+    cerrarModalPublicarDonacion();
+
+    alert(`🤝 ¡Excelente! "${nombre}" se ha publicado en la Red Solidaria.\n\nTus vecinos podrán solicitarlo dentro del horario establecido.`);
+    
+    abrirDonaciones();
+}
+
+function reservarDonacion(idDonacion) {
+    const don = redDonaciones.find(d => d.id === idDonacion);
+    if (!don) return;
+
+    const miUsername = localStorage.getItem(`nowaste_username_${usuarioActual}`) || `@${usuarioActual.split('@')[0]}`;
+
+    don.reservadoPor = miUsername;
+    guardarEnLocalStorage();
+    renderizarRedDonaciones();
+
+    alert(`🎉 ¡Alimento Reservado Con Éxito!\n\nHas apartado "${don.nombre}" de ${don.donante}.\nHorario límite de recolección: ${don.fechaLimite}.\n\nSe ha abierto un chat de coordinación directo con el donante.`);
 }
 
 // LISTA DE COMPRAS
