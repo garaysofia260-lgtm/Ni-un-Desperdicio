@@ -113,7 +113,7 @@
                             <i class="fa-brands fa-apple text-xl text-black"></i>
                         </button>
                     </div>
-                </main>
+                </header>
                 <div class="pb-3"></div>
             </div>
 
@@ -720,7 +720,9 @@
                     <button type="button" id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer">Crear Cuenta</button>
                 </div>
                 <h2 id="modal-titulo" class="font-serif-custom text-green-custom text-lg font-bold mb-3">Iniciar Sesión</h2>
+                
                 <form onsubmit="return procesarFormulario(event)">
+                    <!-- CAMPOS LOGIN -->
                     <div id="campos-login" class="space-y-2.5 mb-3">
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
@@ -732,6 +734,8 @@
                             <button type="button" onclick="togglePassword('pass-login', 'eye-login')" class="p-1 cursor-pointer"><i id="eye-login" class="fa-solid fa-eye text-slate-400 text-xs"></i></button>
                         </div>
                     </div>
+
+                    <!-- CAMPOS REGISTRO -->
                     <div id="campos-registro" class="space-y-2.5 mb-3 hidden text-left">
                         <p class="text-[11px] font-bold text-slate-600 mb-1">Tipo de usuario:</p>
                         <input type="hidden" id="perfil-tipo-input" value="hogar">
@@ -745,7 +749,7 @@
                         </div>
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
-                            <input type="email" placeholder="Correo electrónico" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                            <input type="email" id="input-reg-email" placeholder="Correo electrónico" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
                         </div>
                         <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
@@ -762,8 +766,10 @@
                             <span class="text-[10px] text-slate-500 leading-tight">Acepto los términos y la política ambiental.</span>
                         </label>
                     </div>
+
                     <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">Iniciar sesión</button>
                 </form>
+
                 <a href="#" id="link-olvidaste" class="block text-green-custom font-serif-custom text-[11px] hover:underline mb-2">¿Olvidaste tu contraseña?</a>
                 <p class="text-slate-500 font-serif-custom text-[10px] mb-2">o continuar con:</p>
                 <div class="flex justify-center items-center gap-4">
