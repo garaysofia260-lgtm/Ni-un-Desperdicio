@@ -951,7 +951,7 @@ function reservarDonacion(idDonacion) {
 }
 
 // ==========================================
-// RECETAS, COMPRAS Y UTILIDADES
+// RECETAS INTELIGENTES
 // ==========================================
 function generarRecetasDinamicas() {
     const contenedor = document.getElementById('contenedor-recetas');
@@ -1047,23 +1047,42 @@ function verPasosRecetaDinamica(idReceta) {
 
 function cerrarModalReceta() { document.getElementById('modal-receta-detalle').classList.add('hidden'); }
 
-// LISTA COMPRAS
+// ==========================================
+// MÓDULO LO QUE NECESITO (LISTA DE COMPRAS)
+// ==========================================
 function renderizarListaCompras() {
     const cont = document.getElementById('contenedor-lista-compras');
     const badge = document.getElementById('badge-compras-count');
+    const resumen = document.getElementById('resumen-compras-pendientes');
+
     if (!cont) return;
 
     cont.innerHTML = '';
     const pendientes = listaCompras.filter(i => !i.comprado).length;
+
     if (badge) badge.textContent = pendientes;
+    if (resumen) resumen.textContent = `${pendientes} pendientes`;
+
+    if (listaCompras.length === 0) {
+        cont.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Tu lista está vacía 🎉</p>`;
+        return;
+    }
 
     listaCompras.forEach(item => {
         cont.innerHTML += `
-            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <span class="${item.comprado ? 'line-through text-slate-400' : 'text-slate-800 font-semibold'}">${item.nombre}</span>
-                <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1">
-                    <i class="fa-solid fa-trash text-xs"></i>
-                </button>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                    <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleItemCompra(${item.id})" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                    <span class="${item.comprado ? 'line-through text-slate-400' : 'text-slate-800 font-semibold'}">${item.nombre}</span>
+                </label>
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg transition cursor-pointer">
+                        + Despensa
+                    </button>
+                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1 transition cursor-pointer">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
             </div>
         `;
     });
@@ -1072,6 +1091,7 @@ function renderizarListaCompras() {
 function agregarItemCompra() {
     const input = document.getElementById('input-item-compra');
     const txt = input?.value.trim();
+
     if (!txt) return;
 
     listaCompras.unshift({ id: Date.now(), nombre: txt, comprado: false });
@@ -1080,13 +1100,46 @@ function agregarItemCompra() {
     renderizarListaCompras();
 }
 
+function toggleItemCompra(id) {
+    const item = listaCompras.find(i => i.id === id);
+    if (item) {
+        item.comprado = !item.comprado;
+        guardarEnLocalStorage();
+        renderizarListaCompras();
+    }
+}
+
 function eliminarItemCompra(id) {
     listaCompras = listaCompras.filter(i => i.id !== id);
     guardarEnLocalStorage();
     renderizarListaCompras();
 }
 
+function moverADespensaDesdeCompras(id) {
+    const item = listaCompras.find(i => i.id === id);
+    if (item) {
+        inventario.unshift({
+            id: Date.now(),
+            nombre: item.nombre,
+            cantidad: '1 unidad',
+            dias: 7,
+            pronto: false,
+            tipo: 'Alacena/Secos',
+            ubicacion: 'Alacena',
+            imagen: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
+            diasTotal: 10
+        });
+        listaCompras = listaCompras.filter(i => i.id !== id);
+        guardarEnLocalStorage();
+        renderizarListaCompras();
+        renderizarDespensa();
+        alert(`🛒 ¡"${item.nombre}" se movió a tu Despensa!`);
+    }
+}
+
+// ==========================================
 // MODALES SECUNDARIOS Y FILTROS DESPENSA
+// ==========================================
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
 function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
 function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
