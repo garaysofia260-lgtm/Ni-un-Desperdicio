@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NO WASTE - App Móvil</title>
-    <!-- Framework Tailwind CSS, Iconos FontAwesome y Mapa Leaflet -->
+    <!-- Framework Tailwind CSS & Iconos FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
@@ -21,22 +19,30 @@
         <!-- MARCO MÓVIL CENTRADO -->
         <div class="app-card">
             
-            <!-- VISTA 1: BIENVENIDA / AUTH -->
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
             <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
+                
                 <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
                     <svg class="absolute -top-6 -right-10 w-44 h-44 opacity-90" viewBox="0 0 100 100">
                         <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
                         <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#b1d387"/>
                         <circle cx="50" cy="65" r="14" fill="#6d4c41"/>
                     </svg>
+
                     <svg class="absolute -top-4 -left-8 w-36 h-36 opacity-80" viewBox="0 0 100 100">
                         <path d="M10 20 Q40 10 50 50 Q20 40 10 20 Z" fill="#3b630b"/>
                         <path d="M5 50 Q35 30 60 70 Q25 70 5 50 Z" fill="#2d4c08"/>
                     </svg>
+
                     <svg class="absolute -bottom-12 -left-12 w-48 h-48 opacity-90" viewBox="0 0 100 100">
                         <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C68 95 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08"/>
                         <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#c3e296"/>
                         <circle cx="50" cy="65" r="14" fill="#5d4037"/>
+                    </svg>
+
+                    <svg class="absolute -bottom-6 -right-6 w-36 h-36 opacity-80" viewBox="0 0 100 100">
+                        <path d="M90 80 Q60 90 50 50 Q80 60 90 80 Z" fill="#3b630b"/>
+                        <path d="M95 50 Q65 70 40 30 Q75 30 95 50 Z" fill="#2d4c08"/>
                     </svg>
                 </div>
 
@@ -45,7 +51,9 @@
                         <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
                             <i class="fa-solid fa-xmark text-base"></i>
                         </button>
+                        
                         <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
+                        
                         <button type="button" id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition cursor-pointer">
                             <i class="fa-solid fa-location-dot text-sm"></i>
                         </button>
@@ -70,6 +78,7 @@
                                     <path d="M50 10 Q58 2 66 8 Q58 14 50 10 Z" fill="#3b630b"/>
                                 </svg>
                             </div>
+
                             <span class="text-xl font-brand font-bold text-[#1b3303] tracking-wider mt-1">NO WASTE</span>
                             <span class="text-[8px] uppercase font-bold tracking-wider text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
                         </div>
@@ -79,6 +88,7 @@
                         <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
                             Iniciar sesion
                         </button>
+                        
                         <button type="button" onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
                             Crear cuenta
                         </button>
@@ -95,14 +105,17 @@
                                 <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
                             </svg>
                         </button>
+
                         <button type="button" onclick="loginSocial('Facebook')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Facebook">
                             <i class="fa-brands fa-facebook text-xl text-blue-600"></i>
                         </button>
+
                         <button type="button" onclick="loginSocial('Apple')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Apple">
                             <i class="fa-brands fa-apple text-xl text-black"></i>
                         </button>
                     </div>
                 </main>
+
                 <div class="pb-3"></div>
             </div>
 
@@ -115,34 +128,34 @@
                                 🥑
                             </div>
                             <div>
-                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola, Sofía! 👋</h2>
+                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola, Usuario! 👋</h2>
                                 <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <button type="button" onclick="activarNotificacionesPush()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Activar Alertas de Vencimiento">
-                                <i class="fa-solid fa-bell text-xs" id="icono-notificaciones"></i>
+                            <!-- BOTÓN DE CAMPANITA DE NOTIFICACIONES -->
+                            <button type="button" onclick="activarNotificacionesPush()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Notificaciones de Vencimiento">
+                                <i class="fa-solid fa-bell text-xs" id="icono-notificacion"></i>
                             </button>
+
                             <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
                                 <i class="fa-solid fa-list-check text-xs"></i>
                                 <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
                             </button>
+
                             <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
                                 <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- BOTÓN IMPACTO AMBIENTAL Y GAMIFICACIÓN -->
-                    <div onclick="abrirPerfilGamificacion()" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs cursor-pointer hover:bg-white/20 transition">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
-                            <span>Has salvado <b id="stat-salvados">3.2 kg</b> CO₂</span>
+                            <span>Has salvado <b id="stat-salvados">3.2 kg</b> este mes</span>
                         </div>
-                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100 flex items-center gap-1">
-                            🏆 <span id="nivel-usuario-badge">Nivel 2</span>
-                        </span>
+                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 2 🌟</span>
                     </div>
                 </header>
 
@@ -167,6 +180,27 @@
                         <button type="button" id="btn-cat-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
                             🟢 Frescos
                         </button>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
+                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
+                            <button type="button" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
+                            <button type="button" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
+                            <button type="button" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
+                            <button type="button" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
+                        <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
+                            <button type="button" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
+                            <button type="button" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
+                            <button type="button" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
+                            <button type="button" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
+                        </div>
                     </div>
 
                     <div id="seccion-pronto">
@@ -197,20 +231,24 @@
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
+
                     <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="abrirMapaDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirPerfilGamificacion()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
+
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
-                        <span>Impacto</span>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
@@ -264,8 +302,8 @@
                         </div>
                         <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
-                            <span class="text-[9px] text-slate-400 font-bold uppercase">Ahorro Estimado</span>
-                            <span class="font-bold text-emerald-700 mt-0.5">$3.500 COP</span>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
                         </div>
                     </div>
                 </main>
@@ -276,19 +314,21 @@
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Consumido</span>
                         </button>
+
                         <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-hand-holding-heart"></i>
-                            <span>Donar en Mapa</span>
+                            <span>Donar</span>
                         </button>
                     </div>
+
                     <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-utensils text-amber-600"></i>
-                        <span>Sugerir Receta con este Producto</span>
+                        <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
                 </div>
             </div>
 
-            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS CON GENERADOR AUTOMÁTICO) -->
+            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS) -->
             <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
                 <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
@@ -317,6 +357,7 @@
                                 0 pendientes
                             </span>
                         </div>
+
                         <div id="contenedor-lista-compras" class="space-y-2"></div>
                     </div>
                 </main>
@@ -333,18 +374,18 @@
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="abrirMapaDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirPerfilGamificacion()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
-                        <span>Impacto</span>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
 
-            <!-- VISTA 5: MÓDULO DE RECETAS -->
+            <!-- VISTA 5: MÓDULO DE RECETAS INTELIGENTES ADAPTABLES -->
             <div id="vista-recetas" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
@@ -360,266 +401,82 @@
                     <div class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
                         <div>
                             <h3 class="text-xs font-bold">¡Recetas Adaptadas! 🍳</h3>
-                            <p class="text-[10px] text-emerald-100 mt-0.5">Se actualizan con lo que agregues a tu despensa.</p>
+                            <p class="text-[10px] text-emerald-100 mt-0.5">Se actualizan automáticamente con lo que agregues a tu despensa.</p>
                         </div>
                         <i class="fa-solid fa-kitchen-set text-2xl text-amber-200"></i>
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Insumos en despensa:</p>
-                        <div id="chips-despensa-recetas" class="flex flex-wrap gap-1"></div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Insumos actuales en despensa:</p>
+                        <div id="chips-despensa-recetas" class="flex flex-wrap gap-1">
+                            <!-- Chips con los ingredientes agregados -->
+                        </div>
                     </div>
 
                     <div class="space-y-2">
                         <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-fire text-amber-500"></i> Sugerencias creadas para ti
                         </h3>
-                        <div id="contenedor-recetas" class="space-y-2.5"></div>
+                        <div id="contenedor-recetas" class="space-y-2.5">
+                            <!-- Recetas generadas dinámicamente -->
+                        </div>
                     </div>
                 </main>
 
                 <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
                         <span>Despensa</span>
                     </button>
-                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-utensils text-base mb-0.5"></i>
                         <span>Recetas</span>
                     </button>
                     <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                    <button type="button" onclick="abrirMapaDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="donarAlimentoGenerico()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirPerfilGamificacion()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
+                    <button type="button" onclick="alert('Perfil de usuario 👤')" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px] transition cursor-pointer">
                         <i class="fa-regular fa-user text-base mb-0.5"></i>
-                        <span>Impacto</span>
-                    </button>
-                </nav>
-            </div>
-
-            <!-- VISTA 6: RED DE DONACIONES CON MAPA INTERACTIVO -->
-            <div id="vista-donaciones" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
-                <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
-                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
-                        <i class="fa-solid fa-arrow-left text-sm"></i>
-                    </button>
-                    <h2 class="text-sm font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-map-location-dot text-amber-300"></i> Red de Donación Local
-                    </h2>
-                    <div class="w-9"></div>
-                </header>
-
-                <main class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
-                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-2.5 text-xs text-amber-900 flex items-center gap-2 shadow-xs">
-                        <i class="fa-solid fa-circle-info text-amber-600 text-base"></i>
-                        <span>Publica comida sobrante para que vecinos o bancos cercanos la recojan.</span>
-                    </div>
-
-                    <!-- MAPA INTERACTIVO CONTENEDOR -->
-                    <div id="mapa-donaciones-container" class="w-full h-52 rounded-2xl border-2 border-emerald-300 shadow-sm overflow-hidden z-0"></div>
-
-                    <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex-1 space-y-2 overflow-y-auto">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                            📍 Puntos de Recolección Cercanos
-                        </h4>
-                        <div id="lista-puntos-donacion" class="space-y-2 text-xs"></div>
-                    </div>
-                </main>
-
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
-                        <span>Despensa</span>
-                    </button>
-                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
-                        <span>Recetas</span>
-                    </button>
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
-                        <i class="fa-solid fa-plus text-lg"></i>
-                    </button>
-                    <button type="button" onclick="abrirMapaDonaciones()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
-                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
-                        <span>Donar</span>
-                    </button>
-                    <button type="button" onclick="abrirPerfilGamificacion()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-regular fa-user text-base mb-0.5"></i>
-                        <span>Impacto</span>
-                    </button>
-                </nav>
-            </div>
-
-            <!-- VISTA 7: GAMIFICACIÓN E IMPACTO AMBIENTAL -->
-            <div id="vista-gamificacion" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
-                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
-                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
-                        <i class="fa-solid fa-arrow-left text-sm"></i>
-                    </button>
-                    <h2 class="text-sm font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-trophy text-amber-300"></i> Mi Impacto Ecológico
-                    </h2>
-                    <div class="w-9"></div>
-                </header>
-
-                <main class="flex-1 overflow-y-auto p-4 space-y-3">
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 text-center space-y-2">
-                        <div class="w-16 h-16 rounded-full bg-emerald-100 border-4 border-emerald-500 mx-auto flex items-center justify-center text-2xl shadow-inner">
-                            🌱
-                        </div>
-                        <h3 class="text-sm font-bold text-slate-800" id="gamificacion-nivel-titulo">Nivel 2: Guardián de la Tierra</h3>
-                        <p class="text-[11px] text-slate-500">Has evitado que la comida se convierta en basura.</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-center">
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 shadow-xs">
-                            <i class="fa-solid fa-coins text-amber-500 text-xl mb-1"></i>
-                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Dinero Ahorrado</span>
-                            <b class="text-sm text-emerald-800" id="gamificacion-dinero">$42.500 COP</b>
-                        </div>
-
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 shadow-xs">
-                            <i class="fa-solid fa-cloud-arrow-down text-emerald-600 text-xl mb-1"></i>
-                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Reducción CO₂</span>
-                            <b class="text-sm text-emerald-800" id="gamificacion-co2">12.4 kg CO₂</b>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                            🏅 Mis Insignias Conseguidas
-                        </h4>
-                        <div class="grid grid-cols-3 gap-2 text-center text-[10px]" id="contenedor-insignias">
-                            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center">
-                                <span class="text-xl">🥑</span>
-                                <span class="font-bold text-slate-700 mt-1">Primer Salve</span>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center">
-                                <span class="text-xl">🍎</span>
-                                <span class="font-bold text-slate-700 mt-1">Cero Desperdicio</span>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center opacity-40">
-                                <span class="text-xl">🤝</span>
-                                <span class="font-bold text-slate-700 mt-1">Super Donante</span>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-
-                <nav class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
-                        <span>Despensa</span>
-                    </button>
-                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
-                        <span>Recetas</span>
-                    </button>
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
-                        <i class="fa-solid fa-plus text-lg"></i>
-                    </button>
-                    <button type="button" onclick="abrirMapaDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[10px]">
-                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
-                        <span>Donar</span>
-                    </button>
-                    <button type="button" onclick="abrirPerfilGamificacion()" class="flex flex-col items-center text-[#3b630b] font-bold text-[10px]">
-                        <i class="fa-regular fa-user text-base mb-0.5"></i>
-                        <span>Impacto</span>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
 
         </div>
 
-        <!-- MODAL DETALLE DE RECETA -->
+        <!-- MODAL DETALLE DE RECETA GENERADA -->
         <div id="modal-receta-detalle" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[340px] max-h-[85vh] overflow-y-auto shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarModalReceta()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">
                     ✕
                 </button>
+
                 <div class="w-full h-36 rounded-2xl overflow-hidden mb-3">
                     <img id="modal-receta-img" src="" class="w-full h-full object-cover">
                 </div>
+
                 <h3 id="modal-receta-titulo" class="text-base font-bold text-slate-800"></h3>
                 <div id="modal-receta-meta" class="flex gap-3 text-[10px] text-slate-500 my-1 font-semibold"></div>
+
                 <hr class="my-2 border-slate-100">
-                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes utilizados:</h4>
+
+                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes utilizados de tu despensa:</h4>
                 <ul id="modal-receta-ingredientes" class="text-xs space-y-1 mb-3"></ul>
+
                 <h4 class="text-xs font-bold text-slate-700 mb-1">Preparación paso a paso:</h4>
                 <ol id="modal-receta-pasos" class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100"></ol>
+
                 <button type="button" id="btn-cocinar-receta" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
-                    👨‍🍳 Preparar y Descontar de Despensa
+                    👨‍🍳 Marcar como Preparada
                 </button>
             </div>
         </div>
 
-        <!-- MODAL DE AGREGAR PRODUCTO CON ESCÁNER DE CÓDIGO DE BARRAS -->
-        <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
-                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
-                
-                <!-- BOTÓN PARA SIMULAR ESCÁNER DE CÓDIGO DE BARRAS -->
-                <button type="button" onclick="escanearCodigoBarrasCamara()" class="w-full mb-3 bg-slate-800 hover:bg-black text-white font-bold text-xs py-2 rounded-xl transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
-                    <i class="fa-solid fa-barcode text-amber-400"></i> Escanear Código de Barras
-                </button>
-
-                <div class="space-y-2.5">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
-                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
-                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
-                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                            <div id="placeholder-foto" class="flex flex-col items-center">
-                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
-                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
-                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Peras, Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
-                    </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-600">Tipo:</label>
-                            <select id="select-tipo-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
-                                <option value="Frutas y Verduras">Frutas y Verduras</option>
-                                <option value="Lácteos">Lácteos</option>
-                                <option value="Alacena/Secos">Alacena/Secos</option>
-                                <option value="Bebidas">Bebidas</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-600">Ubicación:</label>
-                            <select id="select-ubicacion-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
-                                <option value="Refrigerador">Refrigerador</option>
-                                <option value="Congelador">Congelador</option>
-                                <option value="Alacena">Alacena</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
-                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 Litro" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
-                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-2 mt-4">
-                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">Cancelar</button>
-                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">Guardar</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODALES RESTANTES (LOGIN Y FILTROS) -->
+        <!-- MODALES DE LOGIN Y AGREGAR (INTACTOS) -->
         <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
                 <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
@@ -679,6 +536,62 @@
                     <button type="button" onclick="loginSocial('Apple')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-apple text-base text-black"></i></button>
                 </div>
                 <button type="button" onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer">Cerrar</button>
+            </div>
+        </div>
+
+        <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
+                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
+                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
+                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="flex flex-col items-center">
+                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
+                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Peras, Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Tipo:</label>
+                            <select id="select-tipo-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
+                                <option value="Frutas y Verduras">Frutas y Verduras</option>
+                                <option value="Lácteos">Lácteos</option>
+                                <option value="Alacena/Secos">Alacena/Secos</option>
+                                <option value="Bebidas">Bebidas</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Ubicación:</label>
+                            <select id="select-ubicacion-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
+                                <option value="Refrigerador">Refrigerador</option>
+                                <option value="Congelador">Congelador</option>
+                                <option value="Alacena">Alacena</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
+                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 Litro" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
+                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">Cancelar</button>
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">Guardar</button>
+                </div>
             </div>
         </div>
 
