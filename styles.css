@@ -129,3 +129,27 @@ html, body {
 .animate-scale-up {
     animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+/* Animaciones de Carga del Conejo y Zanahorias */
+@keyframes bunnyHop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-16px) scale(1.05); }
+}
+
+@keyframes carrotBounce {
+    0%, 100% { transform: translateY(0) scale(0.9); opacity: 0.5; }
+    50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+.animate-bunny-hop {
+    animation: bunnyHop 0.8s ease-in-out infinite;
+}
+
+.carrot-1 {
+    animation: carrotBounce 1s infinite ease-in-out 0s;
+}
+.carrot-2 {
+    animation: carrotBounce 1s infinite ease-in-out 0.2s;
+}
+.carrot-3 {
+    animation: carrotBounce 1s infinite ease-in-out 0.4s;
+}
