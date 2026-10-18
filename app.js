@@ -17,7 +17,7 @@ let ordenActual = 'vencimiento';
 let donacionSubtab = 'red';
 let donacionFiltro = 'cerca';
 
-// Base de datos de cuentas registradas localmente
+// Base de datos de cuentas registradas localmente (Correo -> Contraseña y Nombre)
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
     'usuario.demo@gmail.com': { pass: '123456', nombre: 'Usuario Demo' },
     'sofia@nowaste.com': { pass: '123456', nombre: 'Sofia' }
@@ -46,6 +46,28 @@ const inventarioDefault = [
         ubicacion: 'Refrigerador',
         imagen: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500', 
         diasTotal: 10 
+    },
+    { 
+        id: 3, 
+        nombre: 'Aguacates', 
+        cantidad: '2 pcs', 
+        dias: 6, 
+        pronto: false, 
+        tipo: 'Frutas y Verduras',
+        ubicacion: 'Alacena',
+        imagen: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=500', 
+        diasTotal: 10 
+    },
+    { 
+        id: 4, 
+        nombre: 'Tomates Frescos', 
+        cantidad: '5 pcs', 
+        dias: 5, 
+        pronto: false, 
+        tipo: 'Frutas y Verduras',
+        ubicacion: 'Refrigerador',
+        imagen: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500', 
+        diasTotal: 8 
     }
 ];
 
@@ -103,6 +125,19 @@ const plantillasRecetas = [
         ]
     },
     {
+        idTipo: 'compota',
+        nombreBase: 'Compota / Postre Dulce de',
+        aplicableA: ['Frutas y Verduras'],
+        tiempo: '12 min',
+        dificultad: 'Fácil',
+        imagenDefault: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
+        pasosTemplate: (ing) => [
+            `Pela y pica en cubitos los/las ${ing}.`,
+            `Llévalos a una olla pequeña con un chorrito de agua y canela a fuego lento por 10 minutos.`,
+            `Cuando estén suaves, tritura ligeramente y disfruta caliente o frío.`
+        ]
+    },
+    {
         idTipo: 'salteado',
         nombreBase: 'Salteado Express de',
         aplicableA: ['Frutas y Verduras', 'Alacena/Secos'],
@@ -112,10 +147,25 @@ const plantillasRecetas = [
         pasosTemplate: (ing) => [
             `Corta los/las ${ing} en tiras o rodajas delgadas.`,
             `Calienta una sartén con un poco de aceite de oliva o mantequilla.`,
-            `Saltea a fuego vivo durante 5-7 minutos y condimenta al gusto.`
+            `Saltea a fuego vivo durante 5-7 minutos y condimenta con sal y pimienta.`
+        ]
+    },
+    {
+        idTipo: 'tarta',
+        nombreBase: 'Tarta o Bizcocho Saludable con',
+        aplicableA: ['Frutas y Verduras', 'Alacena/Secos', 'Lácteos'],
+        tiempo: '25 min',
+        dificultad: 'Media',
+        imagenDefault: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500',
+        pasosTemplate: (ing) => [
+            `Mezcla 1 huevo, harina, avena y los/las ${ing} triturados o troceados.`,
+            `Vierte la mezcla en un molde pequeño o sartén antiadherente.`,
+            `Cocina a fuego lento tapado por 15 minutos hasta que esté firme y dorado.`
         ]
     }
 ];
+
+let recetaDetalleActual = null;
 
 // ==========================================
 // CARGA Y AISLAMIENTO TOTAL POR CUENTA
@@ -213,13 +263,13 @@ function procesarFormulario(e) {
         const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
         const pass = passInput ? passInput.value.trim() : '';
 
-        // 🛑 CANDADO 1: Campos vacíos
+        // CANDADO 1: Campos vacíos
         if (!email || !pass) {
             alert("⚠️ Por favor ingresa tanto tu correo como tu contraseña para iniciar sesión.");
             return false;
         }
 
-        // 🛑 CANDADO 2: Verificación de contraseña registrada
+        // CANDADO 2: Verificación de contraseña registrada
         if (usuariosRegistrados[email]) {
             if (usuariosRegistrados[email].pass !== pass) {
                 alert("❌ La contraseña ingresada es incorrecta. Inténtalo de nuevo.");
@@ -240,7 +290,7 @@ function procesarFormulario(e) {
     } else {
         // MODO REGISTRO
         const nombreInput = document.getElementById('input-reg-nombre');
-        const emailRegInput = document.getElementById('input-reg-email');
+        const emailRegInput = document.querySelectorAll('#campos-registro input[type="email"]')[0];
         const pass1Input = document.getElementById('pass-reg1');
         const pass2Input = document.getElementById('pass-reg2');
         const checkTerminos = document.getElementById('check-terminos');
@@ -250,19 +300,19 @@ function procesarFormulario(e) {
         const pass1 = pass1Input ? pass1Input.value.trim() : '';
         const pass2 = pass2Input ? pass2Input.value.trim() : '';
 
-        // 🛑 CANDADO 3: Campos vacíos
+        // CANDADO 3: Campos vacíos
         if (!nombre || !emailReg || !pass1 || !pass2) {
             alert("⚠️ Todos los campos son obligatorios para crear tu cuenta.");
             return false;
         }
 
-        // 🛑 CANDADO 4: Coincidencia de contraseña
+        // CANDADO 4: Coincidencia de contraseña
         if (pass1 !== pass2) {
             alert("❌ Las contraseñas no coinciden. Por favor verifica ambos campos.");
             return false;
         }
 
-        // 🛑 CANDADO 5: Términos obligatorios
+        // CANDADO 5: Términos obligatorios
         if (checkTerminos && !checkTerminos.checked) {
             alert("⚠️ Debes aceptar los términos y la política ambiental para registrarte.");
             return false;
@@ -443,6 +493,37 @@ function ejecutarPantallaDeCarga(callback) {
     } else {
         if (callback) callback();
     }
+}
+
+function activarNotificacionesPush() {
+    const icono = document.getElementById('icono-notificacion');
+
+    if (!('Notification' in window)) {
+        alert("🔔 Las notificaciones push no están soportadas en este navegador.");
+        return;
+    }
+
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            if (icono) icono.className = "fa-solid fa-bell text-amber-300 animate-bounce";
+            
+            const porVencer = inventario.filter(i => i.dias <= 2);
+            
+            if (porVencer.length > 0) {
+                porVencer.forEach(item => {
+                    new Notification("⚠️ ¡Insumo Próximo a Vencer!", {
+                        body: `Tu alimento "${item.nombre}" vence en ${item.dias === 0 ? 'hoy' : item.dias + ' días'}. ¡Aprovéchalo en tus recetas!`,
+                        icon: item.imagen
+                    });
+                });
+                alert(`🔔 ¡Notificaciones activadas! Tienes ${porVencer.length} alimento(s) por vencer pronto. Te hemos enviado las alertas.`);
+            } else {
+                alert("🔔 ¡Notificaciones activadas correctamente! Todos tus alimentos están frescos por ahora.");
+            }
+        } else {
+            alert("⚠️ No permitiste las notificaciones en tu navegador.");
+        }
+    });
 }
 
 // ==========================================
