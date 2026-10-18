@@ -134,7 +134,6 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <!-- BOTÓN DE CAMPANITA DE NOTIFICACIONES -->
                             <button type="button" onclick="activarNotificacionesPush()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Notificaciones de Vencimiento">
                                 <i class="fa-solid fa-bell text-xs" id="icono-notificacion"></i>
                             </button>
@@ -185,21 +184,21 @@
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
                         <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
-                            <button type="button" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
-                            <button type="button" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
-                            <button type="button" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
-                            <button type="button" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
-                            <button type="button" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
+                            <button type="button" data-tipo="todos" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
+                            <button type="button" data-tipo="Frutas y Verduras" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
+                            <button type="button" data-tipo="Lácteos" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
+                            <button type="button" data-tipo="Alacena/Secos" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
+                            <button type="button" data-tipo="Bebidas" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
                         </div>
                     </div>
 
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
                         <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
-                            <button type="button" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
-                            <button type="button" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
-                            <button type="button" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
-                            <button type="button" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
+                            <button type="button" data-ub="todas" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
+                            <button type="button" data-ub="Refrigerador" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
+                            <button type="button" data-ub="Congelador" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
+                            <button type="button" data-ub="Alacena" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
                         </div>
                     </div>
 
@@ -408,18 +407,14 @@
 
                     <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Insumos actuales en despensa:</p>
-                        <div id="chips-despensa-recetas" class="flex flex-wrap gap-1">
-                            <!-- Chips con los ingredientes agregados -->
-                        </div>
+                        <div id="chips-despensa-recetas" class="flex flex-wrap gap-1"></div>
                     </div>
 
                     <div class="space-y-2">
                         <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-fire text-amber-500"></i> Sugerencias creadas para ti
                         </h3>
-                        <div id="contenedor-recetas" class="space-y-2.5">
-                            <!-- Recetas generadas dinámicamente -->
-                        </div>
+                        <div id="contenedor-recetas" class="space-y-2.5"></div>
                     </div>
                 </main>
 
@@ -476,7 +471,7 @@
             </div>
         </div>
 
-        <!-- MODALES DE LOGIN Y AGREGAR (INTACTOS) -->
+        <!-- MODAL LOGIN -->
         <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
                 <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
@@ -539,6 +534,7 @@
             </div>
         </div>
 
+        <!-- MODAL AGREGAR ALIMENTO -->
         <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
@@ -595,6 +591,7 @@
             </div>
         </div>
 
+        <!-- MODAL FILTROS ORDEN -->
         <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <h3 class="text-xs font-bold text-slate-800 mb-3 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-sliders text-emerald-700"></i> Ordenar inventario</h3>
