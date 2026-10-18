@@ -1,5 +1,5 @@
 // ==========================================
-// VARIABLES GLOBALES Y ESTADO
+// VARIABLES GLOBALES Y ESTADO DE SESIÓN
 // ==========================================
 let modoModal = 'login';
 let fotoTemporal = null;
@@ -17,13 +17,13 @@ let ordenActual = 'vencimiento';
 let donacionSubtab = 'red';
 let donacionFiltro = 'cerca';
 
-// Base de datos de cuentas registradas localmente (Correo -> Hash/Password sim)
+// Base de datos de cuentas registradas localmente
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
     'usuario.demo@gmail.com': { pass: '123456', nombre: 'Usuario Demo' },
-    'mi_cuenta_eco@nowaste.com': { pass: '123456', nombre: 'Eco Usuario' }
+    'sofia@nowaste.com': { pass: '123456', nombre: 'Sofia' }
 };
 
-// INVENTARIO BASE POR DEFECTO PARA USUARIOS NUEVOS
+// DATOS BASE PREDETERMINADOS (Únicamente para cuentas totalmente nuevas)
 const inventarioDefault = [
     { 
         id: 1, 
@@ -87,8 +87,38 @@ let inventario = [];
 let listaCompras = [];
 let redDonaciones = [];
 
+// PLANTILLAS DE RECETAS COMODÍN
+const plantillasRecetas = [
+    {
+        idTipo: 'batido',
+        nombreBase: 'Batido Cremoso de Rescate',
+        aplicableA: ['Frutas y Verduras', 'Lácteos', 'Bebidas'],
+        tiempo: '5 min',
+        dificultad: 'Fácil',
+        imagenDefault: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500',
+        pasosTemplate: (ing) => [
+            `Corta en trozos pequeños los/las ${ing}.`,
+            `Agrégalos a la licuadora con agua, leche o yogur.`,
+            `Licúa bien por 2 minutos, añade endulzante opcional y sirve bien frío.`
+        ]
+    },
+    {
+        idTipo: 'salteado',
+        nombreBase: 'Salteado Express de',
+        aplicableA: ['Frutas y Verduras', 'Alacena/Secos'],
+        tiempo: '10 min',
+        dificultad: 'Fácil',
+        imagenDefault: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
+        pasosTemplate: (ing) => [
+            `Corta los/las ${ing} en tiras o rodajas delgadas.`,
+            `Calienta una sartén con un poco de aceite de oliva o mantequilla.`,
+            `Saltea a fuego vivo durante 5-7 minutos y condimenta al gusto.`
+        ]
+    }
+];
+
 // ==========================================
-// CARGA Y PERSISTENCIA DE DATOS POR CUENTA
+// CARGA Y AISLAMIENTO TOTAL POR CUENTA
 // ==========================================
 function cargarDatosUsuario() {
     const sesionGuardada = localStorage.getItem('nowaste_usuario_activo');
@@ -96,7 +126,6 @@ function cargarDatosUsuario() {
         usuarioActual = sesionGuardada;
     }
 
-    // Nombre de usuario asignado a la cuenta activa
     const usernameGuardado = localStorage.getItem(`nowaste_username_${usuarioActual}`);
     const saludo = document.getElementById('saludo-usuario');
     
@@ -108,37 +137,47 @@ function cargarDatosUsuario() {
         }
     }
 
-    // Cargar la despensa específica de ESTE usuario
+    // Cargar la despensa EXCLUSIVA de este correo
     const despensaGuardada = localStorage.getItem(`nowaste_despensa_${usuarioActual}`);
-    const comprasGuardadas = localStorage.getItem(`nowaste_compras_${usuarioActual}`);
-    const donacionesGuardadas = localStorage.getItem(`nowaste_donaciones_red`);
-
     if (despensaGuardada !== null) {
-        try { inventario = JSON.parse(despensaGuardada); } catch (e) { inventario = [...inventarioDefault]; }
+        try { 
+            inventario = JSON.parse(despensaGuardada); 
+        } catch (e) { 
+            inventario = []; 
+        }
     } else {
         inventario = JSON.parse(JSON.stringify(inventarioDefault));
-        guardarEnLocalStorage();
     }
 
+    // Cargar Lista de Compras EXCLUSIVA de este correo
+    const comprasGuardadas = localStorage.getItem(`nowaste_compras_${usuarioActual}`);
     if (comprasGuardadas !== null) {
-        try { listaCompras = JSON.parse(comprasGuardadas); } catch (e) { listaCompras = [...listaComprasDefault]; }
+        try { 
+            listaCompras = JSON.parse(comprasGuardadas); 
+        } catch (e) { 
+            listaCompras = []; 
+        }
     } else {
         listaCompras = JSON.parse(JSON.stringify(listaComprasDefault));
-        guardarEnLocalStorage();
     }
 
+    // Red de Donaciones Compartida
+    const donacionesGuardadas = localStorage.getItem(`nowaste_donaciones_red`);
     if (donacionesGuardadas) {
-        try { redDonaciones = JSON.parse(donacionesGuardadas); } catch (e) { redDonaciones = [...donacionesBaseDefault]; }
+        try { redDonaciones = JSON.parse(donacionesGuardadas); } catch (e) { redDonaciones = []; }
     } else {
-        redDonaciones = [...donacionesBaseDefault];
-        localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
+        redDonaciones = JSON.parse(JSON.stringify(donacionesBaseDefault));
     }
+
+    guardarEnLocalStorage();
 }
 
 function guardarEnLocalStorage() {
     try {
-        localStorage.setItem(`nowaste_despensa_${usuarioActual}`, JSON.stringify(inventario));
-        localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
+        if (usuarioActual) {
+            localStorage.setItem(`nowaste_despensa_${usuarioActual}`, JSON.stringify(inventario));
+            localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
+        }
         localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
         localStorage.setItem('nowaste_usuarios_db', JSON.stringify(usuariosRegistrados));
     } catch (e) {
@@ -147,10 +186,9 @@ function guardarEnLocalStorage() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    cargarDatosUsuario();
-    
     const estaAutenticado = localStorage.getItem('nowaste_autenticado') === 'true';
     if (estaAutenticado) {
+        cargarDatosUsuario();
         mostrarDespensa();
     } else {
         cerrarSesion();
@@ -167,58 +205,69 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 function procesarFormulario(e) {
     if (e && e.preventDefault) e.preventDefault();
-    
-    if (modoModal === 'login') {
-        const email = document.getElementById('input-login-email')?.value.trim().toLowerCase();
-        const pass = document.getElementById('pass-login')?.value;
 
+    if (modoModal === 'login') {
+        const emailInput = document.getElementById('input-login-email');
+        const passInput = document.getElementById('pass-login');
+
+        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        const pass = passInput ? passInput.value.trim() : '';
+
+        // 🛑 CANDADO 1: Campos vacíos
         if (!email || !pass) {
-            alert("⚠️ Por favor ingresa tu correo y contraseña.");
+            alert("⚠️ Por favor ingresa tanto tu correo como tu contraseña para iniciar sesión.");
             return false;
         }
 
-        // Verificar si la cuenta existe y coincide la contraseña
+        // 🛑 CANDADO 2: Verificación de contraseña registrada
         if (usuariosRegistrados[email]) {
             if (usuariosRegistrados[email].pass !== pass) {
-                alert("❌ La contraseña ingresada no es correcta.");
+                alert("❌ La contraseña ingresada es incorrecta. Inténtalo de nuevo.");
                 return false;
             }
         } else {
-            // Si es la primera vez que ingresa con este correo, registrarlo con la contraseña provista
             usuariosRegistrados[email] = { pass: pass, nombre: email.split('@')[0] };
         }
 
         usuarioActual = email;
         localStorage.setItem('nowaste_usuario_activo', usuarioActual);
         localStorage.setItem('nowaste_autenticado', 'true');
+        
         if (!localStorage.getItem(`nowaste_username_${usuarioActual}`)) {
             localStorage.setItem(`nowaste_username_${usuarioActual}`, usuariosRegistrados[email].nombre || email.split('@')[0]);
         }
 
     } else {
         // MODO REGISTRO
-        const nombre = document.getElementById('input-reg-nombre')?.value.trim();
-        const emailReg = document.querySelectorAll('#campos-registro input[type="email"]')[0]?.value.trim().toLowerCase();
-        const pass1 = document.getElementById('pass-reg1')?.value;
-        const pass2 = document.getElementById('pass-reg2')?.value;
-        const checkTerminos = document.getElementById('check-terminos')?.checked;
+        const nombreInput = document.getElementById('input-reg-nombre');
+        const emailRegInput = document.getElementById('input-reg-email');
+        const pass1Input = document.getElementById('pass-reg1');
+        const pass2Input = document.getElementById('pass-reg2');
+        const checkTerminos = document.getElementById('check-terminos');
 
+        const nombre = nombreInput ? nombreInput.value.trim() : '';
+        const emailReg = emailRegInput ? emailRegInput.value.trim().toLowerCase() : '';
+        const pass1 = pass1Input ? pass1Input.value.trim() : '';
+        const pass2 = pass2Input ? pass2Input.value.trim() : '';
+
+        // 🛑 CANDADO 3: Campos vacíos
         if (!nombre || !emailReg || !pass1 || !pass2) {
-            alert("⚠️ Por favor completa todos los campos del registro.");
+            alert("⚠️ Todos los campos son obligatorios para crear tu cuenta.");
             return false;
         }
 
+        // 🛑 CANDADO 4: Coincidencia de contraseña
         if (pass1 !== pass2) {
-            alert("❌ Las contraseñas no coinciden. Por favor verifícalas.");
+            alert("❌ Las contraseñas no coinciden. Por favor verifica ambos campos.");
             return false;
         }
 
-        if (!checkTerminos) {
-            alert("⚠️ Debes aceptar los términos y condiciones para continuar.");
+        // 🛑 CANDADO 5: Términos obligatorios
+        if (checkTerminos && !checkTerminos.checked) {
+            alert("⚠️ Debes aceptar los términos y la política ambiental para registrarte.");
             return false;
         }
 
-        // Guardar nuevo usuario
         usuariosRegistrados[emailReg] = { pass: pass1, nombre: nombre };
         usuarioActual = emailReg;
         localStorage.setItem('nowaste_usuario_activo', usuarioActual);
@@ -329,6 +378,11 @@ function confirmarLoginSocial() {
 function cerrarSesion() {
     localStorage.removeItem('nowaste_autenticado');
     localStorage.removeItem('nowaste_usuario_activo');
+
+    inventario = [];
+    listaCompras = [];
+    usuarioActual = '';
+
     ocultarTodasLasVistas();
     document.getElementById('vista-auth')?.classList.remove('hidden');
 }
@@ -378,7 +432,6 @@ function abrirListaCompras() {
     document.getElementById('vista-lista-compras')?.classList.remove('hidden');
 }
 
-// PANTALLA DE CARGA CON ANIMACIÓN
 function ejecutarPantallaDeCarga(callback) {
     const loader = document.getElementById('pantalla-carga');
     if (loader) {
