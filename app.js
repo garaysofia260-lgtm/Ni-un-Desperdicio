@@ -2,7 +2,8 @@
 let modoModal = 'login';
 let fotoTemporal = null;
 let alimentoSeleccionadoId = null;
-let usuarioActual = 'mi_cuenta'; // Usuario persistente por defecto
+let usuarioActual = 'mi_cuenta@nowaste.com';
+let redSocialSeleccionada = 'Google';
 
 // Filtros
 let categoriaFiltro = 'todos';
@@ -133,21 +134,37 @@ function cargarDatosUsuario() {
         localStorage.setItem('nowaste_usuario_activo', usuarioActual);
     }
 
+    const usernameGuardado = localStorage.getItem(`nowaste_username_${usuarioActual}`);
     const saludo = document.getElementById('saludo-usuario');
-    if (saludo) saludo.textContent = `¡Hola, ${usuarioActual.split('@')[0]}! 👋`;
+    
+    if (saludo) {
+        if (usernameGuardado) {
+            saludo.textContent = `¡Hola, ${usernameGuardado}! 👋`;
+        } else {
+            saludo.textContent = `¡Hola, ${usuarioActual.split('@')[0]}! 👋`;
+        }
+    }
 
     const despensaGuardada = localStorage.getItem(`nowaste_despensa_${usuarioActual}`);
     const comprasGuardadas = localStorage.getItem(`nowaste_compras_${usuarioActual}`);
 
     if (despensaGuardada) {
-        inventario = JSON.parse(despensaGuardada);
+        try {
+            inventario = JSON.parse(despensaGuardada);
+        } catch (e) {
+            inventario = [...inventarioDefault];
+        }
     } else {
         inventario = [...inventarioDefault];
         guardarEnLocalStorage();
     }
 
     if (comprasGuardadas) {
-        listaCompras = JSON.parse(comprasGuardadas);
+        try {
+            listaCompras = JSON.parse(comprasGuardadas);
+        } catch (e) {
+            listaCompras = [...listaComprasDefault];
+        }
     } else {
         listaCompras = [...listaComprasDefault];
         guardarEnLocalStorage();
@@ -155,14 +172,19 @@ function cargarDatosUsuario() {
 }
 
 function guardarEnLocalStorage() {
-    localStorage.setItem(`nowaste_despensa_${usuarioActual}`, JSON.stringify(inventario));
-    localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
+    try {
+        localStorage.setItem(`nowaste_despensa_${usuarioActual}`, JSON.stringify(inventario));
+        localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
+        localStorage.setItem('nowaste_autenticado', 'true');
+    } catch (e) {
+        console.warn("Límite de almacenamiento alcanzado en localStorage", e);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosUsuario();
     
-    // Abre la despensa directamente al cargar si ya hay una sesión previa activa
+    // Entra siempre a la despensa si ya está autenticado
     const vistaAuth = document.getElementById('vista-auth');
     const vistaDespensa = document.getElementById('vista-despensa');
     
@@ -174,6 +196,128 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarDespensa();
     renderizarListaCompras();
 });
+
+// PANTALLA DE CARGA CON CONEJO SALTANDO Y ZANAHORIAS
+function ejecutarPantallaDeCarga(callback) {
+    const loader = document.getElementById('pantalla-carga');
+    if (loader) {
+        loader.classList.remove('hidden');
+        
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            if (callback) callback();
+        }, 2000); // 2 segundos de animación
+    } else {
+        if (callback) callback();
+    }
+}
+
+// MODAL SELECCIÓN DE CUENTA SOCIAL Y NOMBRE DE USUARIO EDITABLE
+function abrirModalSocial(red) {
+    redSocialSeleccionada = red;
+    const modal = document.getElementById('modal-social');
+    const icon = document.getElementById('social-modal-icon');
+    const title = document.getElementById('social-modal-title');
+    const select = document.getElementById('select-cuenta-social');
+
+    if (!modal) return;
+
+    if (red === 'Google') {
+        if (icon) icon.innerHTML = '<i class="fa-brands fa-google text-red-500"></i>';
+        if (title) title.textContent = 'Continuar con Google';
+    } else if (red === 'Facebook') {
+        if (icon) icon.innerHTML = '<i class="fa-brands fa-facebook text-blue-600"></i>';
+        if (title) title.textContent = 'Continuar con Facebook';
+    } else {
+        if (icon) icon.innerHTML = '<i class="fa-brands fa-apple text-black"></i>';
+        if (title) title.textContent = 'Continuar con Apple ID';
+    }
+
+    if (select) {
+        select.value = select.options[0].value;
+    }
+
+    document.getElementById('campo-correo-custom')?.classList.add('hidden');
+    actualizarUsuarioDesdeSelect();
+    cerrarLogin();
+    modal.classList.remove('hidden');
+}
+
+function cerrarModalSocial() {
+    document.getElementById('modal-social')?.classList.add('hidden');
+}
+
+function actualizarUsuarioDesdeSelect() {
+    const select = document.getElementById('select-cuenta-social');
+    const campoCustom = document.getElementById('campo-correo-custom');
+    const inputUsername = document.getElementById('input-username-social');
+    const btnLabel = document.getElementById('btn-user-label');
+
+    if (!select || !inputUsername) return;
+
+    if (select.value === 'nuevo_correo') {
+        if (campoCustom) campoCustom.classList.remove('hidden');
+        inputUsername.value = 'nuevo_usuario';
+    } else {
+        if (campoCustom) campoCustom.classList.add('hidden');
+        const prefijo = select.value.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
+        inputUsername.value = prefijo;
+    }
+
+    if (btnLabel) btnLabel.textContent = `@${inputUsername.value}`;
+}
+
+function confirmarLoginSocial() {
+    const select = document.getElementById('select-cuenta-social');
+    const customEmail = document.getElementById('input-correo-social-custom')?.value.trim();
+    const username = document.getElementById('input-username-social')?.value.trim() || 'usuario';
+
+    let emailFinal = select.value;
+    if (emailFinal === 'nuevo_correo') {
+        emailFinal = customEmail || `${username}@nowaste.com`;
+    }
+
+    usuarioActual = emailFinal;
+    localStorage.setItem('nowaste_usuario_activo', usuarioActual);
+    localStorage.setItem(`nowaste_username_${usuarioActual}`, username);
+    localStorage.setItem('nowaste_autenticado', 'true');
+
+    cerrarModalSocial();
+
+    ejecutarPantallaDeCarga(() => {
+        cargarDatosUsuario();
+        mostrarDespensa();
+        renderizarDespensa();
+        renderizarListaCompras();
+    });
+}
+
+// PROCESAR FORMULARIO LOGIN / REGISTRO TRADICIONAL
+function procesarFormulario(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    
+    const email = document.getElementById('input-login-email')?.value.trim() || 'usuario@nowaste.com';
+    const nombreReg = document.getElementById('input-reg-nombre')?.value.trim();
+
+    usuarioActual = email;
+    localStorage.setItem('nowaste_usuario_activo', usuarioActual);
+    
+    if (nombreReg) {
+        localStorage.setItem(`nowaste_username_${usuarioActual}`, nombreReg);
+    }
+
+    localStorage.setItem('nowaste_autenticado', 'true');
+    cerrarLogin();
+
+    ejecutarPantallaDeCarga(() => {
+        cargarDatosUsuario();
+        mostrarDespensa();
+        renderizarDespensa();
+        renderizarListaCompras();
+    });
+
+    return false;
+}
 
 // NOTIFICACIONES PUSH Y ALERTAS AL PRESIONAR LA CAMPANITA
 function activarNotificacionesPush() {
@@ -207,7 +351,7 @@ function activarNotificacionesPush() {
     });
 }
 
-// RENDERIZAR DESPENSA
+// RENDERIZAR DESPENSA Y FILTRADO EXACTO
 function renderizarDespensa() {
     const listaPronto = document.getElementById('lista-pronto');
     const listaFrescos = document.getElementById('lista-frescos');
@@ -227,6 +371,7 @@ function renderizarDespensa() {
         const coincideEstado = categoriaFiltro === 'todos' || 
                               (categoriaFiltro === 'pronto' && item.pronto) || 
                               (categoriaFiltro === 'frescos' && !item.pronto);
+        
         const coincideTipo = tipoFiltro === 'todos' || item.tipo === tipoFiltro;
         const coincideUbicacion = ubicacionFiltro === 'todas' || item.ubicacion === ubicacionFiltro;
 
@@ -292,7 +437,133 @@ function renderizarDespensa() {
     }
 }
 
-// MÓDULO DE RECETAS ADAPTABLES
+// FILTROS
+function filtrarTipo(tipo) {
+    tipoFiltro = tipo;
+    const botones = document.querySelectorAll('#contenedor-filtros-tipo .btn-tipo');
+    botones.forEach(b => {
+        const valAttr = b.getAttribute('data-tipo');
+        if (valAttr === tipo) {
+            b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
+        } else {
+            b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+        }
+    });
+    renderizarDespensa();
+}
+
+function filtrarUbicacion(ub) {
+    ubicacionFiltro = ub;
+    const botones = document.querySelectorAll('#contenedor-filtros-ubicacion .btn-ubicacion');
+    botones.forEach(b => {
+        const valAttr = b.getAttribute('data-ub');
+        if (valAttr === ub) {
+            b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
+        } else {
+            b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
+        }
+    });
+    renderizarDespensa();
+}
+
+function filtrarCategoria(cat) {
+    categoriaFiltro = cat;
+    const btnTodos = document.getElementById('btn-cat-todos');
+    const btnPronto = document.getElementById('btn-cat-pronto');
+    const btnFrescos = document.getElementById('btn-cat-frescos');
+
+    [btnTodos, btnPronto, btnFrescos].forEach(b => {
+        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
+    });
+
+    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
+
+    renderizarDespensa();
+}
+
+// FOTO COMPRIMIDA PARA EVITAR LIMITE EN LOCALSTORAGE
+function previsualizarFoto(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 300;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                fotoTemporal = canvas.toDataURL('image/jpeg', 0.7);
+
+                const imgPreview = document.getElementById('preview-foto');
+                const placeholder = document.getElementById('placeholder-foto');
+                if (imgPreview && placeholder) {
+                    imgPreview.src = fotoTemporal;
+                    imgPreview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// GUARDAR ALIMENTO
+function guardarAlimento() {
+    const nom = document.getElementById('input-nombre-alimento')?.value.trim();
+    const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
+    const fecha = document.getElementById('input-fecha-alimento')?.value;
+    const tipo = document.getElementById('select-tipo-alimento')?.value || 'Alacena/Secos';
+    const ub = document.getElementById('select-ubicacion-alimento')?.value || 'Alacena';
+
+    if (!nom) return alert("Por favor ingresa un nombre.");
+
+    let dias = 3;
+    if (fecha) {
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        const destino = new Date(fecha);
+        destino.setHours(0,0,0,0);
+        dias = Math.max(0, Math.ceil((destino - hoy) / (1000 * 3600 * 24)));
+    }
+
+    const nuevo = {
+        id: Date.now(),
+        nombre: nom,
+        cantidad: cant,
+        dias: dias,
+        pronto: dias <= 2,
+        tipo: tipo,
+        ubicacion: ub,
+        imagen: fotoTemporal || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
+        diasTotal: Math.max(dias + 2, 7)
+    };
+
+    inventario.unshift(nuevo);
+    guardarEnLocalStorage();
+    
+    renderizarDespensa();
+    cerrarModalAgregar();
+
+    document.getElementById('input-nombre-alimento').value = '';
+    document.getElementById('input-cantidad-alimento').value = '';
+    document.getElementById('input-fecha-alimento').value = '';
+    fotoTemporal = null;
+    document.getElementById('preview-foto')?.classList.add('hidden');
+    document.getElementById('placeholder-foto')?.classList.remove('hidden');
+
+    alert(`🥑 "${nom}" guardado con éxito. ¡Se mantendrá guardado en tu despensa!`);
+}
+
+// RECETAS DINÁMICAS
 function abrirRecetas() {
     ocultarTodasLasVistas();
     document.getElementById('vista-recetas')?.classList.remove('hidden');
@@ -379,7 +650,6 @@ function generarRecetasDinamicas() {
     window.recetasGeneradasCache = recetasGeneradas;
 }
 
-// DESCONTAR CANTIDAD O ELIMINAR EL PRODUCTO SI SE UTILIZÓ POR COMPLETO EN LA RECETA
 function verPasosRecetaDinamica(idReceta) {
     const receta = window.recetasGeneradasCache?.find(r => r.id === idReceta);
     if (!receta) return;
@@ -448,57 +718,7 @@ function cerrarModalReceta() {
     document.getElementById('modal-receta-detalle').classList.add('hidden');
 }
 
-// FILTROS
-function filtrarCategoria(cat) {
-    categoriaFiltro = cat;
-    const btnTodos = document.getElementById('btn-cat-todos');
-    const btnPronto = document.getElementById('btn-cat-pronto');
-    const btnFrescos = document.getElementById('btn-cat-frescos');
-
-    [btnTodos, btnPronto, btnFrescos].forEach(b => {
-        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
-    });
-
-    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-
-    renderizarDespensa();
-}
-
-function filtrarTipo(tipo) {
-    tipoFiltro = tipo;
-    const contenedor = document.getElementById('contenedor-filtros-tipo');
-    if (contenedor) {
-        const botones = contenedor.querySelectorAll('button');
-        botones.forEach(b => {
-            if (b.getAttribute('onclick').includes(`'${tipo}'`)) {
-                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
-            } else {
-                b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
-            }
-        });
-    }
-    renderizarDespensa();
-}
-
-function filtrarUbicacion(ub) {
-    ubicacionFiltro = ub;
-    const contenedor = document.getElementById('contenedor-filtros-ubicacion');
-    if (contenedor) {
-        const botones = contenedor.querySelectorAll('button');
-        botones.forEach(b => {
-            if (b.getAttribute('onclick').includes(`'${ub}'`)) {
-                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
-            } else {
-                b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
-            }
-        });
-    }
-    renderizarDespensa();
-}
-
-// DETALLE INDIVIDUAL DE PRODUCTO
+// DETALLE INDIVIDUAL
 function abrirDetalleTab(id) {
     const item = inventario.find(i => i.id === id);
     if (!item) return;
@@ -683,75 +903,6 @@ function abrirModalFiltros() { document.getElementById('modal-filtros')?.classLi
 function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
 function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
 
-function previsualizarFoto(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            fotoTemporal = evt.target.result;
-            const imgPreview = document.getElementById('preview-foto');
-            const placeholder = document.getElementById('placeholder-foto');
-            if (imgPreview && placeholder) {
-                imgPreview.src = fotoTemporal;
-                imgPreview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// GUARDAR NUEVO PRODUCTO CON PERSISTENCIA
-function guardarAlimento() {
-    const nom = document.getElementById('input-nombre-alimento')?.value.trim();
-    const cant = document.getElementById('input-cantidad-alimento')?.value.trim() || '1 unidad';
-    const fecha = document.getElementById('input-fecha-alimento')?.value;
-    const tipo = document.getElementById('select-tipo-alimento')?.value || 'Alacena/Secos';
-    const ub = document.getElementById('select-ubicacion-alimento')?.value || 'Alacena';
-
-    if (!nom) return alert("Por favor ingresa un nombre.");
-
-    let dias = 3;
-    if (fecha) {
-        const hoy = new Date();
-        hoy.setHours(0,0,0,0);
-        const destino = new Date(fecha);
-        destino.setHours(0,0,0,0);
-        dias = Math.max(0, Math.ceil((destino - hoy) / (1000 * 3600 * 24)));
-    }
-
-    const nuevo = {
-        id: Date.now(),
-        nombre: nom,
-        cantidad: cant,
-        dias: dias,
-        pronto: dias <= 2,
-        tipo: tipo,
-        ubicacion: ub,
-        imagen: fotoTemporal || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
-        diasTotal: Math.max(dias + 2, 7)
-    };
-
-    inventario.unshift(nuevo);
-    
-    // Guardar autenticación para que permanezca dentro de la despensa tras recargar
-    localStorage.setItem('nowaste_autenticado', 'true');
-    guardarEnLocalStorage();
-    
-    renderizarDespensa();
-    cerrarModalAgregar();
-
-    document.getElementById('input-nombre-alimento').value = '';
-    document.getElementById('input-cantidad-alimento').value = '';
-    document.getElementById('input-fecha-alimento').value = '';
-    fotoTemporal = null;
-    document.getElementById('preview-foto')?.classList.add('hidden');
-    document.getElementById('placeholder-foto')?.classList.remove('hidden');
-
-    alert(`🥑 "${nom}" guardado con éxito. ¡Se mantendrá guardado en tu navegador!`);
-}
-
-// MANEJO DE SESIÓN Y REGISTRO
 function abrirModal(modo) {
     modoModal = modo || 'login';
     document.getElementById('modal-login')?.classList.remove('hidden');
@@ -830,33 +981,6 @@ function cerrarSesion() {
     localStorage.removeItem('nowaste_autenticado');
     ocultarTodasLasVistas();
     document.getElementById('vista-auth')?.classList.remove('hidden');
-}
-
-function loginSocial(red) {
-    usuarioActual = `${red.toLowerCase()}_user@nowaste.com`;
-    localStorage.setItem('nowaste_usuario_activo', usuarioActual);
-    localStorage.setItem('nowaste_autenticado', 'true');
-    cargarDatosUsuario();
-    cerrarLogin();
-    mostrarDespensa();
-    renderizarDespensa();
-    renderizarListaCompras();
-}
-
-function procesarFormulario(e) {
-    if (e && e.preventDefault) e.preventDefault();
-    
-    const email = document.getElementById('input-login-email')?.value.trim() || 'usuario@nowaste.com';
-    usuarioActual = email;
-    localStorage.setItem('nowaste_usuario_activo', usuarioActual);
-    localStorage.setItem('nowaste_autenticado', 'true');
-    
-    cargarDatosUsuario();
-    cerrarLogin();
-    mostrarDespensa();
-    renderizarDespensa();
-    renderizarListaCompras();
-    return false;
 }
 
 function abrirModalAgregar() { document.getElementById('modal-agregar')?.classList.remove('hidden'); }
