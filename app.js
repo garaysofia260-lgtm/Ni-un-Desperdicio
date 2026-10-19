@@ -22,6 +22,10 @@ let donacionSubtab = 'red';
 let donacionFiltro = 'cerca';
 let categoriaPuntosFijos = 'todos';
 
+// Filtros Comunidades
+let comunidadSubtab = 'muros';
+let comunidadFiltroCategoria = 'todos';
+
 // Base de datos de cuentas registradas localmente
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
     'usuario.demo@gmail.com': { pass: '123456', nombre: 'Usuario Demo', tipo: 'hogar' },
@@ -29,6 +33,71 @@ let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')
     'mcdonalds@comercio.com': { pass: '123456', nombre: 'McDonald\'s Centro', tipo: 'comercio' },
     'fundacion@esperanza.org': { pass: '123456', nombre: 'Fundación San José', tipo: 'fundacion' }
 };
+
+// DATOS BASE DE PUBLICACIONES DE LA COMUNIDAD
+const publicacionesComunidadDefault = [
+    {
+        id: 401,
+        autor: 'Sofia',
+        tipoAutor: 'hogar',
+        categoria: 'recetas',
+        titulo: '🍞 Cómo aprovechar el pan duro de ayer',
+        contenido: '¡No lo tires! Corta en cubos, agrega aceite de oliva, orégano y hornea por 8 min a 180°C. Tienes crutones deliciosos para ensaladas.',
+        fecha: 'Hace 2 horas',
+        likes: 12,
+        dioLike: false
+    },
+    {
+        id: 402,
+        autor: 'Fundación San José',
+        tipoAutor: 'fundacion',
+        categoria: 'alertas',
+        titulo: '🏛️ Gran Recolección de Granos Secos',
+        contenido: 'Este fin de semana estaremos recibiendo arroz, lentejas y frijoles en la sede central para el comedor comunitario infantil.',
+        fecha: 'Hace 5 horas',
+        likes: 24,
+        dioLike: false
+    },
+    {
+        id: 403,
+        autor: 'McDonald\'s Centro',
+        tipoAutor: 'comercio',
+        categoria: 'tips',
+        titulo: '🏬 Tip de Almacenamiento de Verduras',
+        contenido: 'Guarda las lechugas y verduras de hoja con una servilleta de papel húmeda en un contenedor hermético. ¡Duran el doble!',
+        fecha: 'Ayer',
+        likes: 18,
+        dioLike: false
+    }
+];
+
+// DATOS BASE DE GRUPOS Y ALIADOS LOCALES
+const gruposComunidadList = [
+    {
+        id: 501,
+        nombre: 'Vecinos Recicladores Centro',
+        tipo: '👥 Grupo Vecinal',
+        miembros: '142 miembros',
+        descripcion: 'Comunidad orientada al intercambio de insumos y compostaje comunitario.',
+        unido: true
+    },
+    {
+        id: 502,
+        nombre: 'Restaurantes Conscientes',
+        tipo: '🏬 Red Comercial Aliada',
+        miembros: '28 establecimientos',
+        descripcion: 'Red de comercios que ofrecen excedentes diarios de comida en óptimo estado.',
+        unido: false
+    },
+    {
+        id: 503,
+        nombre: 'Voluntarios Zero Waste',
+        tipo: '🌱 Movimiento Voluntario',
+        miembros: '89 voluntarios',
+        descripcion: 'Organización de jornadas de rescate de comida en plazas de mercado.',
+        unido: false
+    }
+];
 
 // DATOS BASE PREDETERMINADOS DE DONACIONES
 const donacionesBaseDefault = [
@@ -139,6 +208,7 @@ const listaComprasDefault = [
 let inventario = [];
 let listaCompras = [];
 let redDonaciones = [];
+let publicacionesComunidad = [];
 
 // PLANTILLAS DE RECETAS
 const plantillasRecetas = [
@@ -192,6 +262,7 @@ function cargarDatosUsuario() {
     }
 
     cargarRedDonacionesGlobales();
+    cargarPublicacionesComunidadGlobales();
     guardarEnLocalStorage();
 }
 
@@ -204,6 +275,15 @@ function cargarRedDonacionesGlobales() {
     }
 }
 
+function cargarPublicacionesComunidadGlobales() {
+    const pubGuardadas = localStorage.getItem(`nowaste_comunidad_posts`);
+    if (pubGuardadas) {
+        try { publicacionesComunidad = JSON.parse(pubGuardadas); } catch (e) { publicacionesComunidad = []; }
+    } else {
+        publicacionesComunidad = JSON.parse(JSON.stringify(publicacionesComunidadDefault));
+    }
+}
+
 function guardarEnLocalStorage() {
     try {
         if (usuarioActual) {
@@ -211,6 +291,7 @@ function guardarEnLocalStorage() {
             localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
         }
         localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
+        localStorage.setItem(`nowaste_comunidad_posts`, JSON.stringify(publicacionesComunidad));
         localStorage.setItem('nowaste_usuarios_db', JSON.stringify(usuariosRegistrados));
     } catch (e) {
         console.warn("Límite de almacenamiento alcanzado", e);
@@ -222,6 +303,10 @@ window.addEventListener('storage', (event) => {
     if (event.key === 'nowaste_donaciones_red') {
         cargarRedDonacionesGlobales();
         renderizarRedDonaciones();
+    }
+    if (event.key === 'nowaste_comunidad_posts') {
+        cargarPublicacionesComunidadGlobales();
+        renderizarPublicacionesComunidad();
     }
 });
 
@@ -238,7 +323,203 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
     renderizarRedDonaciones();
     renderizarPuntosRecoleccion();
+    renderizarPublicacionesComunidad();
+    renderizarGruposComunidad();
 });
+
+// ==========================================
+// MÓDULO PESTAÑA COMUNIDADES Y ALIADOS
+// ==========================================
+function renderizarPublicacionesComunidad() {
+    const cont = document.getElementById('contenedor-publicaciones-comunidad');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+
+    let filtrados = publicacionesComunidad.filter(p => {
+        return comunidadFiltroCategoria === 'todos' || p.categoria === comunidadFiltroCategoria;
+    });
+
+    if (filtrados.length === 0) {
+        cont.innerHTML = `
+            <div class="text-center py-8 text-xs text-slate-400">
+                <i class="fa-solid fa-comments text-2xl mb-1 block"></i>
+                No hay publicaciones en esta categoría. ¡Sé el primero en compartir!
+            </div>`;
+        return;
+    }
+
+    filtrados.forEach(post => {
+        let badgeTipo = `<b class="text-emerald-700">${post.autor}</b>`;
+        if (post.tipoAutor === 'comercio') {
+            badgeTipo = `<span class="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-amber-200">🏬 ${post.autor}</span>`;
+        } else if (post.tipoAutor === 'fundacion') {
+            badgeTipo = `<span class="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-purple-200">🏛️ ${post.autor}</span>`;
+        }
+
+        let catTxt = '💬 General';
+        if (post.categoria === 'recetas') catTxt = '🍲 Receta';
+        else if (post.categoria === 'tips') catTxt = '💡 Tip';
+        else if (post.categoria === 'alertas') catTxt = '📢 Alerta';
+
+        cont.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm space-y-2">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">${catTxt}</span>
+                        <h4 class="text-xs font-bold text-slate-800 mt-1">${post.titulo}</h4>
+                    </div>
+                    <span class="text-[9px] text-slate-400 font-semibold">${post.fecha}</span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">${post.contenido}</p>
+
+                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px]">
+                    <span class="text-slate-500">Por ${badgeTipo}</span>
+
+                    <button type="button" onclick="darLikePublicacionComunidad(${post.id})" class="flex items-center gap-1 font-bold ${post.dioLike ? 'text-red-500' : 'text-slate-400 hover:text-red-500'} transition cursor-pointer">
+                        <i class="${post.dioLike ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        <span>${post.likes}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function renderizarGruposComunidad() {
+    const cont = document.getElementById('contenedor-grupos-comunidad');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+
+    gruposComunidadList.forEach(g => {
+        cont.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800">${g.nombre}</h4>
+                        <p class="text-[10px] text-emerald-700 font-bold">${g.tipo} • 👥 ${g.miembros}</p>
+                    </div>
+                    <button type="button" onclick="toggleUnirmeGrupoComunidad(${g.id})" class="${g.unido ? 'bg-slate-200 text-slate-700' : 'bg-emerald-700 text-white'} text-[10px] font-bold px-3 py-1 rounded-xl transition cursor-pointer">
+                        ${g.unido ? '✓ Unido' : '+ Unirme'}
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-600">${g.descripcion}</p>
+            </div>
+        `;
+    });
+}
+
+function cambiarSubtabComunidad(tab) {
+    comunidadSubtab = tab;
+    const btnMuros = document.getElementById('tab-com-muros');
+    const btnCanales = document.getElementById('tab-com-canales');
+    const contMuros = document.getElementById('subtab-comunidad-muros');
+    const contCanales = document.getElementById('subtab-comunidad-canales');
+
+    if (tab === 'muros') {
+        btnMuros.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnCanales.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contMuros.classList.remove('hidden');
+        contCanales.classList.add('hidden');
+    } else {
+        btnCanales.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnMuros.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contCanales.classList.remove('hidden');
+        contMuros.classList.add('hidden');
+    }
+}
+
+function filtrarPublicacionesComunidad(cat) {
+    comunidadFiltroCategoria = cat;
+
+    ['todos', 'recetas', 'tips', 'alertas'].forEach(c => {
+        const btn = document.getElementById(`btn-com-cat-${c}`);
+        if (btn) {
+            if (c === cat) {
+                btn.className = "px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer";
+            } else {
+                btn.className = "px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+            }
+        }
+    });
+
+    renderizarPublicacionesComunidad();
+}
+
+function darLikePublicacionComunidad(idPost) {
+    const post = publicacionesComunidad.find(p => p.id === idPost);
+    if (!post) return;
+
+    if (post.dioLike) {
+        post.likes--;
+        post.dioLike = false;
+    } else {
+        post.likes++;
+        post.dioLike = true;
+    }
+
+    guardarEnLocalStorage();
+    renderizarPublicacionesComunidad();
+}
+
+function toggleUnirmeGrupoComunidad(idGrupo) {
+    const grupo = gruposComunidadList.find(g => g.id === idGrupo);
+    if (!grupo) return;
+
+    grupo.unido = !grupo.unido;
+    renderizarGruposComunidad();
+
+    if (grupo.unido) {
+        alert(`🤝 Te has unido al grupo "${grupo.nombre}".`);
+    } else {
+        alert(`Has dejado el grupo "${grupo.nombre}".`);
+    }
+}
+
+function abrirModalNuevaPublicacionComunidad() {
+    document.getElementById('modal-publicar-comunidad')?.classList.remove('hidden');
+}
+
+function cerrarModalNuevaPublicacionComunidad() {
+    document.getElementById('modal-publicar-comunidad')?.classList.add('hidden');
+}
+
+function guardarPublicacionComunidad() {
+    const cat = document.getElementById('select-comunidad-categoria')?.value || 'recetas';
+    const titulo = document.getElementById('input-comunidad-titulo')?.value.trim();
+    const contenido = document.getElementById('input-comunidad-contenido')?.value.trim();
+
+    if (!titulo || !contenido) {
+        return alert("Por favor completa el título y mensaje de tu publicación.");
+    }
+
+    const miNombre = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
+    const tipoCuenta = usuariosRegistrados[usuarioActual]?.tipo || 'hogar';
+
+    const nuevaPub = {
+        id: Date.now(),
+        autor: miNombre,
+        tipoAutor: tipoCuenta,
+        categoria: cat,
+        titulo: titulo,
+        contenido: contenido,
+        fecha: 'Ahora mismo',
+        likes: 0,
+        dioLike: false
+    };
+
+    publicacionesComunidad.unshift(nuevaPub);
+    guardarEnLocalStorage();
+    renderizarPublicacionesComunidad();
+    cerrarModalNuevaPublicacionComunidad();
+
+    document.getElementById('input-comunidad-titulo').value = '';
+    document.getElementById('input-comunidad-contenido').value = '';
+
+    alert("🎉 Publicación compartida con éxito en la Comunidad.");
+}
 
 // ==========================================
 // PUNTOS FIJOS GPS (FUNDACIONES, BANCOS Y COMEDORES)
@@ -1050,6 +1331,9 @@ function abrirDonaciones() {
 function abrirComunidades() {
     ocultarTodasLasVistas();
     document.getElementById('vista-comunidades')?.classList.remove('hidden');
+    cargarPublicacionesComunidadGlobales();
+    renderizarPublicacionesComunidad();
+    renderizarGruposComunidad();
 }
 
 function abrirRecetas() {
