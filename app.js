@@ -3,6 +3,7 @@
 // ==========================================
 let modoModal = 'login';
 let fotoTemporal = null;
+let fotoComunitariaTemporal = null;
 let alimentoSeleccionadoId = null;
 let usuarioActual = 'mi_cuenta@nowaste.com';
 let redSocialSeleccionada = 'Google';
@@ -20,12 +21,15 @@ let ordenActual = 'vencimiento';
 // Filtros Donaciones y Puntos Fijos
 let donacionSubtab = 'red';
 let donacionFiltro = 'cerca';
-let categoriaPuntosFijos = 'todos';
 
 // Filtros Comunidades y Chat
 let comunidadSubtab = 'foro';
 let comunidadFiltroCategoria = 'todos';
 let chatActivoEmail = null;
+
+// Variables de estado de perfil
+let avatarUrlTemporal = null;
+let avatarTamanoTemporal = 80;
 
 // Base de datos de cuentas registradas localmente
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
@@ -35,23 +39,71 @@ let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')
     'fundacion@esperanza.org': { pass: '123456', nombre: 'Fundación San José', tipo: 'fundacion' }
 };
 
-// NOTICIAS DEL SECTOR ECO / ZERO WASTE
-const noticiasEcoList = [
+// ==========================================
+// CONFIGURACIÓN Y SPRITES DEL SR. BIGOTES
+// ==========================================
+const spritesSrBigotes = {
+    1: {
+        img: 'image_90a5e3.png',
+        bgCard: 'bg-amber-50 border-amber-300',
+        mensaje: '"¡Bienvenido! Hoy empieza tu racha con la zanahoria del ahorro."'
+    },
+    2: {
+        img: 'image_90a5fd.png',
+        bgCard: 'bg-emerald-50 border-emerald-300',
+        mensaje: '"¡2 días seguidos! Estás salvando comida como un profesional."'
+    },
+    3: {
+        img: 'image_90a603.png',
+        bgCard: 'bg-indigo-50 border-indigo-300',
+        mensaje: '"¡3 días de racha! ¡Qué estilo tienes para no desperdiciar nada!"'
+    },
+    4: {
+        img: 'image_90a620.png',
+        bgCard: 'bg-pink-50 border-pink-300',
+        mensaje: '"¡4 días! El planeta y tu bolsillo te lo agradecen mucho."'
+    },
+    5: {
+        img: 'image_90a65d.png',
+        bgCard: 'bg-blue-50 border-blue-300',
+        mensaje: '"¡5 días en racha! Tu disciplina de consumo es imbatible."'
+    },
+    6: {
+        img: 'image_90a677.png',
+        bgCard: 'bg-purple-50 border-purple-300',
+        mensaje: '"¡6 días consecutivos! Ya eres todo un experto en desperdicio cero."'
+    },
+    7: {
+        img: 'image_90a658.png',
+        bgCard: 'bg-teal-50 border-teal-300',
+        mensaje: '"¡UNA SEMANA ENTERA! 🎉 ¡Logro legendario con el Sr. Bigotes!"'
+    }
+};
+
+const mensajesNotificacionSrBigotes = [
+    "🐰 '¡No olvides revisar tus verduras de la alacena!'",
+    "🐰 '¿Tienes pan duro? ¡Haz crutones o rebozado!'",
+    "🐰 'Hoy es un gran día para donar lo que no consumas.'",
+    "🐰 'Recuerda: mantener limpia la nevera conserva mejor la comida.'"
+];
+
+// NOTICIAS EN TIEMPO REAL (DINÁMICAS CON HORA)
+const noticiasTiempoRealDefault = [
     {
         id: 1,
-        titulo: '🌍 Nuevas metas de reducción del desperdicio para 2026',
-        fuente: 'Noticias Ambientales',
-        resumen: 'Se han establecido acuerdos locales para redistribuir más de 10 toneladas de alimentos antes de fin de año.'
+        titulo: '🔴 En Vivo: Reducción récord de desperdicio en comercios locales',
+        fuente: 'Monitoreo Zero Waste',
+        resumen: 'Más de 45 establecimientos locales se han unido hoy a la red de rescate de alimentos.'
     },
     {
         id: 2,
-        titulo: '🌱 Bancos de Alimentos amplían rutas de recolección',
-        fuente: 'Red Solidaria Global',
-        resumen: 'Ahora los pequeños comercios pueden agendar recogidas directamente en barrios céntricos.'
+        titulo: '⚡ Alerta comunitaria: Alta demanda de frutas frescas en comedores',
+        fuente: 'Red Solidaria',
+        resumen: 'Los puntos de recolección reportan gran éxito en donaciones de cítricos y plátanos.'
     }
 ];
 
-// DATOS BASE DE PUBLICACIONES DE LA COMUNIDAD
+// DATOS BASE DE PUBLICACIONES DE LA COMUNIDAD (CON Y SIN FOTO)
 const publicacionesComunidadDefault = [
     {
         id: 401,
@@ -59,7 +111,8 @@ const publicacionesComunidadDefault = [
         tipoAutor: 'hogar',
         categoria: 'recetas',
         titulo: '🍞 Cómo aprovechar el pan duro de ayer',
-        contenido: '¡No lo tires! Corta en cubos, agrega aceite de oliva, orégano y hornea por 8 min a 180°C. Tienes crutones deliciosos para ensaladas.',
+        contenido: '¡No lo tires! Corta en cubos, agrega aceite de oliva, orégano y hornea por 8 min a 180°C. Tienes crutones deliciosos.',
+        imagen: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
         fecha: 'Hace 2 horas',
         likes: 12,
         dioLike: false
@@ -71,19 +124,9 @@ const publicacionesComunidadDefault = [
         categoria: 'alertas',
         titulo: '🏛️ Gran Recolección de Granos Secos',
         contenido: 'Este fin de semana estaremos recibiendo arroz, lentejas y frijoles en la sede central para el comedor comunitario infantil.',
+        imagen: null,
         fecha: 'Hace 5 horas',
         likes: 24,
-        dioLike: false
-    },
-    {
-        id: 403,
-        autor: 'McDonald\'s Centro',
-        tipoAutor: 'comercio',
-        categoria: 'tips',
-        titulo: '🏬 Tip de Almacenamiento de Verduras',
-        contenido: 'Guarda las lechugas y verduras de hoja con una servilleta de papel húmeda en un contenedor hermético. ¡Duran el doble!',
-        fecha: 'Ayer',
-        likes: 18,
         dioLike: false
     }
 ];
@@ -101,19 +144,6 @@ const donacionesBaseDefault = [
         dias: 0,
         fechaLimite: 'Hoy hasta las 19:00',
         imagen: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500',
-        reservadoPor: null
-    },
-    {
-        id: 202,
-        donante: 'McDonald\'s Centro',
-        tipoDonante: 'comercio',
-        nombre: 'Hamburguesas con Queso (Excedente diario)',
-        cantidad: '12 unidades',
-        ubicacion: 'A 500m (Sucursal Calle 50)',
-        urgente: true,
-        dias: 0,
-        fechaLimite: 'Hoy hasta las 22:30',
-        imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500',
         reservadoPor: null
     }
 ];
@@ -133,34 +163,6 @@ let puntosRecoleccionList = [
         aceptacion: 'Acepta refrigerados y no perecederos',
         necesidadUrgente: '🍞 Buscando pan y cereales',
         distancia: 'Calculando GPS...'
-    },
-    {
-        id: 302,
-        nombre: 'Fundación Nutriendo Esperanza',
-        tipoClave: 'fundacion',
-        tipo: '🏛️ Fundación de Comida',
-        direccion: 'Carrera 15 # 28-40',
-        lat: 4.6200,
-        lon: -74.0700,
-        horario: '9:00 AM - 6:00 PM',
-        estado: 'Abierto ahora',
-        aceptacion: 'Acepta frutas, verduras y lácteos',
-        necesidadUrgente: '🍎 Requiere frutas frescas hoy',
-        distancia: 'Calculando GPS...'
-    },
-    {
-        id: 303,
-        nombre: 'Comedor Social San Francisco',
-        tipoClave: 'comedor',
-        tipo: '🍲 Comedor Social',
-        direccion: 'Avenida Bolivar # 10-05',
-        lat: 4.6000,
-        lon: -74.0900,
-        horario: '11:00 AM - 3:00 PM',
-        estado: 'Abierto ahora',
-        aceptacion: 'Acepta platillos cocinados y secos',
-        necesidadUrgente: '🍲 Necesita arroz y legumbres',
-        distancia: 'Calculando GPS...'
     }
 ];
 
@@ -175,23 +177,11 @@ const inventarioDefault = [
         ubicacion: 'Alacena',
         imagen: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500', 
         diasTotal: 7 
-    },
-    { 
-        id: 2, 
-        nombre: 'Leche Entera', 
-        cantidad: '1 Litro', 
-        dias: 2, 
-        pronto: true, 
-        tipo: 'Lácteos',
-        ubicacion: 'Refrigerador',
-        imagen: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500', 
-        diasTotal: 10 
     }
 ];
 
 const listaComprasDefault = [
-    { id: 101, nombre: 'Huevos docena', comprado: false },
-    { id: 102, nombre: 'Queso Parmesano', comprado: false }
+    { id: 101, nombre: 'Huevos docena', comprado: false }
 ];
 
 let inventario = [];
@@ -308,7 +298,6 @@ function guardarEnLocalStorage() {
     }
 }
 
-// ESCUCHADOR EN TIEMPO REAL
 window.addEventListener('storage', (event) => {
     if (event.key === 'nowaste_donaciones_red') {
         cargarRedDonacionesGlobales();
@@ -340,11 +329,186 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
     renderizarRedDonaciones();
     renderizarPuntosRecoleccion();
-    renderizarNoticiasEco();
+    renderizarNoticiasTiempoReal();
     renderizarPublicacionesComunidad();
     renderizarListaPerfiles();
     renderizarPanelChatsYAmigos();
 });
+
+// ==========================================
+// VISTA DE PERFIL, RACHA Y SR. BIGOTES
+// ==========================================
+function abrirPerfil() {
+    ocultarTodasLasVistas();
+    document.getElementById('vista-perfil')?.classList.remove('hidden');
+    cargarDatosPerfil();
+}
+
+function cargarDatosPerfil() {
+    const nombreEl = document.getElementById('perfil-nombre-usuario');
+    const correoEl = document.getElementById('perfil-correo-usuario');
+    const badgeEl = document.getElementById('perfil-badge-tipo');
+
+    const usernameGuardado = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
+    const tipoCuenta = usuariosRegistrados[usuarioActual]?.tipo || 'hogar';
+
+    if (nombreEl) nombreEl.textContent = usernameGuardado;
+    if (correoEl) correoEl.textContent = usuarioActual;
+
+    if (badgeEl) {
+        if (tipoCuenta === 'comercio') {
+            badgeEl.textContent = "🏬 Comercio Aliado";
+            badgeEl.className = "mt-1 bg-amber-100 text-amber-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-amber-200";
+        } else if (tipoCuenta === 'fundacion') {
+            badgeEl.textContent = "🏛️ Fundación Solidaria";
+            badgeEl.className = "mt-1 bg-purple-100 text-purple-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-purple-200";
+        } else {
+            badgeEl.textContent = "🌱 Defensor del Alimento";
+            badgeEl.className = "mt-1 bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200";
+        }
+    }
+
+    const avatarGuardado = localStorage.getItem(`nowaste_avatar_${usuarioActual}`) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+    const tamanoGuardado = localStorage.getItem(`nowaste_avatar_size_${usuarioActual}`) || 80;
+
+    const imgAvatar = document.getElementById('avatar-img');
+    const frameAvatar = document.getElementById('avatar-frame');
+
+    if (imgAvatar) imgAvatar.src = avatarGuardado;
+    if (frameAvatar) {
+        frameAvatar.style.width = `${tamanoGuardado}px`;
+        frameAvatar.style.height = `${tamanoGuardado}px`;
+    }
+
+    actualizarRachaDiaria();
+    actualizarMetricasImpacto();
+}
+
+function actualizarRachaDiaria() {
+    const hoyStr = new Date().toISOString().split('T')[0];
+    let rachaActual = parseInt(localStorage.getItem(`nowaste_racha_count_${usuarioActual}`)) || 1;
+    let ultimaFecha = localStorage.getItem(`nowaste_racha_fecha_${usuarioActual}`);
+
+    if (ultimaFecha && ultimaFecha !== hoyStr) {
+        const fechaUltima = new Date(ultimaFecha);
+        const fechaHoy = new Date(hoyStr);
+        const diffDias = Math.floor((fechaHoy - fechaUltima) / (1000 * 60 * 60 * 24));
+
+        if (diffDias === 1) {
+            rachaActual++;
+        } else if (diffDias > 1) {
+            rachaActual = 1;
+        }
+        localStorage.setItem(`nowaste_racha_count_${usuarioActual}`, rachaActual);
+        localStorage.setItem(`nowaste_racha_fecha_${usuarioActual}`, hoyStr);
+    } else if (!ultimaFecha) {
+        localStorage.setItem(`nowaste_racha_count_${usuarioActual}`, 1);
+        localStorage.setItem(`nowaste_racha_fecha_${usuarioActual}`, hoyStr);
+    }
+
+    const diaClave = ((rachaActual - 1) % 7) + 1;
+    const configRacha = spritesSrBigotes[diaClave] || spritesSrBigotes[1];
+
+    const numEl = document.getElementById('racha-dias-numero');
+    const msgEl = document.getElementById('sr-bigotes-mensaje');
+    const spriteEl = document.getElementById('sr-bigotes-sprite');
+    const cardEl = document.getElementById('racha-card');
+    const notiEl = document.getElementById('sr-bigotes-noticall');
+
+    if (numEl) numEl.textContent = rachaActual;
+    if (msgEl) msgEl.textContent = configRacha.mensaje;
+    if (spriteEl) spriteEl.src = configRacha.img;
+    if (cardEl) {
+        cardEl.className = `rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden ${configRacha.bgCard}`;
+    }
+
+    if (notiEl) {
+        const indexNoti = Math.floor(Math.random() * mensajesNotificacionSrBigotes.length);
+        notiEl.textContent = mensajesNotificacionSrBigotes[indexNoti];
+    }
+}
+
+function actualizarMetricasImpacto() {
+    const salvadosKg = (inventario.length * 0.8 + 3.2).toFixed(1);
+    const ahorroEstimado = (inventario.length * 12000 + 15000).toLocaleString('es-CO');
+    const donadosPacks = redDonaciones.filter(d => d.donante.includes(usuarioActual.split('@')[0])).length + 2;
+
+    const elSalvado = document.getElementById('metric-salvado');
+    const elAhorro = document.getElementById('metric-ahorro');
+    const elDonado = document.getElementById('metric-donado');
+
+    if (elSalvado) elSalvado.textContent = `${salvadosKg} kg`;
+    if (elAhorro) elAhorro.textContent = `$${ahorroEstimado}`;
+    if (elDonado) elDonado.textContent = `${donadosPacks} Packs`;
+}
+
+function abrirEditorAvatar() {
+    avatarUrlTemporal = localStorage.getItem(`nowaste_avatar_${usuarioActual}`) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+    avatarTamanoTemporal = localStorage.getItem(`nowaste_avatar_size_${usuarioActual}`) || 80;
+
+    const slider = document.getElementById('slider-avatar-size');
+    if (slider) slider.value = avatarTamanoTemporal;
+
+    document.getElementById('modal-editor-avatar')?.classList.remove('hidden');
+}
+
+function cerrarEditorAvatar() {
+    document.getElementById('modal-editor-avatar')?.classList.add('hidden');
+}
+
+function seleccionarAvatarPreset(url) {
+    avatarUrlTemporal = url;
+    document.getElementById('avatar-img').src = url;
+}
+
+function subirCustomAvatar(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            avatarUrlTemporal = evt.target.result;
+            document.getElementById('avatar-img').src = avatarUrlTemporal;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function cambiarTamanoAvatar(val) {
+    avatarTamanoTemporal = val;
+    const frame = document.getElementById('avatar-frame');
+    if (frame) {
+        frame.style.width = `${val}px`;
+        frame.style.height = `${val}px`;
+    }
+}
+
+function guardarAjustesAvatar() {
+    localStorage.setItem(`nowaste_avatar_${usuarioActual}`, avatarUrlTemporal);
+    localStorage.setItem(`nowaste_avatar_size_${usuarioActual}`, avatarTamanoTemporal);
+    cerrarEditorAvatar();
+    cargarDatosPerfil();
+    alert("✨ ¡Avatar e icono de perfil actualizados con éxito!");
+}
+
+function cambiarDeCuenta() {
+    cerrarSesion();
+    abrirLogin();
+}
+
+function reiniciarDatosCuenta() {
+    if (confirm("⚠️ ¿Estás seguro de que deseas reiniciar todos los datos de tu cuenta? Se borrarán tu despensa, racha y publicaciones.")) {
+        localStorage.removeItem(`nowaste_despensa_${usuarioActual}`);
+        localStorage.removeItem(`nowaste_compras_${usuarioActual}`);
+        localStorage.removeItem(`nowaste_racha_count_${usuarioActual}`);
+        localStorage.removeItem(`nowaste_racha_fecha_${usuarioActual}`);
+        localStorage.removeItem(`nowaste_avatar_${usuarioActual}`);
+
+        cargarDatosUsuario();
+        cargarDatosPerfil();
+        renderizarDespensa();
+        alert("🔄 Tu cuenta se ha reiniciado correctamente a los valores iniciales.");
+    }
+}
 
 // ==========================================
 // MÓDULO COMUNIDADES: FORO, NOTICIAS, BUSCAR CUENTAS Y CHAT
@@ -368,7 +532,7 @@ function cambiarSubtabComunidad(tab) {
     if (tab === 'foro') {
         btnForo.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
         contForo?.classList.remove('hidden');
-        renderizarNoticiasEco();
+        renderizarNoticiasTiempoReal();
         renderizarPublicacionesComunidad();
     } else if (tab === 'perfiles') {
         btnPerfiles.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
@@ -382,12 +546,16 @@ function cambiarSubtabComunidad(tab) {
     }
 }
 
-function renderizarNoticiasEco() {
-    const cont = document.getElementById('contenedor-noticias-eco');
+function renderizarNoticiasTiempoReal() {
+    const cont = document.getElementById('contenedor-noticias-tiempo-real');
+    const labelHora = document.getElementById('hora-actual-noticias');
     if (!cont) return;
 
+    const ahora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (labelHora) labelHora.textContent = `Actualizado ${ahora}`;
+
     cont.innerHTML = '';
-    noticiasEcoList.forEach(n => {
+    noticiasTiempoRealDefault.forEach(n => {
         cont.innerHTML += `
             <div class="bg-white/10 p-2 rounded-xl text-[10px] space-y-0.5 border border-white/10">
                 <h4 class="font-bold text-amber-200">${n.titulo}</h4>
@@ -429,6 +597,8 @@ function renderizarPublicacionesComunidad() {
         else if (post.categoria === 'tips') catTxt = '💡 Tip';
         else if (post.categoria === 'alertas') catTxt = '📢 Alerta';
 
+        const imagenHTML = post.imagen ? `<div class="w-full h-36 rounded-xl overflow-hidden mb-2"><img src="${post.imagen}" class="w-full h-full object-cover"></div>` : '';
+
         cont.innerHTML += `
             <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm space-y-2">
                 <div class="flex justify-between items-start">
@@ -440,6 +610,7 @@ function renderizarPublicacionesComunidad() {
                 </div>
 
                 <p class="text-xs text-slate-600 leading-relaxed">${post.contenido}</p>
+                ${imagenHTML}
 
                 <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px]">
                     <span class="text-slate-500">Por ${badgeTipo}</span>
@@ -484,11 +655,46 @@ function darLikePublicacionComunidad(idPost) {
 }
 
 function abrirModalNuevaPublicacionComunidad() {
+    fotoComunitariaTemporal = null;
+    document.getElementById('input-comunidad-titulo').value = '';
+    document.getElementById('input-comunidad-contenido').value = '';
+    document.getElementById('preview-foto-comunidad')?.classList.add('hidden');
+    document.getElementById('placeholder-foto-comunidad')?.classList.remove('hidden');
     document.getElementById('modal-publicar-comunidad')?.classList.remove('hidden');
 }
 
 function cerrarModalNuevaPublicacionComunidad() {
     document.getElementById('modal-publicar-comunidad')?.classList.add('hidden');
+}
+
+function previsualizarFotoComunidad(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                fotoComunitariaTemporal = canvas.toDataURL('image/jpeg', 0.7);
+
+                const imgPreview = document.getElementById('preview-foto-comunidad');
+                const placeholder = document.getElementById('placeholder-foto-comunidad');
+                if (imgPreview && placeholder) {
+                    imgPreview.src = fotoComunitariaTemporal;
+                    imgPreview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 function guardarPublicacionComunidad() {
@@ -510,6 +716,7 @@ function guardarPublicacionComunidad() {
         categoria: cat,
         titulo: titulo,
         contenido: contenido,
+        imagen: fotoComunitariaTemporal || null,
         fecha: 'Ahora mismo',
         likes: 0,
         dioLike: false
@@ -519,10 +726,6 @@ function guardarPublicacionComunidad() {
     guardarEnLocalStorage();
     renderizarPublicacionesComunidad();
     cerrarModalNuevaPublicacionComunidad();
-
-    document.getElementById('input-comunidad-titulo').value = '';
-    document.getElementById('input-comunidad-contenido').value = '';
-
     alert("🎉 Publicación compartida con éxito en la Comunidad.");
 }
 
@@ -774,7 +977,7 @@ function enviarMensajeChat() {
 }
 
 // ==========================================
-// PUNTOS FIJOS GPS (FUNDACIONES, BANCOS Y COMEDORES)
+// PUNTOS FIJOS GPS & DONACIONES
 // ==========================================
 function obtenerPuntosRecoleccionGPS() {
     if (navigator.geolocation) {
@@ -791,9 +994,7 @@ function obtenerPuntosRecoleccionGPS() {
                 puntosRecoleccionList.sort((a, b) => parseFloat(a.distancia) - parseFloat(b.distancia));
                 renderizarPuntosRecoleccion();
             },
-            () => {
-                alert("Por favor habilita el GPS en tu navegador para ver la distancia real.");
-            }
+            () => {}
         );
     }
 }
@@ -844,9 +1045,6 @@ function renderizarPuntosRecoleccion() {
     });
 }
 
-// ==========================================
-// RED SOLIDARIA Y DONACIONES VECINALES
-// ==========================================
 function renderizarRedDonaciones() {
     const cont = document.getElementById('contenedor-red-donaciones');
     if (!cont) return;
@@ -1453,6 +1651,7 @@ function ocultarTodasLasVistas() {
     document.getElementById('vista-recetas')?.classList.add('hidden');
     document.getElementById('vista-donaciones')?.classList.add('hidden');
     document.getElementById('vista-comunidades')?.classList.add('hidden');
+    document.getElementById('vista-perfil')?.classList.add('hidden');
 }
 
 function mostrarDespensa() {
@@ -1474,7 +1673,7 @@ function abrirComunidades() {
     ocultarTodasLasVistas();
     document.getElementById('vista-comunidades')?.classList.remove('hidden');
     cargarPublicacionesComunidadGlobales();
-    renderizarNoticiasEco();
+    renderizarNoticiasTiempoReal();
     renderizarPublicacionesComunidad();
     renderizarListaPerfiles();
     renderizarPanelChatsYAmigos();
