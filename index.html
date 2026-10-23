@@ -122,8 +122,8 @@
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[#2d4c08] font-bold text-base shadow-sm">
-                                🥑
+                            <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm bg-emerald-100 flex items-center justify-center">
+                                <img id="despensa-avatar-header" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
                             </div>
                             <div>
                                 <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola! 👋</h2>
@@ -156,7 +156,9 @@
                             <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
                             <span>Has salvado <b id="stat-salvados">3.2 kg</b> este mes</span>
                         </div>
-                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 2 🌟</span>
+                        <span id="despensa-nivel-badge" class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">
+                            Nivel 1 🌟
+                        </span>
                     </div>
                 </header>
 
@@ -247,9 +249,9 @@
                         <span>Donar</span>
                     </button>
 
-                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-users text-base mb-0.5"></i>
-                        <span>Comunidad</span>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
@@ -322,7 +324,7 @@
                         </button>
                     </div>
 
-                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="abrirRecetas()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-utensils text-amber-600"></i>
                         <span>Sugerir Receta de Aprovechamiento</span>
                     </button>
@@ -379,9 +381,9 @@
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
-                        <i class="fa-solid fa-users text-base mb-0.5"></i>
-                        <span>Comunidad</span>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
@@ -436,9 +438,9 @@
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-users text-base mb-0.5"></i>
-                        <span>Comunidad</span>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
@@ -456,7 +458,6 @@
                         <div class="w-8"></div>
                     </div>
 
-                    <!-- Subpestañas del Módulo Donar -->
                     <div class="flex bg-black/20 p-1 rounded-2xl text-[10px] font-bold">
                         <button type="button" id="tab-donar-red" onclick="cambiarSubtabDonacion('red')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
                             🤝 Red Vecinal
@@ -468,8 +469,6 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                    
-                    <!-- SECCIÓN RED SOLIDARIA VECINAL -->
                     <div id="subtab-contenido-red" class="space-y-3">
                         <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between">
                             <div>
@@ -481,13 +480,11 @@
                             </button>
                         </div>
 
-                        <!-- BARRA DE BÚSQUEDA PARA DONACIONES -->
                         <div class="flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
                             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
                             <input type="text" id="input-buscar-donaciones" oninput="renderizarRedDonaciones()" placeholder="Buscar alimento, donante o fundación..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
                         </div>
 
-                        <!-- Filtros por Cercanía / Urgencia -->
                         <div class="flex gap-2 text-xs">
                             <button type="button" id="btn-don-filtro-cerca" onclick="filtrarDonaciones('cerca')" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold text-[10px] shadow-xs cursor-pointer">
                                 📍 Cerca de ti
@@ -500,7 +497,6 @@
                         <div id="contenedor-red-donaciones" class="space-y-2.5"></div>
                     </div>
 
-                    <!-- SECCIÓN PUNTOS FIJOS (BANCOS / COMEDORES) -->
                     <div id="subtab-contenido-puntos" class="space-y-3 hidden">
                         <div class="bg-emerald-900 text-white rounded-2xl p-3 shadow-sm flex items-center justify-between">
                             <div>
@@ -512,7 +508,6 @@
 
                         <div id="contenedor-puntos-recoleccion" class="space-y-2.5"></div>
                     </div>
-
                 </main>
 
                 <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
@@ -531,161 +526,30 @@
                         <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
                         <span>Donar</span>
                     </button>
-                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-users text-base mb-0.5"></i>
-                        <span>Comunidad</span>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
                     </button>
                 </nav>
             </div>
 
-            <!-- VISTA 7: SECCIÓN COMUNIDADES -->
-            <div id="vista-comunidades" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
-                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-3 px-5 text-white rounded-b-3xl shadow-md">
-                    <div class="flex justify-between items-center mb-2">
-                        <button type="button" onclick="volverADespensa()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
-                            <i class="fa-solid fa-arrow-left text-xs"></i>
-                        </button>
-                        <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
-                            <i class="fa-solid fa-users text-amber-300"></i> Comunidad & Chat
-                        </h2>
-                        <button type="button" onclick="abrirModalNuevaPublicacionComunidad()" class="w-8 h-8 rounded-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center text-white transition shadow-sm cursor-pointer" title="Crear Publicación">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
-                    </div>
-
-                    <!-- Subpestañas de la Comunidad -->
-                    <div class="flex bg-black/20 p-1 rounded-2xl text-[10px] font-bold gap-1">
-                        <button type="button" id="tab-com-foro" onclick="cambiarSubtabComunidad('foro')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
-                            💬 Foro & Noticias
-                        </button>
-                        <button type="button" id="tab-com-perfiles" onclick="cambiarSubtabComunidad('perfiles')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
-                            🔍 Buscar Cuentas
-                        </button>
-                        <button type="button" id="tab-com-chat" onclick="cambiarSubtabComunidad('chat')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
-                            💬 Chat & Amigos
-                        </button>
-                    </div>
-                </header>
-
-                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                    
-                    <!-- SUBPESTAÑA 1: FORO CON PUBLICACIONES Y NOTICIAS EN TIEMPO REAL -->
-                    <div id="subtab-comunidad-foro" class="space-y-3">
-                        <!-- SECCIÓN NOTICIAS EN TIEMPO REAL -->
-                        <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-3 rounded-2xl shadow-sm space-y-1.5">
-                            <div class="flex justify-between items-center">
-                                <h3 class="text-xs font-bold flex items-center gap-1">
-                                    <i class="fa-solid fa-tower-broadcast text-amber-300 animate-pulse"></i> Noticias en Tiempo Real
-                                </h3>
-                                <span class="bg-emerald-400/30 text-emerald-100 text-[8px] font-bold px-2 py-0.5 rounded-full" id="hora-actual-noticias">En vivo</span>
-                            </div>
-                            <div id="contenedor-noticias-tiempo-real" class="space-y-2 pt-1"></div>
-                        </div>
-
-                        <!-- BARRA FILTRO POR CANAL EN FORO -->
-                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px] font-semibold">
-                            <button type="button" onclick="filtrarPublicacionesComunidad('todos')" id="btn-com-cat-todos" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer">Todos</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('recetas')" id="btn-com-cat-recetas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍲 Recetas</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('tips')" id="btn-com-cat-tips" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">💡 Tips</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('alertas')" id="btn-com-cat-alertas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📢 Alertas</button>
-                        </div>
-
-                        <!-- CONTENEDOR PUBLICACIONES DE VECINOS -->
-                        <div id="contenedor-publicaciones-comunidad" class="space-y-3"></div>
-                    </div>
-
-                    <!-- SUBPESTAÑA 2: BUSCAR PERFILES Y AMISTADES -->
-                    <div id="subtab-comunidad-perfiles" class="space-y-3 hidden">
-                        <div class="flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
-                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
-                            <input type="text" id="input-buscar-perfil" oninput="renderizarListaPerfiles()" placeholder="Buscar usuario por nombre o correo..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
-                        </div>
-
-                        <div id="contenedor-lista-perfiles" class="space-y-2.5"></div>
-                    </div>
-
-                    <!-- SUBPESTAÑA 3: CHAT FUNCIONAL & SOLICITUDES DE AMISTAD -->
-                    <div id="subtab-comunidad-chat" class="space-y-3 hidden">
-                        <div id="panel-lista-chats" class="space-y-3">
-                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-user-group text-emerald-600"></i> Solicitudes de Amistad
-                                </h3>
-                                <div id="contenedor-solicitudes" class="space-y-2"></div>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-comments text-emerald-600"></i> Chats Activos con Amigos
-                                </h3>
-                                <div id="contenedor-amigos-chats" class="space-y-2"></div>
-                            </div>
-                        </div>
-
-                        <!-- VISTA CONVERSACIÓN CHAT -->
-                        <div id="panel-conversacion-chat" class="hidden flex flex-col h-full space-y-2">
-                            <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                                <button type="button" onclick="cerrarChatActivo()" class="text-xs text-emerald-700 font-bold flex items-center gap-1 cursor-pointer">
-                                    <i class="fa-solid fa-arrow-left"></i> Volver
-                                </button>
-                                <h4 id="chat-titulo-amigo" class="text-xs font-bold text-slate-800">Chat con Usuario</h4>
-                                <div class="w-10"></div>
-                            </div>
-
-                            <div id="contenedor-mensajes-chat" class="bg-white border border-slate-200 rounded-2xl p-3 flex-1 overflow-y-auto space-y-2 min-h-[220px] max-h-[260px]"></div>
-
-                            <div class="flex gap-2">
-                                <input type="text" id="input-mensaje-chat" placeholder="Escribe un mensaje..." class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none text-slate-700">
-                                <button type="button" onclick="enviarMensajeChat()" class="btn-green text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer shadow-sm">
-                                    <i class="fa-solid fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </main>
-
-                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
-                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
-                        <span>Despensa</span>
-                    </button>
-                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
-                        <span>Recetas</span>
-                    </button>
-                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
-                        <i class="fa-solid fa-plus text-lg"></i>
-                    </button>
-                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
-                        <span>Donar</span>
-                    </button>
-                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px] transition cursor-pointer">
-                        <i class="fa-solid fa-users text-base mb-0.5"></i>
-                        <span>Comunidad</span>
-                    </button>
-                </nav>
-            </div>
-
-            <!-- VISTA 8: PERFIL DE USUARIO & RACHA DEL SR. BIGOTES -->
+            <!-- VISTA 8: PERFIL DE USUARIO, LOGROS & RACHA DEL SR. BIGOTES -->
             <div id="vista-perfil" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
                     <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
                         <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
                     <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
-                        <i class="fa-solid fa-user text-amber-300"></i> Mi Perfil Eco
+                        <i class="fa-solid fa-user text-amber-300"></i> Mi Perfil & Logros
                     </h2>
                     <div class="w-9"></div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                     
-                    <!-- TARJETA PRINCIPAL DEL USUARIO CON AVATAR AJUSTABLE -->
+                    <!-- TARJETA PRINCIPAL DEL USUARIO CON AVATAR PERSISTENTE -->
                     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 flex flex-col items-center relative">
                         <div class="relative group">
-                            <!-- Marco del Avatar con tamaño dinámico -->
                             <div id="avatar-frame" class="rounded-full overflow-hidden border-4 border-emerald-500 shadow-md bg-emerald-50 flex items-center justify-center transition-all duration-300" style="width: 80px; height: 80px;">
                                 <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
                             </div>
@@ -696,9 +560,13 @@
 
                         <h3 id="perfil-nombre-usuario" class="text-base font-bold text-slate-800 mt-2">Usuario Eco</h3>
                         <p id="perfil-correo-usuario" class="text-[10px] text-slate-400 font-semibold">correo@nowaste.com</p>
-                        <span id="perfil-badge-tipo" class="mt-1 bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
-                            🌱 Defensor del Alimento
-                        </span>
+                        
+                        <!-- NIVEL Y TÍTULO DINÁMICO -->
+                        <div class="flex items-center gap-1.5 mt-1.5">
+                            <span id="perfil-nivel-badge" class="bg-emerald-100 text-emerald-800 font-extrabold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
+                                🌱 Nivel 1: Semilla Eco
+                            </span>
+                        </div>
                     </div>
 
                     <!-- SECCIÓN DE RACHA CON SR. BIGOTES -->
@@ -714,9 +582,18 @@
                             </p>
                         </div>
 
-                        <!-- Sprite Dinámico del Sr. Bigotes -->
                         <div class="w-20 h-20 relative z-10 flex items-center justify-center">
-                            <img id="sr-bigotes-sprite" src="" class="w-full h-full object-contain drop-shadow-md">
+                            <div id="sr-bigotes-sprite" class="w-full h-full flex items-center justify-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN DE LOGROS DESBLOQUEABLES -->
+                    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 space-y-2.5">
+                        <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-trophy text-amber-500"></i> Logros y Medallas
+                        </h3>
+                        <div id="contenedor-logros" class="grid grid-cols-2 gap-2">
+                            <!-- Los logros se cargan dinámicamente -->
                         </div>
                     </div>
 
@@ -739,13 +616,13 @@
 
                         <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <span class="text-lg">🎁</span>
-                            <span id="metric-donado" class="text-xs font-extrabold text-amber-600 mt-1">5 Packs</span>
+                            <span id="metric-donado" class="text-xs font-extrabold text-amber-600 mt-1">2 Packs</span>
                             <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Donados</span>
                         </div>
 
                         <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <span class="text-lg">⚖️</span>
-                            <span id="metric-salvado" class="text-xs font-extrabold text-emerald-800 mt-1">8.5 kg</span>
+                            <span id="metric-salvado" class="text-xs font-extrabold text-emerald-800 mt-1">3.2 kg</span>
                             <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Comida Salvada</span>
                         </div>
                     </div>
@@ -809,7 +686,7 @@
             </div>
         </div>
 
-        <!-- MODAL EDITOR DE AVATAR -->
+        <!-- MODAL EDITOR DE AVATAR PERSISTENTE -->
         <div id="modal-editor-avatar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarEditorAvatar()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
@@ -844,75 +721,6 @@
 
                 <button type="button" onclick="guardarAjustesAvatar()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
                     Guardar Cambios
-                </button>
-            </div>
-        </div>
-
-        <!-- MODAL VER PERFIL DE USUARIO -->
-        <div id="modal-ver-perfil" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up text-center space-y-3">
-                <button type="button" onclick="cerrarModalPerfil()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
-
-                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-2xl font-bold border-2 border-emerald-300 shadow-sm">
-                    👤
-                </div>
-
-                <div>
-                    <h3 id="perfil-modal-nombre" class="text-base font-bold text-slate-800">Nombre de Usuario</h3>
-                    <p id="perfil-modal-correo" class="text-[10px] text-slate-500">correo@dominio.com</p>
-                </div>
-
-                <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200/80 text-xs space-y-1">
-                    <p class="text-emerald-900 font-bold">Tipo de cuenta: <span id="perfil-modal-tipo" class="font-normal uppercase">Hogar</span></p>
-                    <p class="text-emerald-900 font-bold">Insignia eco: <span class="font-normal text-emerald-700">🌱 Defensor del Alimento</span></p>
-                </div>
-
-                <div id="perfil-modal-accion-container"></div>
-            </div>
-        </div>
-
-        <!-- MODAL PARA PUBLICAR EN LA COMUNIDAD -->
-        <div id="modal-publicar-comunidad" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
-                <button type="button" onclick="cerrarModalNuevaPublicacionComunidad()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
-
-                <h3 class="text-sm font-bold text-slate-800 mb-1 text-center">✍️ Crear Publicación Comunitaria</h3>
-                <p class="text-[10px] text-slate-500 text-center mb-3">Comparte ideas, recetas o alertas con la comunidad.</p>
-
-                <div class="space-y-2.5 text-xs">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Categoría / Tema:</label>
-                        <select id="select-comunidad-categoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none font-semibold">
-                            <option value="recetas">🍲 Recetas de Rescate</option>
-                            <option value="tips">💡 Tip de Conservación</option>
-                            <option value="alertas">📢 Alerta Vecinal / Oportunidad</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Título:</label>
-                        <input type="text" id="input-comunidad-titulo" placeholder="Ej. Cómo conservar el cilantro por 2 semanas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Contenido / Mensaje:</label>
-                        <textarea id="input-comunidad-contenido" rows="3" placeholder="Escribe aquí tu mensaje..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none resize-none"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto (Opcional):</label>
-                        <input type="file" id="input-foto-comunidad" accept="image/*" onchange="previsualizarFotoComunidad(event)" class="hidden">
-                        <div onclick="document.getElementById('input-foto-comunidad').click()" class="w-full h-16 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-xl flex items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
-                            <img id="preview-foto-comunidad" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                            <div id="placeholder-foto-comunidad" class="flex items-center gap-1.5 text-emerald-900 font-bold text-[10px]">
-                                <i class="fa-solid fa-camera text-emerald-700 text-sm"></i> Adjuntar imagen (Opcional)
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" onclick="guardarPublicacionComunidad()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
-                    🚀 Publicar en la Comunidad
                 </button>
             </div>
         </div>
@@ -1000,34 +808,6 @@
 
                 <button type="button" onclick="confirmarLoginSocial()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
                     Continuar como <span id="btn-user-label">usuario</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- MODAL DETALLE DE RECETA GENERADA -->
-        <div id="modal-receta-detalle" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[340px] max-h-[85vh] overflow-y-auto shadow-2xl relative border border-slate-100 animate-scale-up">
-                <button type="button" onclick="cerrarModalReceta()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">
-                    ✕
-                </button>
-
-                <div class="w-full h-36 rounded-2xl overflow-hidden mb-3">
-                    <img id="modal-receta-img" src="" class="w-full h-full object-cover">
-                </div>
-
-                <h3 id="modal-receta-titulo" class="text-base font-bold text-slate-800"></h3>
-                <div id="modal-receta-meta" class="flex gap-3 text-[10px] text-slate-500 my-1 font-semibold"></div>
-
-                <hr class="my-2 border-slate-100">
-
-                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes utilizados de tu despensa:</h4>
-                <ul id="modal-receta-ingredientes" class="text-xs space-y-1 mb-3"></ul>
-
-                <h4 class="text-xs font-bold text-slate-700 mb-1">Preparación paso a paso:</h4>
-                <ol id="modal-receta-pasos" class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100"></ol>
-
-                <button type="button" id="btn-cocinar-receta" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
-                    👨‍🍳 Marcar como Preparada
                 </button>
             </div>
         </div>
