@@ -2,846 +2,1183 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoWaste - Cero Desperdicio</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NO WASTE - App Móvil</title>
+    <!-- Framework Tailwind CSS & Iconos FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .btn-green { background-color: #3b630b; }
-        .btn-green:hover { background-color: #2e4e09; }
-        .bg-green-main { background-color: #3b630b; }
-        .text-green-main { color: #3b630b; }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased flex justify-center items-center min-h-screen">
+<body class="antialiased w-full min-h-screen">
 
-    <!-- CONTENEDOR PRINCIPAL TIPO APP MÓVIL -->
-    <div class="w-full max-w-md bg-white min-h-screen sm:min-h-[850px] sm:rounded-3xl sm:shadow-2xl flex flex-col relative overflow-hidden border border-slate-200">
+    <!-- CONTENEDOR GLOBAL -->
+    <div class="app-screen">
+        
+        <!-- MARCO MÓVIL CENTRADO -->
+        <div class="app-card">
+            
+            <!-- VISTA 1: PANTALLA INICIAL DE BIENVENIDA / AUTH -->
+            <div id="vista-auth" class="w-full h-full flex flex-col justify-between relative z-10">
+                <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                    <svg class="absolute -top-6 -right-10 w-44 h-44 opacity-90" viewBox="0 0 100 100">
+                        <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C82 30 70 10 50 10 Z" fill="#2d4c08"/>
+                        <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#b1d387"/>
+                        <circle cx="50" cy="65" r="14" fill="#6d4c41"/>
+                    </svg>
 
-        <!-- ========================================== -->
-        // 1. PANTALLA DE AUTENTICACIÓN (LOGIN / REGISTRO)
-        <!-- ========================================== -->
-        <div id="vista-auth" class="absolute inset-0 bg-white z-50 flex flex-col justify-between p-6 overflow-y-auto">
-            <div class="my-auto space-y-6 pt-4">
-                <div class="text-center space-y-2">
-                    <div class="w-20 h-20 bg-emerald-100 rounded-3xl mx-auto flex items-center justify-center shadow-inner">
-                        <i class="fa-solid fa-seedling text-3xl text-emerald-700"></i>
+                    <svg class="absolute -top-4 -left-8 w-36 h-36 opacity-80" viewBox="0 0 100 100">
+                        <path d="M10 20 Q40 10 50 50 Q20 40 10 20 Z" fill="#3b630b"/>
+                        <path d="M5 50 Q35 30 60 70 Q25 70 5 50 Z" fill="#2d4c08"/>
+                    </svg>
+
+                    <svg class="absolute -bottom-12 -left-12 w-48 h-48 opacity-90" viewBox="0 0 100 100">
+                        <path d="M50 10 C30 10 18 30 18 60 C18 85 32 95 50 95 C68 95 82 85 82 60 C68 95 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08"/>
+                        <path d="M50 16 C35 16 24 33 24 60 C24 80 35 88 50 88 C65 88 76 80 76 60 C76 33 65 16 50 16 Z" fill="#c3e296"/>
+                        <circle cx="50" cy="65" r="14" fill="#5d4037"/>
+                    </svg>
+
+                    <svg class="absolute -bottom-6 -right-6 w-36 h-36 opacity-80" viewBox="0 0 100 100">
+                        <path d="M90 80 Q60 90 50 50 Q80 60 90 80 Z" fill="#3b630b"/>
+                        <path d="M95 50 Q65 70 40 30 Q75 30 95 50 Z" fill="#2d4c08"/>
+                    </svg>
+                </div>
+
+                <header class="px-5 pt-5 flex flex-col justify-center items-center w-full z-10 gap-1">
+                    <div class="flex justify-between items-center w-full">
+                        <button type="button" class="w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 active:bg-slate-100 flex items-center justify-center text-slate-700 shadow-sm transition cursor-pointer">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                        
+                        <h1 class="text-[#1b3303] font-bold text-sm tracking-tight">Inicio o Registro</h1>
+                        
+                        <button type="button" id="btn-gps" onclick="obtenerUbicacion()" title="Detectar Ubicación" class="w-9 h-9 rounded-full bg-[#1b5e20] text-white flex items-center justify-center active:bg-[#123e15] shadow-md transition cursor-pointer">
+                            <i class="fa-solid fa-location-dot text-sm"></i>
+                        </button>
                     </div>
-                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">NoWaste</h1>
-                    <p class="text-xs text-slate-500">Gestiona tu despensa, salva alimentos y ayuda al planeta.</p>
-                </div>
 
-                <!-- Tabs Login / Registro -->
-                <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
-                    <button type="button" id="tab-login" onclick="cambiarModoModal('login')" class="flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer">Iniciar Sesión</button>
-                    <button type="button" id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer">Crear Cuenta</button>
-                </div>
+                    <div id="badge-ubicacion" class="hidden animate-fade-in mt-1 px-3 py-0.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-bold text-emerald-900 shadow-sm">
+                        <span id="texto-ciudad">📍 Detectando ciudad...</span>
+                    </div>
+                </header>
 
-                <!-- Formulario -->
-                <form id="form-auth" onsubmit="return procesarFormulario(event)" class="space-y-4">
-                    <h2 id="modal-titulo" class="text-sm font-bold text-slate-800">Iniciar Sesión</h2>
+                <main class="px-6 flex-1 flex flex-col items-center justify-center text-center z-10 w-full -mt-5">
+                    <div class="relative my-2 w-full max-w-[220px] animate-float">
+                        <div class="bg-gradient-to-b from-white to-emerald-50/90 rounded-3xl p-5 border-2 border-emerald-300/80 shadow-lg flex flex-col items-center relative overflow-hidden">
+                            <div class="relative w-24 h-20 flex items-center justify-center drop-shadow-sm">
+                                <svg viewBox="0 0 100 100" class="w-full h-full">
+                                    <path d="M50 10 C32 10 22 28 22 55 C22 78 34 90 50 90 C66 90 78 78 78 55 C78 28 68 10 50 10 Z" fill="#2d4c08" />
+                                    <path d="M50 15 C36 15 27 31 27 55 C27 74 37 84 50 84 C63 84 73 74 73 55 C73 31 64 15 50 15 Z" fill="#c3e296" />
+                                    <circle cx="50" cy="62" r="13" fill="#5d4037" stroke="#3e2723" stroke-width="1"/>
+                                    <circle cx="43" cy="38" r="2.5" fill="#1b3303"/>
+                                    <circle cx="57" cy="38" r="2.5" fill="#1b3303"/>
+                                    <path d="M44 44 Q50 50 56 44" stroke="#1b3303" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    <path d="M50 10 Q58 2 66 8 Q58 14 50 10 Z" fill="#3b630b"/>
+                                </svg>
+                            </div>
 
-                    <!-- Campos de Registro extra (Ocultos por defecto) -->
-                    <div id="campos-registro" class="hidden space-y-3">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Nombre Completo o Alias</label>
-                            <input type="text" id="input-reg-nombre" placeholder="Ej. Sofia Gomez" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
+                            <span class="text-xl font-brand font-bold text-[#1b3303] tracking-wider mt-1">NO WASTE</span>
+                            <span class="text-[8px] uppercase font-bold tracking-wider text-emerald-800/80 mt-0.5">Aprovecha • Comparte • Transforma</span>
                         </div>
+                    </div>
+
+                    <div class="w-full space-y-3 mt-3">
+                        <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                            Iniciar sesión
+                        </button>
+                        
+                        <button type="button" onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
+                            Crear cuenta
+                        </button>
+                    </div>
+
+                    <p class="text-slate-600 font-serif-custom text-[11px] my-3">o continuar con:</p>
+
+                    <div class="flex justify-center items-center gap-5">
+                        <button type="button" onclick="abrirModalSocial('Google')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Google">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
+                                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
+                                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+                            </svg>
+                        </button>
+
+                        <button type="button" onclick="abrirModalSocial('Facebook')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Facebook">
+                            <i class="fa-brands fa-facebook text-xl text-blue-600"></i>
+                        </button>
+
+                        <button type="button" onclick="abrirModalSocial('Apple')" class="p-2.5 bg-white rounded-full shadow-md border border-slate-100 active:scale-90 transition cursor-pointer" title="Iniciar con Apple">
+                            <i class="fa-brands fa-apple text-xl text-black"></i>
+                        </button>
+                    </div>
+                </main>
+                <div class="pb-3"></div>
+            </div>
+
+            <!-- VISTA 2: MI DESPENSA -->
+            <div id="vista-despensa" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[#2d4c08] font-bold text-base shadow-sm">
+                                🥑
+                            </div>
+                            <div>
+                                <h2 class="text-xs font-semibold text-emerald-200" id="saludo-usuario">¡Hola! 👋</h2>
+                                <p class="text-sm font-bold tracking-tight">Mi Despensa</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="activarNotificacionesPush()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Notificaciones de Vencimiento">
+                                <i class="fa-solid fa-bell text-xs" id="icono-notificacion"></i>
+                            </button>
+
+                            <button type="button" onclick="abrirListaCompras()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer relative" title="Mi Lista de Pendientes">
+                                <i class="fa-solid fa-list-check text-xs"></i>
+                                <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                            </button>
+
+                            <button type="button" onclick="abrirPerfil()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Mi Perfil">
+                                <i class="fa-regular fa-user text-xs"></i>
+                            </button>
+
+                            <button type="button" onclick="cerrarSesion()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Cerrar Sesión">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
+                            <span>Has salvado <b id="stat-salvados">3.2 kg</b> este mes</span>
+                        </div>
+                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 2 🌟</span>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+                            <input type="text" id="input-buscar" oninput="renderizarDespensa()" placeholder="Buscar en mi despensa..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                        </div>
+                        <button type="button" onclick="abrirModalFiltros()" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 active:bg-slate-100 transition cursor-pointer">
+                            <i class="fa-solid fa-sliders text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+                        <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">
+                            Todos
+                        </button>
+                        <button type="button" id="btn-cat-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🔴 Vence pronto
+                        </button>
+                        <button type="button" id="btn-cat-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">
+                            🟢 Frescos
+                        </button>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de alimento:</p>
+                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]" id="contenedor-filtros-tipo">
+                            <button type="button" data-tipo="todos" onclick="filtrarTipo('todos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap cursor-pointer">Todas</button>
+                            <button type="button" data-tipo="Frutas y Verduras" onclick="filtrarTipo('Frutas y Verduras')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍎 Frutas/Verduras</button>
+                            <button type="button" data-tipo="Lácteos" onclick="filtrarTipo('Lácteos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🥛 Lácteos</button>
+                            <button type="button" data-tipo="Alacena/Secos" onclick="filtrarTipo('Alacena/Secos')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📦 Alacena/Secos</button>
+                            <button type="button" data-tipo="Bebidas" onclick="filtrarTipo('Bebidas')" class="btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🧃 Bebidas</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ubicación:</p>
+                        <div class="flex gap-1.5 text-[11px]" id="contenedor-filtros-ubicacion">
+                            <button type="button" data-ub="todas" onclick="filtrarUbicacion('todas')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white cursor-pointer">Todas</button>
+                            <button type="button" data-ub="Refrigerador" onclick="filtrarUbicacion('Refrigerador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">❄️ Refrig.</button>
+                            <button type="button" data-ub="Congelador" onclick="filtrarUbicacion('Congelador')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧊 Congelador</button>
+                            <button type="button" data-ub="Alacena" onclick="filtrarUbicacion('Alacena')" class="btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer">🧺 Alacena</button>
+                        </div>
+                    </div>
+
+                    <div id="seccion-pronto">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span> Consumir Pronto
+                            </h3>
+                            <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-full border border-red-200">¡Prioridad!</span>
+                        </div>
+                        <div id="lista-pronto" class="space-y-2"></div>
+                    </div>
+
+                    <div id="seccion-frescos">
+                        <h3 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> En Buen Estado
+                        </h3>
+                        <div id="lista-frescos" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+
+                    <div id="mensaje-vacio" class="hidden text-center py-8">
+                        <i class="fa-solid fa-basket-shopping text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-500">No hay productos con este filtro</p>
+                    </div>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px] cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg active:scale-95 transition cursor-pointer border-4 border-slate-50">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+
+                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span>Comunidad</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 3: DETALLE DEL ALIMENTO -->
+            <div id="vista-detalle-alimento" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50 animate-fade-in">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight">Detalle del Producto</h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+                    <div class="w-full h-48 rounded-3xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center shadow-md relative">
+                        <img id="tab-detalle-img" src="" class="w-full h-full object-cover">
+                        <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md">
+                            Fresco
+                        </span>
+                    </div>
+
+                    <div class="text-center">
+                        <h3 id="tab-detalle-nombre" class="text-xl font-bold text-slate-800">Nombre del Alimento</h3>
+                        <p id="tab-detalle-cantidad" class="text-xs text-emerald-700 font-semibold mt-0.5">0 Unidades</p>
+                        <span id="tab-detalle-ubicacion-tag" class="inline-block mt-1 bg-slate-200 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md">
+                            📍 Refrigerador
+                        </span>
+                    </div>
+
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5">
+                        <div class="flex justify-between items-center text-xs font-bold">
+                            <span class="text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gauge-high text-emerald-600 text-sm"></i> Nivel de Frescura
+                            </span>
+                            <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold text-sm">100% Fresco</span>
+                        </div>
+
+                        <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 shadow-inner">
+                            <div id="tab-detalle-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500 shadow-sm" style="width: 100%;"></div>
+                        </div>
+
+                        <p id="tab-detalle-dias-restantes" class="text-[11px] text-slate-500 font-medium text-right">0 días restantes para vencimiento</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-calendar-day text-emerald-700 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Estado</span>
+                            <span id="tab-detalle-estado" class="font-bold text-slate-800 mt-0.5">En consumo</span>
+                        </div>
+                        <div class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-base mb-1"></i>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">Impacto CO2</span>
+                            <span class="font-bold text-emerald-700 mt-0.5">-0.8 kg CO2</span>
+                        </div>
+                    </div>
+                </main>
+
+                <div class="p-4 bg-white border-t border-slate-200/80 rounded-t-3xl shadow-lg space-y-2">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="marcarComoConsumidoTab()" class="flex-1 btn-green text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Consumido</span>
+                        </button>
+
+                        <button type="button" onclick="donarAlimentoDetalle()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Donar en 1-Clic</span>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="recetaDesdeDetalle()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-amber-600"></i>
+                        <span>Sugerir Receta de Aprovechamiento</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VISTA 4: LO QUE NECESITO (LISTA DE COMPRAS) -->
+            <div id="vista-lista-compras" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-100">
+                <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check"></i> Lo que necesito
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex gap-2">
+                        <input type="text" id="input-item-compra" placeholder="Ej. Huevos, Harina..." class="flex-1 text-xs px-3 outline-none text-slate-700">
+                        <button type="button" onclick="agregarItemCompra()" class="bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">
+                            + Añadir
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-clipboard-list text-emerald-600"></i> Alimentos Faltantes
+                            </span>
+                            <span id="resumen-compras-pendientes" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+                                0 pendientes
+                            </span>
+                        </div>
+
+                        <div id="contenedor-lista-compras" class="space-y-2"></div>
+                    </div>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span>Comunidad</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 5: RECETAS INTELIGENTES -->
+            <div id="vista-recetas" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Recetas Generadas
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    <div class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Tipo de Perfil</label>
-                            <div class="flex gap-2">
-                                <button type="button" id="btn-perfil-hogar" onclick="seleccionarPerfil('hogar')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer">
-                                    🏠 Hogar
+                            <h3 class="text-xs font-bold">¡Recetas Adaptadas! 🍳</h3>
+                            <p class="text-[10px] text-emerald-100 mt-0.5">Se actualizan automáticamente con lo que agregues a tu despensa.</p>
+                        </div>
+                        <i class="fa-solid fa-kitchen-set text-2xl text-amber-200"></i>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Insumos actuales en despensa:</p>
+                        <div id="chips-despensa-recetas" class="flex flex-wrap gap-1"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-fire text-amber-500"></i> Sugerencias creadas para ti
+                        </h3>
+                        <div id="contenedor-recetas" class="space-y-2.5"></div>
+                    </div>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span>Comunidad</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 6: MÓDULO INTEGRADO DE DONACIONES SOCIALES -->
+            <div id="vista-donaciones" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#1b5e20] to-[#2d4c08] pt-5 pb-3 px-5 text-white rounded-b-3xl shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <button type="button" onclick="volverADespensa()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                        <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-heart text-amber-300"></i> Red Solidaria
+                        </h2>
+                        <div class="w-8"></div>
+                    </div>
+
+                    <!-- Subpestañas del Módulo Donar -->
+                    <div class="flex bg-black/20 p-1 rounded-2xl text-[10px] font-bold">
+                        <button type="button" id="tab-donar-red" onclick="cambiarSubtabDonacion('red')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
+                            🤝 Red Vecinal
+                        </button>
+                        <button type="button" id="tab-donar-puntos" onclick="cambiarSubtabDonacion('puntos')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
+                            📍 Puntos Fijos
+                        </button>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    
+                    <!-- SECCIÓN RED SOLIDARIA VECINAL -->
+                    <div id="subtab-contenido-red" class="space-y-3">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-800">¿Tienes comida que no vas a consumir?</h3>
+                                <p class="text-[10px] text-slate-500">Publícala para vecinos y fundaciones antes de que expire.</p>
+                            </div>
+                            <button type="button" onclick="abrirModalPublicarDonacion()" class="btn-green text-white text-[10px] font-bold px-3 py-2 rounded-xl shadow-xs shrink-0 cursor-pointer">
+                                + Publicar
+                            </button>
+                        </div>
+
+                        <!-- BARRA DE BÚSQUEDA PARA DONACIONES -->
+                        <div class="flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+                            <input type="text" id="input-buscar-donaciones" oninput="renderizarRedDonaciones()" placeholder="Buscar alimento, donante o fundación..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                        </div>
+
+                        <!-- Filtros por Cercanía / Urgencia -->
+                        <div class="flex gap-2 text-xs">
+                            <button type="button" id="btn-don-filtro-cerca" onclick="filtrarDonaciones('cerca')" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold text-[10px] shadow-xs cursor-pointer">
+                                📍 Cerca de ti
+                            </button>
+                            <button type="button" id="btn-don-filtro-urgente" onclick="filtrarDonaciones('urgente')" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[10px] cursor-pointer">
+                                🔴 ¡Aceptación urgente!
+                            </button>
+                        </div>
+
+                        <div id="contenedor-red-donaciones" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- SECCIÓN PUNTOS FIJOS (BANCOS / COMEDORES) -->
+                    <div id="subtab-contenido-puntos" class="space-y-3 hidden">
+                        <div class="bg-emerald-900 text-white rounded-2xl p-3 shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold">Puntos Oficiales de Entrega 🏢</h3>
+                                <p class="text-[10px] text-emerald-200">Refugios, comedores comunitarios y bancos de alimentos.</p>
+                            </div>
+                            <i class="fa-solid fa-building-circle-check text-2xl text-emerald-300"></i>
+                        </div>
+
+                        <div id="contenedor-puntos-recoleccion" class="space-y-2.5"></div>
+                    </div>
+
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span>Comunidad</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 7: SECCIÓN COMUNIDADES -->
+            <div id="vista-comunidades" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-3 px-5 text-white rounded-b-3xl shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <button type="button" onclick="volverADespensa()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                        <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                            <i class="fa-solid fa-users text-amber-300"></i> Comunidad & Chat
+                        </h2>
+                        <button type="button" onclick="abrirModalNuevaPublicacionComunidad()" class="w-8 h-8 rounded-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center text-white transition shadow-sm cursor-pointer" title="Crear Publicación">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Subpestañas de la Comunidad -->
+                    <div class="flex bg-black/20 p-1 rounded-2xl text-[10px] font-bold gap-1">
+                        <button type="button" id="tab-com-foro" onclick="cambiarSubtabComunidad('foro')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
+                            💬 Foro & Noticias
+                        </button>
+                        <button type="button" id="tab-com-perfiles" onclick="cambiarSubtabComunidad('perfiles')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
+                            🔍 Buscar Cuentas
+                        </button>
+                        <button type="button" id="tab-com-chat" onclick="cambiarSubtabComunidad('chat')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
+                            💬 Chat & Amigos
+                        </button>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                    
+                    <!-- SUBPESTAÑA 1: FORO CON PUBLICACIONES Y NOTICIAS EN TIEMPO REAL -->
+                    <div id="subtab-comunidad-foro" class="space-y-3">
+                        <!-- SECCIÓN NOTICIAS EN TIEMPO REAL -->
+                        <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-3 rounded-2xl shadow-sm space-y-1.5">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xs font-bold flex items-center gap-1">
+                                    <i class="fa-solid fa-tower-broadcast text-amber-300 animate-pulse"></i> Noticias en Tiempo Real
+                                </h3>
+                                <span class="bg-emerald-400/30 text-emerald-100 text-[8px] font-bold px-2 py-0.5 rounded-full" id="hora-actual-noticias">En vivo</span>
+                            </div>
+                            <div id="contenedor-noticias-tiempo-real" class="space-y-2 pt-1"></div>
+                        </div>
+
+                        <!-- BARRA FILTRO POR CANAL EN FORO -->
+                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px] font-semibold">
+                            <button type="button" onclick="filtrarPublicacionesComunidad('todos')" id="btn-com-cat-todos" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer">Todos</button>
+                            <button type="button" onclick="filtrarPublicacionesComunidad('recetas')" id="btn-com-cat-recetas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍲 Recetas</button>
+                            <button type="button" onclick="filtrarPublicacionesComunidad('tips')" id="btn-com-cat-tips" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">💡 Tips</button>
+                            <button type="button" onclick="filtrarPublicacionesComunidad('alertas')" id="btn-com-cat-alertas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📢 Alertas</button>
+                        </div>
+
+                        <!-- CONTENEDOR PUBLICACIONES DE VECINOS -->
+                        <div id="contenedor-publicaciones-comunidad" class="space-y-3"></div>
+                    </div>
+
+                    <!-- SUBPESTAÑA 2: BUSCAR PERFILES Y AMISTADES -->
+                    <div id="subtab-comunidad-perfiles" class="space-y-3 hidden">
+                        <div class="flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+                            <input type="text" id="input-buscar-perfil" oninput="renderizarListaPerfiles()" placeholder="Buscar usuario por nombre o correo..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                        </div>
+
+                        <div id="contenedor-lista-perfiles" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- SUBPESTAÑA 3: CHAT FUNCIONAL & SOLICITUDES DE AMISTAD -->
+                    <div id="subtab-comunidad-chat" class="space-y-3 hidden">
+                        <div id="panel-lista-chats" class="space-y-3">
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user-group text-emerald-600"></i> Solicitudes de Amistad
+                                </h3>
+                                <div id="contenedor-solicitudes" class="space-y-2"></div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-comments text-emerald-600"></i> Chats Activos con Amigos
+                                </h3>
+                                <div id="contenedor-amigos-chats" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- VISTA CONVERSACIÓN CHAT -->
+                        <div id="panel-conversacion-chat" class="hidden flex flex-col h-full space-y-2">
+                            <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                                <button type="button" onclick="cerrarChatActivo()" class="text-xs text-emerald-700 font-bold flex items-center gap-1 cursor-pointer">
+                                    <i class="fa-solid fa-arrow-left"></i> Volver
                                 </button>
-                                <button type="button" id="btn-perfil-comercio" onclick="seleccionarPerfil('comercio')" class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer">
-                                    🏬 Comercio
+                                <h4 id="chat-titulo-amigo" class="text-xs font-bold text-slate-800">Chat con Usuario</h4>
+                                <div class="w-10"></div>
+                            </div>
+
+                            <div id="contenedor-mensajes-chat" class="bg-white border border-slate-200 rounded-2xl p-3 flex-1 overflow-y-auto space-y-2 min-h-[220px] max-h-[260px]"></div>
+
+                            <div class="flex gap-2">
+                                <input type="text" id="input-mensaje-chat" placeholder="Escribe un mensaje..." class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none text-slate-700">
+                                <button type="button" onclick="enviarMensajeChat()" class="btn-green text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer shadow-sm">
+                                    <i class="fa-solid fa-paper-plane"></i>
                                 </button>
                             </div>
-                            <input type="hidden" id="perfil-tipo-input" value="hogar">
                         </div>
                     </div>
 
-                    <div id="campos-login" class="space-y-3">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Correo Electrónico</label>
-                            <input type="email" id="input-login-email" value="usuario.demo@gmail.com" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
-                        </div>
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Contraseña</label>
-                            <input type="password" id="pass-login" value="123456" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
-                            <button type="button" onclick="togglePassword('pass-login', 'icon-eye-login')" class="absolute right-3 top-7">
-                                <i id="icon-eye-login" class="fa-solid fa-eye text-slate-400 text-xs"></i>
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px] transition cursor-pointer">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span>Comunidad</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- VISTA 8: PERFIL DE USUARIO & RACHA DEL SR. BIGOTES -->
+            <div id="vista-perfil" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                        <i class="fa-solid fa-user text-amber-300"></i> Mi Perfil Eco
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                    
+                    <!-- TARJETA PRINCIPAL DEL USUARIO CON AVATAR AJUSTABLE -->
+                    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 flex flex-col items-center relative">
+                        <div class="relative group">
+                            <!-- Marco del Avatar con tamaño dinámico -->
+                            <div id="avatar-frame" class="rounded-full overflow-hidden border-4 border-emerald-500 shadow-md bg-emerald-50 flex items-center justify-center transition-all duration-300" style="width: 80px; height: 80px;">
+                                <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
+                            </div>
+                            <button type="button" onclick="abrirEditorAvatar()" class="absolute bottom-0 right-0 bg-emerald-700 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer hover:bg-emerald-800 transition">
+                                <i class="fa-solid fa-pencil"></i>
                             </button>
                         </div>
+
+                        <h3 id="perfil-nombre-usuario" class="text-base font-bold text-slate-800 mt-2">Usuario Eco</h3>
+                        <p id="perfil-correo-usuario" class="text-[10px] text-slate-400 font-semibold">correo@nowaste.com</p>
+                        <span id="perfil-badge-tipo" class="mt-1 bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            🌱 Defensor del Alimento
+                        </span>
                     </div>
 
-                    <!-- Si fuera registro, contraseña repetida -->
-                    <div id="campos-registro-pass" class="hidden space-y-3">
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Contraseña</label>
-                            <input type="password" id="pass-reg1" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
+                    <!-- SECCIÓN DE RACHA CON SR. BIGOTES -->
+                    <div id="racha-card" class="rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden bg-orange-50 border-orange-300">
+                        <div class="space-y-1 z-10 max-w-[60%]">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl">🥕</span>
+                                <span id="racha-dias-numero" class="text-3xl font-extrabold text-orange-600 tracking-tight">1</span>
+                                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Días en Racha</span>
+                            </div>
+                            <p id="sr-bigotes-mensaje" class="text-[11px] font-semibold text-slate-600 leading-tight">
+                                "¡Hola! Soy el Sr. Bigotes. ¡Sigamos salvando comida juntos!"
+                            </p>
                         </div>
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Confirmar Contraseña</label>
-                            <input type="password" id="pass-reg2" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
-                        </div>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="checkbox" id="check-terminos" class="rounded text-emerald-600">
-                            <label for="check-terminos" class="text-[10px] text-slate-500">Acepto los términos y la política ambiental.</label>
+
+                        <!-- Sprite Dinámico del Sr. Bigotes -->
+                        <div class="w-20 h-20 relative z-10 flex items-center justify-center">
+                            <img id="sr-bigotes-sprite" src="" class="w-full h-full object-contain drop-shadow-md">
                         </div>
                     </div>
 
-                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                        Iniciar sesión
-                    </button>
-                </form>
-
-                <div class="relative flex py-2 items-center">
-                    <div class="flex-grow border-t border-slate-200"></div>
-                    <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-semibold uppercase">O continúa con</span>
-                    <div class="flex-grow border-t border-slate-200"></div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="abrirModalSocial('Google')" class="border border-slate-200 hover:bg-slate-50 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
-                        <i class="fa-brands fa-google text-red-500"></i> Google
-                    </button>
-                    <button type="button" onclick="abrirModalSocial('Facebook')" class="border border-slate-200 hover:bg-slate-50 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
-                        <i class="fa-brands fa-facebook text-blue-600"></i> Facebook
-                    </button>
-                    <button type="button" onclick="abrirModalSocial('Apple')" class="border border-slate-200 hover:bg-slate-50 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
-                        <i class="fa-brands fa-apple text-slate-900"></i> Apple
-                    </button>
-                </div>
-            </div>
-            <p class="text-center text-[10px] text-slate-400 py-2">NoWaste App v3.5 • Cero Desperdicio</p>
-        </div>
-
-        <!-- ========================================== -->
-        // 2. VISTA PRINCIPAL: DESPENSA
-        <!-- ========================================== -->
-        <div id="vista-despensa" class="flex-1 flex flex-col bg-slate-50 pb-20">
-            <!-- Header superior -->
-            <div class="bg-gradient-to-br from-[#2e4e09] to-[#3b630b] text-white p-4 pt-5 rounded-b-3xl shadow-md space-y-3">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-[10px] text-emerald-200 font-medium uppercase tracking-wider">Tu despensa inteligente</p>
-                        <h2 id="saludo-usuario" class="text-base font-black">¡Hola, Usuario! 👋</h2>
+                    <!-- NOTIFICACIÓN / CONSEJO RÁPIDO DEL SR. BIGOTES -->
+                    <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-2xl p-3 shadow-sm flex items-center gap-3">
+                        <div class="text-2xl shrink-0">🔔</div>
+                        <div class="text-[10px]">
+                            <b class="text-amber-300 block text-xs">Mensaje del Sr. Bigotes:</b>
+                            <span id="sr-bigotes-noticall">"Recuerda revisar tus alimentos marcados con punto rojo hoy."</span>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="activarNotificacionesPush()" class="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition cursor-pointer">
-                            <i id="icono-notificacion" class="fa-solid fa-bell text-xs text-white"></i>
+
+                    <!-- MÉTRICAS DE IMPACTO AMBIENTAL Y AHORRO -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">💰</span>
+                            <span id="metric-ahorro" class="text-xs font-extrabold text-emerald-700 mt-1">$45.000</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Ahorrado</span>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">🎁</span>
+                            <span id="metric-donado" class="text-xs font-extrabold text-amber-600 mt-1">5 Packs</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Donados</span>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">⚖️</span>
+                            <span id="metric-salvado" class="text-xs font-extrabold text-emerald-800 mt-1">8.5 kg</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Comida Salvada</span>
+                        </div>
+                    </div>
+
+                    <!-- OPCIONES DE CUENTA Y AJUSTES -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm space-y-1">
+                        <button type="button" onclick="cambiarDeCuenta()" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-users-line text-emerald-600"></i> Cambiar de Cuenta</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
-                        <!-- BOTÓN DE PERFIL MEJORADO -->
-                        <button type="button" onclick="abrirPerfil()" class="w-9 h-9 rounded-full bg-white/20 overflow-hidden border border-white/40 flex items-center justify-center hover:scale-105 transition cursor-pointer">
-                            <img id="avatar-preview-header" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
+
+                        <button type="button" onclick="reiniciarDatosCuenta()" class="w-full text-left p-2.5 rounded-xl hover:bg-red-50 flex items-center justify-between text-xs font-bold text-red-600 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-red-500"></i> Reiniciar Datos de Cuenta</span>
+                            <i class="fa-solid fa-chevron-right text-red-300"></i>
                         </button>
-                    </div>
-                </div>
 
-                <!-- Barra de búsqueda y GPS -->
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-                        <input type="text" id="input-buscar" oninput="renderizarDespensa()" placeholder="Buscar alimento en tu despensa..." class="w-full bg-white text-slate-800 text-xs pl-9 pr-3 py-2.5 rounded-xl focus:outline-none shadow-xs">
-                    </div>
-                    <button type="button" id="btn-gps" onclick="obtenerUbicacion()" class="bg-white/20 hover:bg-white/30 px-3 py-2.5 rounded-xl text-white text-xs transition cursor-pointer">
-                        <i class="fa-solid fa-location-dot"></i>
-                    </button>
-                </div>
-
-                <!-- Ubicación detectada Badge -->
-                <div id="badge-ubicacion" class="hidden bg-white/10 px-3 py-1 rounded-lg text-[10px] flex items-center justify-between">
-                    <span id="texto-ciudad">📍 Bogotá D.C.</span>
-                    <span class="text-emerald-300 font-bold">GPS Activo</span>
-                </div>
-            </div>
-
-            <!-- Contenido Despensa -->
-            <div class="p-4 space-y-4 overflow-y-auto flex-1">
-                <!-- Filtros de categoría rápida -->
-                <div class="flex gap-1.5 overflow-x-auto pb-1 text-xs">
-                    <button type="button" id="btn-cat-todos" onclick="filtrarCategoria('todos')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer">Todos</button>
-                    <button type="button" id="btn-cat-pronto" onclick="filtrarCategoria('pronto')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">🔴 Pronto Vencimiento</button>
-                    <button type="button" id="btn-cat-frescos" onclick="filtrarCategoria('frescos')" class="px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer">🟢 Frescos</button>
-                </div>
-
-                <!-- Sección: Alimentos Próximos a Vencer -->
-                <div id="seccion-pronto" class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-red-600 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-triangle-exclamation"></i> ¡Consumir Pronto!
-                        </h3>
-                        <span class="text-[10px] text-slate-400">Atención inmediata</span>
-                    </div>
-                    <div id="lista-pronto" class="space-y-2">
-                        <!-- Inyectado dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- Sección: Alimentos Frescos -->
-                <div id="seccion-frescos" class="space-y-2 pt-2">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-box-archive"></i> Despensa General
-                        </h3>
-                    </div>
-                    <div id="lista-frescos" class="grid grid-cols-2 gap-2.5">
-                        <!-- Inyectado dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- Estado Vacío -->
-                <div id="mensaje-vacio" class="hidden text-center py-12 space-y-2">
-                    <i class="fa-solid fa-basket-shopping text-3xl text-slate-300"></i>
-                    <p class="text-xs text-slate-400">No hay alimentos registrados con estos filtros.</p>
-                </div>
-            </div>
-
-            <!-- Botón flotante para agregar alimento -->
-            <button type="button" onclick="abrirModalAgregar()" class="absolute bottom-20 right-5 w-14 h-14 btn-green text-white rounded-full shadow-lg flex items-center justify-center text-xl hover:scale-105 transition cursor-pointer z-20">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
-
-        <!-- ========================================== -->
-        // 3. VISTA: DETALLE DE ALIMENTO
-        <!-- ========================================== -->
-        <div id="vista-detalle-alimento" class="hidden flex-1 flex flex-col bg-white p-4 overflow-y-auto pb-20">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <button type="button" onclick="volverADespensa()" class="text-xs font-bold text-slate-600 flex items-center gap-1 cursor-pointer">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
-                </button>
-                <h3 class="text-xs font-bold text-slate-800">Detalle del Alimento</h3>
-                <span class="w-6"></span>
-            </div>
-
-            <div class="my-4 space-y-4">
-                <div class="relative w-full h-44 rounded-3xl overflow-hidden shadow-md">
-                    <img id="tab-detalle-img" src="" class="w-full h-full object-cover">
-                    <span id="tab-detalle-badge" class="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-md bg-emerald-600">Fresco</span>
-                </div>
-
-                <div class="space-y-1">
-                    <h2 id="tab-detalle-nombre" class="text-lg font-black text-slate-900">Nombre Alimento</h2>
-                    <p id="tab-detalle-cantidad" class="text-xs text-slate-500 font-semibold">Cantidad: 2 unidades</p>
-                    <p id="tab-detalle-ubicacion-tag" class="text-[10px] text-emerald-700 font-bold">📍 Alacena</p>
-                </div>
-
-                <!-- Barra de Frescura -->
-                <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span id="tab-detalle-dias-restantes" class="font-bold text-slate-700">5 días restantes</span>
-                        <span id="tab-detalle-porcentaje" class="text-emerald-700 font-extrabold">80% Fresco</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                        <div id="tab-detalle-bar" class="h-full bg-emerald-500 rounded-full w-4/5 transition-all duration-500"></div>
-                    </div>
-                </div>
-
-                <!-- Botones de Acción -->
-                <div class="space-y-2 pt-2">
-                    <button type="button" onclick="marcarComoConsumidoTab()" class="w-full btn-green text-white font-bold text-xs py-3 rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-check"><b>¡Ya lo consumí!</b> (Evité desperdicio)</i>
-                    </button>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="donarAlimentoDetalle()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-handshake"></i> Donar Alimento
-                        </button>
-                        <button type="button" onclick="recetaDesdeDetalle()" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 border border-red-200">
-                            <i class="fa-solid fa-utensils"></i> Ver Receta
+                        <button type="button" onclick="cerrarSesion()" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-600 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-from-bracket text-slate-400"></i> Cerrar Sesión</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- ========================================== -->
-        // 4. VISTA: LISTA DE COMPRAS
-        <!-- ========================================== -->
-        <div id="vista-lista-compras" class="hidden flex-1 flex flex-col bg-white p-4 overflow-y-auto pb-20 space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h2 class="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-cart-shopping text-emerald-700"></i> Lista de Compras Inteligente
-                </h2>
-                <span id="badge-compras-count" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
-            </div>
+                </main>
 
-            <div class="flex gap-2">
-                <input type="text" id="input-item-compra" placeholder="Añadir ingrediente que te falta..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
-                <button type="button" onclick="agregarItemCompra()" class="btn-green text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer">Agregar</button>
-            </div>
-
-            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between text-xs text-emerald-900">
-                <span>💡 Evita comprar de más. Revisa tu despensa antes.</span>
-                <span id="resumen-compras-pendientes" class="font-bold">0 pendientes</span>
-            </div>
-
-            <div id="contenedor-lista-compras" class="space-y-2 flex-1">
-                <!-- Inyectado dinámicamente -->
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        // 5. VISTA: RECETAS DE RESCATE
-        <!-- ========================================== -->
-        <div id="vista-recetas" class="hidden flex-1 flex flex-col bg-white p-4 overflow-y-auto pb-20 space-y-4">
-            <div class="border-b border-slate-100 pb-3">
-                <h2 class="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-utensils text-emerald-700"></i> Recetas de Rescate Cero Desperdicio
-                </h2>
-                <p class="text-[10px] text-slate-400 mt-0.5">Sugerencias basadas en tus alimentos próximos a vencer.</p>
-            </div>
-
-            <!-- Chips de ingredientes disponibles -->
-            <div class="space-y-1">
-                <p class="text-[10px] font-bold text-slate-600">Ingredientes detectados en tu despensa:</p>
-                <div id="chips-despensa-recetas" class="flex flex-wrap gap-1">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-
-            <!-- Contenedor Recetas -->
-            <div id="contenedor-recetas" class="space-y-3">
-                <!-- Dinámico -->
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        // 6. VISTA: RED DE DONACIONES Y PUNTOS FIJOS
-        <!-- ========================================== -->
-        <div id="vista-donaciones" class="hidden flex-1 flex flex-col bg-slate-50 p-4 overflow-y-auto pb-20 space-y-4">
-            <!-- Tabs Superiores -->
-            <div class="flex bg-[#2e4e09] p-1 rounded-2xl shadow-sm text-xs font-bold text-center">
-                <button type="button" id="tab-donar-red" onclick="cambiarSubtabDonacion('red')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">Red Solidaria</button>
-                <button type="button" id="tab-donar-puntos" onclick="cambiarSubtabDonacion('puntos')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">Puntos Fijos GPS</button>
-            </div>
-
-            <!-- Subtab 1: Red Solidaria -->
-            <div id="subtab-contenido-red" class="space-y-3">
-                <div class="flex justify-between items-center">
-                    <div class="flex gap-1.5">
-                        <button type="button" id="btn-don-filtro-cerca" onclick="filtrarDonaciones('cerca')" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold text-[10px] shadow-xs cursor-pointer">Cerca de ti</button>
-                        <button type="button" id="btn-don-filtro-urgente" onclick="filtrarDonaciones('urgente')" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold text-[10px] cursor-pointer">🔴 Urgentes</button>
-                    </div>
-                    <button type="button" onclick="abrirModalPublicarDonacion()" class="btn-green text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-sm transition cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> Donar Alimento
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
                     </button>
-                </div>
-
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="input-buscar-donaciones" oninput="renderizarRedDonaciones()" placeholder="Buscar donaciones..." class="w-full bg-white text-slate-800 text-xs pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none">
-                </div>
-
-                <div id="contenedor-red-donaciones" class="space-y-3">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-
-            <!-- Subtab 2: Puntos Fijos Oficiales -->
-            <div id="subtab-contenido-puntos" class="hidden space-y-3">
-                <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-xs text-emerald-900 space-y-1">
-                    <p class="font-bold">🏛️ Puntos de Acopio y Bancos de Alimentos</p>
-                    <p class="text-[10px]">Ubica en tiempo real los centros autorizados más cercanos mediante GPS para entregar excedentes.</p>
-                </div>
-                <div id="contenedor-puntos-recoleccion" class="space-y-3">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        // 7. VISTA: COMUNIDAD, PERFILES Y CHAT
-        <!-- ========================================== -->
-        <div id="vista-comunidades" class="hidden flex-1 flex flex-col bg-slate-50 p-4 overflow-y-auto pb-20 space-y-4">
-            <!-- Tabs Subvistas Comunidad -->
-            <div class="flex bg-[#2e4e09] p-1 rounded-2xl shadow-sm text-xs font-bold text-center">
-                <button type="button" id="tab-com-foro" onclick="cambiarSubtabComunidad('foro')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">Foro y Noticias</button>
-                <button type="button" id="tab-com-perfiles" onclick="cambiarSubtabComunidad('perfiles')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">Buscar Perfiles</button>
-                <button type="button" id="tab-com-chat" onclick="cambiarSubtabComunidad('chat')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">Chats</button>
-            </div>
-
-            <!-- Subtab 1: Foro y Noticias -->
-            <div id="subtab-comunidad-foro" class="space-y-3">
-                <!-- Banner Noticias en Tiempo Real -->
-                <div class="bg-gradient-to-r from-emerald-800 to-emerald-900 text-white p-3 rounded-2xl space-y-2 shadow-sm">
-                    <div class="flex justify-between items-center text-[10px] text-emerald-200 font-bold border-b border-white/10 pb-1">
-                        <span>📰 Alertas y Noticias en Vivo</span>
-                        <span id="hora-actual-noticias">Actualizado ahora</span>
-                    </div>
-                    <div id="contenedor-noticias-tiempo-real" class="space-y-2">
-                        <!-- Dinámico -->
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <div class="flex gap-1 overflow-x-auto text-[10px]">
-                        <button type="button" id="btn-com-cat-todos" onclick="filtrarPublicacionesComunidad('todos')" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer">Todos</button>
-                        <button type="button" id="btn-com-cat-recetas" onclick="filtrarPublicacionesComunidad('recetas')" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍲 Recetas</button>
-                        <button type="button" id="btn-com-cat-tips" onclick="filtrarPublicacionesComunidad('tips')" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">💡 Tips</button>
-                        <button type="button" id="btn-com-cat-alertas" onclick="filtrarPublicacionesComunidad('alertas')" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📢 Alertas</button>
-                    </div>
-                    <button type="button" onclick="abrirModalNuevaPublicacionComunidad()" class="btn-green text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-xs shrink-0 cursor-pointer">
-                        <i class="fa-solid fa-pen-to-square"></i> Publicar
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
                     </button>
-                </div>
-
-                <div id="contenedor-publicaciones-comunidad" class="space-y-3">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-
-            <!-- Subtab 2: Buscar Perfiles -->
-            <div id="subtab-comunidad-perfiles" class="hidden space-y-3">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="input-buscar-perfil" oninput="renderizarListaPerfiles()" placeholder="Buscar usuarios o comercios..." class="w-full bg-white text-slate-800 text-xs pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none">
-                </div>
-                <div id="contenedor-lista-perfiles" class="space-y-2">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-
-            <!-- Subtab 3: Chats y Amigos -->
-            <div id="subtab-comunidad-chat" class="hidden space-y-3">
-                <div id="panel-lista-chats" class="space-y-3">
-                    <div class="bg-white p-3 rounded-2xl border border-slate-200 space-y-2">
-                        <h4 class="text-xs font-bold text-slate-800">✨ Solicitudes de Amistad</h4>
-                        <div id="contenedor-solicitudes" class="space-y-1">
-                            <p class="text-[11px] text-slate-400 italic">No tienes solicitudes pendientes.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-3 rounded-2xl border border-slate-200 space-y-2">
-                        <h4 class="text-xs font-bold text-slate-800">💬 Mis Amigos y Chats</h4>
-                        <div id="contenedor-amigos-chats" class="space-y-2">
-                            <p class="text-[11px] text-slate-400 italic">Aún no tienes amigos agregados.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Conversación Chat Activo -->
-                <div id="panel-conversacion-chat" class="hidden bg-white border border-slate-200 rounded-2xl p-3 flex flex-col h-[450px]">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="cerrarChatActivo()" class="text-xs text-slate-500 font-bold hover:text-slate-800 cursor-pointer">
-                                <i class="fa-solid fa-arrow-left"></i>
-                            </button>
-                            <h4 id="chat-titulo-amigo" class="text-xs font-bold text-slate-800">Chat con Amigo</h4>
-                        </div>
-                        <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Activo</span>
-                    </div>
-
-                    <div id="contenedor-mensajes-chat" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
-                        <!-- Mensajes -->
-                    </div>
-
-                    <div class="flex gap-2 pt-2 border-t border-slate-100 mt-2">
-                        <input type="text" id="input-mensaje-chat" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                        <button type="button" onclick="enviarMensajeChat()" class="btn-green text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">Enviar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        // 8. VISTA: PERFIL DE USUARIO Y RACHA SR. BIGOTES (MEJORADO)
-        <!-- ========================================== -->
-        <div id="vista-perfil" class="hidden flex-1 flex flex-col bg-slate-50 p-4 overflow-y-auto pb-20 space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
-                <button type="button" onclick="volverADespensa()" class="text-xs font-bold text-slate-600 flex items-center gap-1 cursor-pointer">
-                    <i class="fa-solid fa-arrow-left"></i> Volver a Despensa
-                </button>
-                <h3 class="text-xs font-bold text-slate-800">Mi Perfil y Racha</h3>
-                <span class="w-6"></span>
-            </div>
-
-            <!-- Tarjeta de Identidad de Usuario -->
-            <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm flex items-center gap-4 relative overflow-hidden">
-                <!-- Marco personalizable del avatar -->
-                <div id="avatar-frame" class="w-20 h-20 rounded-full border-4 border-emerald-600 overflow-hidden shadow-md shrink-0 bg-emerald-100 flex items-center justify-center relative cursor-pointer" onclick="abrirEditorAvatar()">
-                    <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 flex items-center justify-center transition text-white text-[10px] font-bold">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-                </div>
-
-                <div class="flex-1">
-                    <h2 id="perfil-nombre-usuario" class="text-sm font-black text-slate-900">Usuario Demo</h2>
-                    <p id="perfil-correo-usuario" class="text-[10px] text-slate-400">usuario.demo@nowaste.com</p>
-                    <div id="perfil-badge-tipo" class="mt-1 inline-block bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
-                        🌱 Defensor del Alimento
-                    </div>
-                </div>
-
-                <button type="button" onclick="abrirEditorAvatar()" class="absolute top-3 right-3 bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-xl text-xs transition cursor-pointer" title="Editar Avatar y Marco">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
-            </div>
-
-            <!-- TARJETA RACHA DEL SR. BIGOTES -->
-            <div id="racha-card" class="rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden bg-amber-50 border-amber-300">
-                <div class="space-y-1 relative z-10 flex-1 pr-2">
-                    <span class="bg-white/80 backdrop-blur-xs text-amber-900 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider border border-amber-300">
-                        🔥 Racha del Sr. Bigotes
-                    </span>
-                    <h3 class="text-xl font-black text-amber-950"><span id="racha-dias-numero">1</span> Días Consecutivos</h3>
-                    <p id="sr-bigotes-mensaje" class="text-[11px] text-amber-900 leading-tight italic font-medium">
-                        "¡Bienvenido! Hoy empieza tu racha con la zanahoria del ahorro."
-                    </p>
-                </div>
-                <div class="w-20 h-20 shrink-0 relative flex items-center justify-center">
-                    <img id="sr-bigotes-sprite" src="image_90a5e3.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-            </div>
-
-            <!-- Alerta / Noti del Sr. Bigotes -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
-                    🐰
-                </div>
-                <p id="sr-bigotes-noticall" class="text-[11px] text-slate-600 font-medium">
-                    "¡No olvides revisar tus verduras de la alacena!"
-                </p>
-            </div>
-
-            <!-- Métricas de Impacto -->
-            <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-                <h4 class="text-xs font-bold text-slate-800">📊 Tu Impacto Ambiental Acumulado</h4>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-2xl">
-                        <span id="metric-salvado" class="text-sm font-black text-emerald-800 block">4.2 kg</span>
-                        <span class="text-[9px] text-emerald-700 font-semibold">Alimento Salvado</span>
-                    </div>
-                    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl">
-                        <span id="metric-ahorro" class="text-sm font-black text-amber-900 block">$27.000</span>
-                        <span class="text-[9px] text-amber-800 font-semibold">Dinero Ahorrado</span>
-                    </div>
-                    <div class="bg-purple-50 border border-purple-200 p-2.5 rounded-2xl">
-                        <span id="metric-donado" class="text-sm font-black text-purple-900 block">3 Packs</span>
-                        <span class="text-[9px] text-purple-800 font-semibold">Donados</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ajustes de Cuenta -->
-            <div class="space-y-2 pt-2">
-                <button type="button" onclick="cambiarDeCuenta()" class="w-full bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs py-2.5 rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-right-from-bracket text-red-500"></i> Cambiar de Cuenta / Cerrar Sesión
-                </button>
-                <button type="button" onclick="reiniciarDatosCuenta()" class="w-full bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 font-bold text-xs py-2.5 rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-rotate-right"></i> Reiniciar Datos de Cuenta
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        // NAVEGACIÓN INFERIOR (BOTTOM NAV)
-        <!-- ========================================== -->
-        <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-4 flex justify-around items-center z-40 shadow-lg">
-            <button type="button" onclick="mostrarDespensa()" class="flex flex-col items-center text-emerald-700 hover:text-emerald-900 transition cursor-pointer">
-                <i class="fa-solid fa-basket-shopping text-base"></i>
-                <span class="text-[9px] font-bold mt-0.5">Despensa</span>
-            </button>
-            <button type="button" onclick="abrirListaCompras()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 transition cursor-pointer">
-                <i class="fa-solid fa-cart-shopping text-base"></i>
-                <span class="text-[9px] font-semibold mt-0.5">Compras</span>
-            </button>
-            <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 transition cursor-pointer">
-                <i class="fa-solid fa-utensils text-base"></i>
-                <span class="text-[9px] font-semibold mt-0.5">Recetas</span>
-            </button>
-            <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 transition cursor-pointer">
-                <i class="fa-solid fa-handshake text-base"></i>
-                <span class="text-[9px] font-semibold mt-0.5">Donar</span>
-            </button>
-            <button type="button" onclick="abrirComunidades()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 transition cursor-pointer">
-                <i class="fa-solid fa-users text-base"></i>
-                <span class="text-[9px] font-semibold mt-0.5">Comunidad</span>
-            </button>
-        </div>
-
-        <!-- ========================================== -->
-        // MODALES Y PANTALLAS FLOTANTES
-        <!-- ========================================== -->
-
-        <!-- Modal Editor de Avatar y Marco de Perfil -->
-        <div id="modal-editor-avatar" class="hidden absolute inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl animate-fade-in">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <h3 class="text-xs font-bold text-slate-800">✨ Personalizar Avatar y Marco</h3>
-                    <button type="button" onclick="cerrarEditorAvatar()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
                     </button>
-                </div>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px]">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
+                    </button>
+                </nav>
+            </div>
 
-                <div class="flex flex-col items-center space-y-3">
-                    <div id="avatar-frame-modal" class="w-20 h-20 rounded-full border-4 border-emerald-600 overflow-hidden shadow-md bg-emerald-100 flex items-center justify-center">
-                        <img id="avatar-img-preview-modal" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
-                    </div>
-                    <p class="text-[10px] text-slate-400 text-center">Sube tu foto personalizada o elige un avatar predeterminado de la red Zero Waste.</p>
-                </div>
+        </div>
 
-                <div class="space-y-2">
-                    <label class="block text-[10px] font-bold text-slate-600">Subir foto desde archivo:</label>
-                    <input type="file" accept="image/*" onchange="subdirCustomAvatar(event)" class="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+        <!-- PANTALLA DE CARGA CON CONEJO Y ZANAHORIAS -->
+        <div id="pantalla-carga" class="fixed inset-0 bg-[#1b3303]/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-4 z-50 animate-fade-in">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-[280px] shadow-2xl flex flex-col items-center text-center space-y-3 relative border-2 border-emerald-300">
+                <div class="text-5xl animate-bunny-hop my-2">🐇</div>
+                <h3 class="text-xs font-bold text-[#1b3303] uppercase tracking-wider">Cargando tu Despensa...</h3>
+                <div class="flex items-center justify-center gap-3 pt-1">
+                    <span class="text-xl carrot-1">🥕</span>
+                    <span class="text-xl carrot-2">🥕</span>
+                    <span class="text-xl carrot-3">🥕</span>
                 </div>
-
-                <div class="space-y-1">
-                    <label class="block text-[10px] font-bold text-slate-600">O elige un avatar rápido:</label>
-                    <div class="flex gap-2 justify-center">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" onclick="seleccionarAvatarPreset(this.src)" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-600 cursor-pointer hover:scale-105">
-                        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150" onclick="seleccionarAvatarPreset(this.src)" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-600 cursor-pointer hover:scale-105">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" onclick="seleccionarAvatarPreset(this.src)" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-600 cursor-pointer hover:scale-105">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-[10px] font-bold text-slate-600">Ajustar tamaño del marco:</label>
-                    <input type="range" id="slider-avatar-size" min="60" max="110" value="80" oninput="cambiarTamanoAvatar(this.value)" class="w-full accent-emerald-600 cursor-pointer">
-                </div>
-
-                <button type="button" onclick="guardarAjustesAvatar()" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    Guardar Cambios de Perfil
-                </button>
+                <p class="text-[10px] text-slate-500 italic">Un momento mientras organizamos tus insumos</p>
             </div>
         </div>
 
-        <!-- Modal Agregar Alimento -->
-        <div id="modal-agregar" class="hidden absolute inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl animate-fade-in">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <h3 class="text-xs font-bold text-slate-800">Añadir Nuevo Alimento</h3>
-                    <button type="button" onclick="cerrarModalAgregar()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
-                </div>
+        <!-- MODAL EDITOR DE AVATAR -->
+        <div id="modal-editor-avatar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarEditorAvatar()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🎨 Personalizar Icono de Perfil</h3>
 
                 <div class="space-y-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Nombre del Alimento</label>
-                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Aguacate Hass" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-600">
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Selecciona una imagen:</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="document.getElementById('input-custom-avatar').click()" class="w-12 h-12 rounded-full bg-emerald-50 border-2 border-dashed border-emerald-400 flex items-center justify-center text-emerald-700 text-xs font-bold cursor-pointer">
+                                + Subir
+                            </button>
+                        </div>
+                        <input type="file" id="input-custom-avatar" accept="image/*" onchange="subirCustomAvatar(event)" class="hidden">
                     </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Ajustar tamaño del Marco:</label>
+                        <input type="range" id="slider-avatar-size" min="60" max="110" value="80" oninput="cambiarTamanoAvatar(this.value)" class="w-full accent-emerald-600 cursor-pointer">
+                    </div>
+                </div>
+
+                <button type="button" onclick="guardarAjustesAvatar()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    Guardar Cambios
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL VER PERFIL DE USUARIO -->
+        <div id="modal-ver-perfil" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up text-center space-y-3">
+                <button type="button" onclick="cerrarModalPerfil()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-2xl font-bold border-2 border-emerald-300 shadow-sm">
+                    👤
+                </div>
+
+                <div>
+                    <h3 id="perfil-modal-nombre" class="text-base font-bold text-slate-800">Nombre de Usuario</h3>
+                    <p id="perfil-modal-correo" class="text-[10px] text-slate-500">correo@dominio.com</p>
+                </div>
+
+                <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200/80 text-xs space-y-1">
+                    <p class="text-emerald-900 font-bold">Tipo de cuenta: <span id="perfil-modal-tipo" class="font-normal uppercase">Hogar</span></p>
+                    <p class="text-emerald-900 font-bold">Insignia eco: <span class="font-normal text-emerald-700">🌱 Defensor del Alimento</span></p>
+                </div>
+
+                <div id="perfil-modal-accion-container"></div>
+            </div>
+        </div>
+
+        <!-- MODAL PARA PUBLICAR EN LA COMUNIDAD -->
+        <div id="modal-publicar-comunidad" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarModalNuevaPublicacionComunidad()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-1 text-center">✍️ Crear Publicación Comunitaria</h3>
+                <p class="text-[10px] text-slate-500 text-center mb-3">Comparte ideas, recetas o alertas con la comunidad.</p>
+
+                <div class="space-y-2.5 text-xs">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Categoría / Tema:</label>
+                        <select id="select-comunidad-categoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none font-semibold">
+                            <option value="recetas">🍲 Recetas de Rescate</option>
+                            <option value="tips">💡 Tip de Conservación</option>
+                            <option value="alertas">📢 Alerta Vecinal / Oportunidad</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Título:</label>
+                        <input type="text" id="input-comunidad-titulo" placeholder="Ej. Cómo conservar el cilantro por 2 semanas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Contenido / Mensaje:</label>
+                        <textarea id="input-comunidad-contenido" rows="3" placeholder="Escribe aquí tu mensaje..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto (Opcional):</label>
+                        <input type="file" id="input-foto-comunidad" accept="image/*" onchange="previsualizarFotoComunidad(event)" class="hidden">
+                        <div onclick="document.getElementById('input-foto-comunidad').click()" class="w-full h-16 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-xl flex items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
+                            <img id="preview-foto-comunidad" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="placeholder-foto-comunidad" class="flex items-center gap-1.5 text-emerald-900 font-bold text-[10px]">
+                                <i class="fa-solid fa-camera text-emerald-700 text-sm"></i> Adjuntar imagen (Opcional)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="guardarPublicacionComunidad()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    🚀 Publicar en la Comunidad
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL DE PUBLICACIÓN DIRECTA DE DONACIÓN -->
+        <div id="modal-publicar-donacion" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarModalPublicarDonacion()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-1 text-center">🤝 Publicar Alimento para Donación</h3>
+                <p class="text-[10px] text-slate-500 text-center mb-3">La comunidad podrá ponerse en contacto para pasar por él.</p>
+
+                <div class="space-y-2.5 text-xs">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Seleccionar de mi despensa:</label>
+                        <select id="select-donar-despensa" onchange="autocompletarDonacionDesdeDespensa()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none font-semibold">
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Título / Nombre:</label>
+                        <input type="text" id="input-donar-nombre" placeholder="Ej. 4 Plátanos Maduros" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Cantidad</label>
-                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 unidades" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            <label class="text-[10px] font-bold text-slate-600 block mb-1">Cantidad:</label>
+                            <input type="text" id="input-donar-cantidad" placeholder="Ej. 2 kg" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Fecha Vencimiento</label>
-                            <input type="date" id="input-fecha-alimento" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            <label class="text-[10px] font-bold text-slate-600 block mb-1">Ubicación aprox.:</label>
+                            <input type="text" id="input-donar-ubicacion" placeholder="Ej. Barrio Centro" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Categoría</label>
-                            <select id="select-tipo-alimento" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+
+                    <div class="bg-amber-50 p-2.5 rounded-2xl border border-amber-200/80 space-y-1.5">
+                        <label class="text-[10px] font-bold text-amber-900 block">⏰ Rango Límite de Recolección:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="date" id="input-donar-fecha-limite" class="bg-white border border-amber-200 rounded-xl px-2 py-1 text-[11px] outline-none">
+                            <input type="time" id="input-donar-hora-limite" value="18:00" class="bg-white border border-amber-200 rounded-xl px-2 py-1 text-[11px] outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="confirmarPublicarDonacion()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    🚀 Publicar Donación
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL DE SELECCIÓN DE CUENTA SOCIAL -->
+        <div id="modal-social" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarModalSocial()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <div class="text-center mb-3">
+                    <div id="social-modal-icon" class="text-3xl mb-1"></div>
+                    <h3 class="text-sm font-bold text-slate-800" id="social-modal-title">Iniciar Sesión Social</h3>
+                    <p class="text-[10px] text-slate-500">Selecciona o confirma la cuenta a vincular</p>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Correo Electrónico:</label>
+                        <select id="select-cuenta-social" onchange="actualizarUsuarioDesdeSelect()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none font-semibold">
+                            <option value="usuario.demo@gmail.com">usuario.demo@gmail.com</option>
+                            <option value="mi_cuenta_eco@nowaste.com">mi_cuenta_eco@nowaste.com</option>
+                            <option value="nuevo_correo">+ Usar otro correo</option>
+                        </select>
+                    </div>
+
+                    <div id="campo-correo-custom" class="hidden">
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Ingresa tu correo:</label>
+                        <input type="email" id="input-correo-social-custom" placeholder="ejemplo@correo.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Nombre de Usuario (Guardado):</label>
+                        <div class="flex items-center bg-slate-50 rounded-xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <span class="text-slate-400 text-xs font-bold mr-1">@</span>
+                            <input type="text" id="input-username-social" placeholder="tu_usuario" class="bg-transparent text-xs w-full text-slate-700 outline-none font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="confirmarLoginSocial()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    Continuar como <span id="btn-user-label">usuario</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL DETALLE DE RECETA GENERADA -->
+        <div id="modal-receta-detalle" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[340px] max-h-[85vh] overflow-y-auto shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarModalReceta()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">
+                    ✕
+                </button>
+
+                <div class="w-full h-36 rounded-2xl overflow-hidden mb-3">
+                    <img id="modal-receta-img" src="" class="w-full h-full object-cover">
+                </div>
+
+                <h3 id="modal-receta-titulo" class="text-base font-bold text-slate-800"></h3>
+                <div id="modal-receta-meta" class="flex gap-3 text-[10px] text-slate-500 my-1 font-semibold"></div>
+
+                <hr class="my-2 border-slate-100">
+
+                <h4 class="text-xs font-bold text-slate-700 mb-1">Ingredientes utilizados de tu despensa:</h4>
+                <ul id="modal-receta-ingredientes" class="text-xs space-y-1 mb-3"></ul>
+
+                <h4 class="text-xs font-bold text-slate-700 mb-1">Preparación paso a paso:</h4>
+                <ol id="modal-receta-pasos" class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100"></ol>
+
+                <button type="button" id="btn-cocinar-receta" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    👨‍🍳 Marcar como Preparada
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL LOGIN / REGISTRO -->
+        <div id="modal-login" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl text-center relative border border-slate-100 animate-scale-up">
+                <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
+                    <button type="button" id="tab-login" onclick="cambiarModoModal('login')" class="flex-1 py-1.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-800 transition cursor-pointer">Iniciar Sesión</button>
+                    <button type="button" id="tab-registro" onclick="cambiarModoModal('registro')" class="flex-1 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 transition cursor-pointer">Crear Cuenta</button>
+                </div>
+                <h2 id="modal-titulo" class="font-serif-custom text-green-custom text-lg font-bold mb-3">Iniciar Sesión</h2>
+                
+                <form onsubmit="return procesarFormulario(event)">
+                    <!-- CAMPOS LOGIN -->
+                    <div id="campos-login" class="space-y-2.5 mb-3">
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
+                            <input type="email" id="input-login-email" placeholder="Ingresa tu correo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2.5 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-login" placeholder="Ingresa tu contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-login', 'eye-login')" class="p-1 cursor-pointer"><i id="eye-login" class="fa-solid fa-eye text-slate-400 text-xs"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- CAMPOS REGISTRO -->
+                    <div id="campos-registro" class="space-y-2.5 mb-3 hidden text-left">
+                        <p class="text-[11px] font-bold text-slate-600 mb-1">Tipo de usuario:</p>
+                        <input type="hidden" id="perfil-tipo-input" value="hogar">
+                        <div class="flex gap-2 mb-2">
+                            <button type="button" id="btn-perfil-hogar" onclick="seleccionarPerfil('hogar')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-1.5 transition cursor-pointer"><i class="fa-solid fa-house text-xs"></i> Hogar</button>
+                            <button type="button" id="btn-perfil-comercio" onclick="seleccionarPerfil('comercio')" class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition cursor-pointer"><i class="fa-solid fa-store text-xs"></i> Comercio</button>
+                        </div>
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-user text-slate-400 mr-2 text-sm"></i>
+                            <input type="text" id="input-reg-nombre" placeholder="Nombre completo" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-regular fa-envelope text-slate-400 mr-2 text-sm"></i>
+                            <input type="email" id="input-reg-email" placeholder="Correo electrónico" class="bg-transparent text-xs w-full text-slate-700 outline-none font-serif-custom">
+                        </div>
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-lock text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-reg1" placeholder="Contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-reg1', 'eye-reg1')" class="p-1 cursor-pointer"><i id="eye-reg1" class="fa-solid fa-eye text-slate-400 text-xs"></i></button>
+                        </div>
+                        <div class="flex items-center bg-slate-50 rounded-2xl px-3 py-2 border border-slate-200 focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-shield-halved text-slate-400 mr-2 text-sm"></i>
+                            <input type="password" id="pass-reg2" placeholder="Confirmar contraseña" class="bg-transparent text-xs w-full text-slate-700 outline-none">
+                            <button type="button" onclick="togglePassword('pass-reg2', 'eye-reg2')" class="p-1 cursor-pointer"><i id="eye-reg2" class="fa-solid fa-eye text-slate-400 text-xs"></i></button>
+                        </div>
+                        <label class="flex items-start gap-2 pt-1 cursor-pointer">
+                            <input type="checkbox" id="check-terminos" class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[10px] text-slate-500 leading-tight">Acepto los términos y la política ambiental.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="btn-submit-modal" class="w-full btn-green text-white font-serif-custom text-xs py-2.5 rounded-full shadow-md mb-2.5 cursor-pointer">Iniciar sesión</button>
+                </form>
+
+                <a href="#" id="link-olvidaste" class="block text-green-custom font-serif-custom text-[11px] hover:underline mb-2">¿Olvidaste tu contraseña?</a>
+                <p class="text-slate-500 font-serif-custom text-[10px] mb-2">o continuar con:</p>
+                <div class="flex justify-center items-center gap-4">
+                    <button type="button" onclick="abrirModalSocial('Google')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-google text-base text-red-500"></i></button>
+                    <button type="button" onclick="abrirModalSocial('Facebook')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-facebook text-base text-blue-600"></i></button>
+                    <button type="button" onclick="abrirModalSocial('Apple')" class="w-7 h-7 flex items-center justify-center cursor-pointer"><i class="fa-brands fa-apple text-base text-black"></i></button>
+                </div>
+                <button type="button" onclick="cerrarLogin()" class="mt-3 text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer">Cerrar</button>
+            </div>
+        </div>
+
+        <!-- MODAL AGREGAR ALIMENTO -->
+        <div id="modal-agregar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🥑 Agregar a Mi Despensa</h3>
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Foto del alimento:</label>
+                        <input type="file" id="input-foto-alimento" accept="image/*" capture="environment" onchange="previsualizarFoto(event)" class="hidden">
+                        <div onclick="document.getElementById('input-foto-alimento').click()" class="w-full h-20 border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl flex flex-col items-center justify-center text-slate-500 cursor-pointer overflow-hidden relative">
+                            <img id="preview-foto" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="flex flex-col items-center">
+                                <i class="fa-solid fa-camera text-emerald-700 text-lg mb-0.5"></i>
+                                <span class="text-[10px] font-bold text-emerald-900">Tomar foto o subir imagen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600">Nombre del alimento:</label>
+                        <input type="text" id="input-nombre-alimento" placeholder="Ej. Peras, Manzanas, Leche..." class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Tipo:</label>
+                            <select id="select-tipo-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
                                 <option value="Frutas y Verduras">Frutas y Verduras</option>
                                 <option value="Lácteos">Lácteos</option>
-                                <option value="Carnes y Pescados">Carnes y Pescados</option>
                                 <option value="Alacena/Secos">Alacena/Secos</option>
                                 <option value="Bebidas">Bebidas</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Ubicación</label>
-                            <select id="select-ubicacion-alimento" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                                <option value="Alacena">Alacena</option>
-                                <option value="Nevera">Nevera</option>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Ubicación:</label>
+                            <select id="select-ubicacion-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-700 outline-none">
+                                <option value="Refrigerador">Refrigerador</option>
                                 <option value="Congelador">Congelador</option>
+                                <option value="Alacena">Alacena</option>
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Foto del Alimento (Opcional)</label>
-                        <div class="flex items-center gap-3">
-                            <div id="placeholder-foto" class="w-12 h-12 bg-slate-100 border border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400">
-                                <i class="fa-solid fa-camera text-xs"></i>
-                            </div>
-                            <img id="preview-foto" class="hidden w-12 h-12 rounded-xl object-cover border border-slate-200">
-                            <input type="file" accept="image/*" onchange="previsualizarFoto(event)" class="flex-1 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Cantidad:</label>
+                            <input type="text" id="input-cantidad-alimento" placeholder="Ej. 3 pcs / 1 Litro" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-emerald-600">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[10px] font-bold text-slate-600">Vencimiento:</label>
+                            <input type="date" id="input-fecha-alimento" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-emerald-600">
                         </div>
                     </div>
                 </div>
-
-                <button type="button" onclick="guardarAlimento()" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    Guardar en Despensa
-                </button>
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="cerrarModalAgregar()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer">Cancelar</button>
+                    <button type="button" onclick="guardarAlimento()" class="flex-1 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">Guardar</button>
+                </div>
             </div>
         </div>
 
-        <!-- Modal Publicar Donación -->
-        <div id="modal-publicar-donacion" class="hidden absolute inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-2xl animate-fade-in">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <h3 class="text-xs font-bold text-slate-800">🤝 Publicar Alimento para Donar</h3>
-                    <button type="button" onclick="cerrarModalPublicarDonacion()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-sm"></i></button>
+        <!-- MODAL FILTROS ORDEN -->
+        <div id="modal-filtros" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <h3 class="text-xs font-bold text-slate-800 mb-3 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-sliders text-emerald-700"></i> Ordenar inventario</h3>
+                <div class="space-y-2 text-xs">
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="vencimiento" checked onchange="cambiarOrden('vencimiento')">
+                        <span>📅 Próximos a vencer</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="orden" value="nombre" onchange="cambiarOrden('nombre')">
+                        <span>🔤 Nombre (A - Z)</span>
+                    </label>
                 </div>
-                <div class="space-y-2.5 text-xs">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Seleccionar de tu despensa (Opcional)</label>
-                        <select id="select-donar-despensa" onchange="autocompletarDonacionDesdeDespensa()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                            <option value="">-- Seleccionar --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Nombre del Alimento</label>
-                        <input type="text" id="input-donar-nombre" placeholder="Ej. Pan artesanal..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Cantidad</label>
-                            <input type="text" id="input-donar-cantidad" placeholder="Ej. 2 barras" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Ubicación de Retiro</label>
-                            <input type="text" id="input-donar-ubicacion" value="📍 Barrio Centro (A 300m)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Fecha Límite</label>
-                            <input type="date" id="input-donar-fecha-limite" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 mb-1">Hora Límite</label>
-                            <input type="time" id="input-donar-hora-limite" value="19:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="confirmarPublicarDonacion()" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    Publicar en Red Solidaria
-                </button>
+                <button type="button" onclick="cerrarModalFiltros()" class="w-full mt-4 btn-green text-white py-2 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">Aplicar</button>
             </div>
-        </div>
-
-        <!-- Modal Publicar en Comunidad -->
-        <div id="modal-publicar-comunidad" class="hidden absolute inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-2xl animate-fade-in">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <h3 class="text-xs font-bold text-slate-800">💬 Compartir en Comunidad</h3>
-                    <button type="button" onclick="cerrarModalNuevaPublicacionComunidad()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-sm"></i></button>
-                </div>
-                <div class="space-y-2.5 text-xs">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Categoría</label>
-                        <select id="select-comunidad-categoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                            <option value="recetas">🍲 Receta de Aprovechamiento</option>
-                            <option value="tips">💡 Tip Zero Waste</option>
-                            <option value="alertas">📢 Alerta Comunitaria</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Título</label>
-                        <input type="text" id="input-comunidad-titulo" placeholder="Ej. Cómo conservar verduras por más tiempo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Contenido / Mensaje</label>
-                        <textarea id="input-comunidad-contenido" rows="3" placeholder="Escribe tu consejo o receta..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none resize-none"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Foto Opcional</label>
-                        <div class="flex items-center gap-3">
-                            <div id="placeholder-foto-comunidad" class="w-12 h-12 bg-slate-100 border border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400">
-                                <i class="fa-solid fa-camera text-xs"></i>
-                            </div>
-                            <img id="preview-foto-comunidad" class="hidden w-12 h-12 rounded-xl object-cover border border-slate-200">
-                            <input type="file" accept="image/*" onchange="previsualizarFotoComunidad(event)" class="flex-1 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="guardarPublicacionComunidad()" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    Publicar Post
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal Ver Perfil de Usuario Externo -->
-        <div id="modal-ver-perfil" class="hidden absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-xs rounded-3xl p-5 space-y-3 shadow-2xl text-center">
-                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mx-auto mb-2">
-                    👤
-                </div>
-                <h3 id="perfil-modal-nombre" class="text-sm font-black text-slate-900">Nombre Usuario</h3>
-                <p id="perfil-modal-correo" class="text-[10px] text-slate-400">correo@domain.com</p>
-                <div id="perfil-modal-tipo" class="inline-block bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Hogar</div>
-
-                <div id="perfil-modal-accion-container" class="pt-2">
-                    <!-- Dinámico -->
-                </div>
-
-                <button type="button" onclick="cerrarModalPerfil()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2 rounded-xl transition cursor-pointer">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal Detalle Receta Dinámica -->
-        <div id="modal-receta-detalle" class="hidden absolute inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-2xl max-h-[85vh] overflow-y-auto">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <h3 id="modal-receta-titulo" class="text-xs font-bold text-slate-800">Receta</h3>
-                    <button type="button" onclick="cerrarModalReceta()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-sm"></i></button>
-                </div>
-                <img id="modal-receta-img" class="w-full h-36 rounded-2xl object-cover shadow-xs">
-                <p id="modal-receta-meta" class="text-[10px] text-emerald-700 font-bold">⏱️ Tiempo | 📊 Dificultad</p>
-                <div class="space-y-1">
-                    <h4 class="text-[11px] font-bold text-slate-700">Ingredientes:</h4>
-                    <ul id="modal-receta-ingredientes" class="text-[11px] text-slate-600 pl-4 list-disc space-y-0.5"></ul>
-                </div>
-                <div class="space-y-1">
-                    <h4 class="text-[11px] font-bold text-slate-700">Preparación Paso a Paso:</h4>
-                    <ol id="modal-receta-pasos" class="text-[11px] text-slate-600 pl-4 list-decimal space-y-1 leading-relaxed"></ol>
-                </div>
-                <button type="button" id="btn-cocinar-receta" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    🍳 ¡Cocinar y Descontar de Despensa!
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal Login Social -->
-        <div id="modal-social" class="hidden absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-            <div class="bg-white w-full sm:max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl text-center">
-                <div id="social-modal-icon" class="w-12 h-12 rounded-full bg-slate-100 mx-auto flex items-center justify-center text-xl"></div>
-                <h3 id="social-modal-title" class="text-sm font-black text-slate-900">Continuar con Red Social</h3>
-                <div class="space-y-3 text-left text-xs">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Selecciona cuenta asociada:</label>
-                        <select id="select-cuenta-social" onchange="actualizarUsuarioDesdeSelect()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                            <option value="usuario.demo@gmail.com">usuario.demo@gmail.com (Demo)</option>
-                            <option value="sofia@nowaste.com">sofia@nowaste.com (Sofia Hogar)</option>
-                            <option value="mcdonalds@comercio.com">mcdonalds@comercio.com (McDonald's)</option>
-                            <option value="nuevo_correo">+ Usar otro correo electrónico</option>
-                        </select>
-                    </div>
-                    <div id="campo-correo-custom" class="hidden">
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Correo electrónico:</label>
-                        <input type="email" id="input-correo-social-custom" placeholder="tucorreo@dominio.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 mb-1">Nombre / Alias en la red:</label>
-                        <input type="text" id="input-username-social" value="Usuario_Zero" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
-                    </div>
-                </div>
-                <button type="button" onclick="confirmarLoginSocial()" class="w-full btn-green text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                    Acceder como <span id="btn-user-label">@Usuario_Zero</span>
-                </button>
-                <button type="button" onclick="cerrarModalSocial()" class="text-xs text-slate-400 hover:text-slate-600 cursor-pointer">Cancelar</button>
-            </div>
-        </div>
-
-        <!-- Pantalla de Carga (Loader) -->
-        <div id="pantalla-carga" class="hidden absolute inset-0 bg-white/90 z-60 flex flex-col items-center justify-center space-y-3">
-            <div class="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs font-bold text-emerald-900">Sincronizando tu Despensa Verde...</p>
         </div>
 
     </div>
 
-    <!-- Script principal de la aplicación -->
+    <!-- Archivo JS -->
     <script src="app.js"></script>
 </body>
 </html>
