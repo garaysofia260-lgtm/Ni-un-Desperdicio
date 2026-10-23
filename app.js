@@ -1471,6 +1471,10 @@ function donarAlimentoDetalle() {
     if (alimentoSeleccionadoId) donarAlimentoDirecto(alimentoSeleccionadoId);
 }
 
+function recetaDesdeDetalle() {
+    abrirRecetas();
+}
+
 // ==========================================
 // AUTENTICACIÓN Y REGISTRO DE USUARIOS
 // ==========================================
