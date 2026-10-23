@@ -538,7 +538,7 @@
                 </nav>
             </div>
 
-            <!-- VISTA 7: SECCIÓN COMUNIDADES Y ALIADOS COMPLETA -->
+            <!-- VISTA 7: SECCIÓN COMUNIDADES (PERFILES, CHAT Y AMISTADES) -->
             <div id="vista-comunidades" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-3 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-2">
@@ -546,61 +546,71 @@
                             <i class="fa-solid fa-arrow-left text-xs"></i>
                         </button>
                         <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
-                            <i class="fa-solid fa-users text-amber-300"></i> Comunidades y Aliados
+                            <i class="fa-solid fa-users text-amber-300"></i> Comunidades y Perfiles
                         </h2>
-                        <button type="button" onclick="abrirModalNuevaPublicacionComunidad()" class="w-8 h-8 rounded-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center text-white transition shadow-sm cursor-pointer" title="Crear Publicación">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
+                        <div class="w-8"></div>
                     </div>
 
                     <!-- Subpestañas del Módulo Comunidades -->
                     <div class="flex bg-black/20 p-1 rounded-2xl text-[10px] font-bold">
-                        <button type="button" id="tab-com-muros" onclick="cambiarSubtabComunidad('muros')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
-                            💬 Foro Vecinal
+                        <button type="button" id="tab-com-perfiles" onclick="cambiarSubtabComunidad('perfiles')" class="flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer">
+                            🔍 Buscar Perfiles
                         </button>
-                        <button type="button" id="tab-com-canales" onclick="cambiarSubtabComunidad('canales')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
-                            🏛️ Grupos y Aliados
+                        <button type="button" id="tab-com-chat" onclick="cambiarSubtabComunidad('chat')" class="flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer">
+                            💬 Chat & Amigos
                         </button>
                     </div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                     
-                    <!-- SECCIÓN FORO VECINAL Y PUBLICACIONES -->
-                    <div id="subtab-comunidad-muros" class="space-y-3">
-                        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-800 font-bold text-sm shrink-0">
-                                💬
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-xs font-bold text-slate-800">Foro Comunitario Zero Waste</h3>
-                                <p class="text-[10px] text-slate-500">Comparte tips, recetas de rescate, alertas y colabora con tus vecinos.</p>
-                            </div>
+                    <!-- SUBPESTAÑA 1: BUSCAR PERFILES Y AMISTADES -->
+                    <div id="subtab-comunidad-perfiles" class="space-y-3">
+                        <div class="flex items-center bg-white rounded-2xl px-3.5 py-2 border border-slate-200 shadow-sm focus-within:border-emerald-600 transition">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+                            <input type="text" id="input-buscar-perfil" oninput="renderizarListaPerfiles()" placeholder="Buscar usuario por nombre o correo..." class="bg-transparent text-xs w-full text-slate-700 outline-none">
                         </div>
 
-                        <!-- BARRA FILTRO POR CANAL EN FORO -->
-                        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px] font-semibold" id="bar-filtros-canales-comunidad">
-                            <button type="button" onclick="filtrarPublicacionesComunidad('todos')" id="btn-com-cat-todos" class="px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer">Todos</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('recetas')" id="btn-com-cat-recetas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">🍲 Recetas de Rescate</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('tips')" id="btn-com-cat-tips" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">💡 Tips de Conservación</button>
-                            <button type="button" onclick="filtrarPublicacionesComunidad('alertas')" id="btn-com-cat-alertas" class="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer">📢 Alertas Vecinales</button>
-                        </div>
-
-                        <!-- CONTENEDOR PUBLICACIONES MURAL -->
-                        <div id="contenedor-publicaciones-comunidad" class="space-y-3"></div>
+                        <div id="contenedor-lista-perfiles" class="space-y-2.5"></div>
                     </div>
 
-                    <!-- SECCIÓN GRUPOS Y ALIADOS (COMERCIOS / FUNDACIONES / BANCOS) -->
-                    <div id="subtab-comunidad-canales" class="space-y-3 hidden">
-                        <div class="bg-emerald-900 text-white rounded-2xl p-3 shadow-sm flex items-center justify-between">
-                            <div>
-                                <h3 class="text-xs font-bold">Red de Aliados Locales 🤝</h3>
-                                <p class="text-[10px] text-emerald-200">Únete a grupos de tu barrio, comercios adheridos y fundaciones.</p>
+                    <!-- SUBPESTAÑA 2: CHAT FUNCIONAL & SOLICITUDES -->
+                    <div id="subtab-comunidad-chat" class="space-y-3 hidden">
+                        <div id="panel-lista-chats" class="space-y-3">
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user-group text-emerald-600"></i> Solicitudes de Amistad
+                                </h3>
+                                <div id="contenedor-solicitudes" class="space-y-2"></div>
                             </div>
-                            <i class="fa-solid fa-handshake-angle text-2xl text-emerald-300"></i>
+
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                                <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-comments text-emerald-600"></i> Chats Activos con Amigos
+                                </h3>
+                                <div id="contenedor-amigos-chats" class="space-y-2"></div>
+                            </div>
                         </div>
 
-                        <div id="contenedor-grupos-comunidad" class="space-y-2.5"></div>
+                        <!-- VISTA DE CONVERSACIÓN DE CHAT -->
+                        <div id="panel-conversacion-chat" class="hidden flex flex-col h-full space-y-2">
+                            <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                                <button type="button" onclick="cerrarChatActivo()" class="text-xs text-emerald-700 font-bold flex items-center gap-1 cursor-pointer">
+                                    <i class="fa-solid fa-arrow-left"></i> Volver
+                                </button>
+                                <h4 id="chat-titulo-amigo" class="text-xs font-bold text-slate-800">Chat con Usuario</h4>
+                                <div class="w-10"></div>
+                            </div>
+
+                            <div id="contenedor-mensajes-chat" class="bg-white border border-slate-200 rounded-2xl p-3 flex-1 overflow-y-auto space-y-2 min-h-[220px] max-h-[260px]"></div>
+
+                            <div class="flex gap-2">
+                                <input type="text" id="input-mensaje-chat" placeholder="Escribe un mensaje..." class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none text-slate-700">
+                                <button type="button" onclick="enviarMensajeChat()" class="btn-green text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer shadow-sm">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </main>
@@ -644,38 +654,26 @@
             </div>
         </div>
 
-        <!-- MODAL PARA PUBLICAR EN LA COMUNIDAD -->
-        <div id="modal-publicar-comunidad" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
-                <button type="button" onclick="cerrarModalNuevaPublicacionComunidad()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+        <!-- MODAL VER PERFIL DE USUARIO -->
+        <div id="modal-ver-perfil" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up text-center space-y-3">
+                <button type="button" onclick="cerrarModalPerfil()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
 
-                <h3 class="text-sm font-bold text-slate-800 mb-1 text-center">✍️ Crear Publicación Comunitaria</h3>
-                <p class="text-[10px] text-slate-500 text-center mb-3">Comparte ideas, recetas o iniciativas sin desperdicio.</p>
-
-                <div class="space-y-2.5 text-xs">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Categoría / Tema:</label>
-                        <select id="select-comunidad-categoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none font-semibold">
-                            <option value="recetas">🍲 Recetas de Rescate</option>
-                            <option value="tips">💡 Tip de Conservación</option>
-                            <option value="alertas">📢 Alerta Vecinal / Oportunidad</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Título:</label>
-                        <input type="text" id="input-comunidad-titulo" placeholder="Ej. Cómo conservar el cilantro por 2 semanas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Contenido / Mensaje:</label>
-                        <textarea id="input-comunidad-contenido" rows="3" placeholder="Escribe aquí tu mensaje para los vecinos..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 outline-none resize-none"></textarea>
-                    </div>
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-2xl font-bold border-2 border-emerald-300 shadow-sm">
+                    👤
                 </div>
 
-                <button type="button" onclick="guardarPublicacionComunidad()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
-                    🚀 Publicar en la Comunidad
-                </button>
+                <div>
+                    <h3 id="perfil-modal-nombre" class="text-base font-bold text-slate-800">Nombre de Usuario</h3>
+                    <p id="perfil-modal-correo" class="text-[10px] text-slate-500">correo@dominio.com</p>
+                </div>
+
+                <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200/80 text-xs space-y-1">
+                    <p class="text-emerald-900 font-bold">Tipo de cuenta: <span id="perfil-modal-tipo" class="font-normal uppercase">Hogar</span></p>
+                    <p class="text-emerald-900 font-bold">Insignia eco: <span class="font-normal text-emerald-700">🌱 Defensor del Alimento</span></p>
+                </div>
+
+                <div id="perfil-modal-accion-container"></div>
             </div>
         </div>
 
