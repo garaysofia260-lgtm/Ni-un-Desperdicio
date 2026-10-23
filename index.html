@@ -85,7 +85,7 @@
 
                     <div class="w-full space-y-3 mt-3">
                         <button type="button" onclick="abrirLogin()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
-                            Iniciar sesion
+                            Iniciar sesión
                         </button>
                         
                         <button type="button" onclick="abrirRegistro()" class="w-full btn-green text-white font-serif-custom text-sm py-3 rounded-full transition cursor-pointer">
@@ -141,7 +141,7 @@
                                 <span id="badge-compras-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.2 rounded-full">0</span>
                             </button>
 
-                            <button type="button" onclick="alert('Perfil de Usuario 👤')" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Mi Perfil">
+                            <button type="button" onclick="abrirPerfil()" class="w-8 h-8 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer" title="Mi Perfil">
                                 <i class="fa-regular fa-user text-xs"></i>
                             </button>
 
@@ -538,7 +538,7 @@
                 </nav>
             </div>
 
-            <!-- VISTA 7: SECCIÓN COMUNIDADES (PUBLICACIONES CON/SIN FOTO, NOTICIAS EN TIEMPO REAL, BUSCAR Y CHAT) -->
+            <!-- VISTA 7: SECCIÓN COMUNIDADES -->
             <div id="vista-comunidades" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-3 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-2">
@@ -668,6 +668,131 @@
                 </nav>
             </div>
 
+            <!-- VISTA 8: PERFIL DE USUARIO & RACHA DEL SR. BIGOTES -->
+            <div id="vista-perfil" class="w-full h-full flex flex-col justify-between hidden relative z-10 bg-slate-50">
+                <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md flex items-center justify-between">
+                    <button type="button" onclick="volverADespensa()" class="w-9 h-9 rounded-full bg-white/20 active:bg-white/30 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <h2 class="text-sm font-bold tracking-tight flex items-center gap-1.5">
+                        <i class="fa-solid fa-user text-amber-300"></i> Mi Perfil Eco
+                    </h2>
+                    <div class="w-9"></div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                    
+                    <!-- TARJETA PRINCIPAL DEL USUARIO CON AVATAR AJUSTABLE -->
+                    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 flex flex-col items-center relative">
+                        <div class="relative group">
+                            <!-- Marco del Avatar con tamaño dinámico -->
+                            <div id="avatar-frame" class="rounded-full overflow-hidden border-4 border-emerald-500 shadow-md bg-emerald-50 flex items-center justify-center transition-all duration-300" style="width: 80px; height: 80px;">
+                                <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
+                            </div>
+                            <button type="button" onclick="abrirEditorAvatar()" class="absolute bottom-0 right-0 bg-emerald-700 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer hover:bg-emerald-800 transition">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+
+                        <h3 id="perfil-nombre-usuario" class="text-base font-bold text-slate-800 mt-2">Usuario Eco</h3>
+                        <p id="perfil-correo-usuario" class="text-[10px] text-slate-400 font-semibold">correo@nowaste.com</p>
+                        <span id="perfil-badge-tipo" class="mt-1 bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            🌱 Defensor del Alimento
+                        </span>
+                    </div>
+
+                    <!-- SECCIÓN DE RACHA CON SR. BIGOTES -->
+                    <div id="racha-card" class="rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden bg-orange-50 border-orange-300">
+                        <div class="space-y-1 z-10 max-w-[60%]">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl">🥕</span>
+                                <span id="racha-dias-numero" class="text-3xl font-extrabold text-orange-600 tracking-tight">1</span>
+                                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Días en Racha</span>
+                            </div>
+                            <p id="sr-bigotes-mensaje" class="text-[11px] font-semibold text-slate-600 leading-tight">
+                                "¡Hola! Soy el Sr. Bigotes. ¡Sigamos salvando comida juntos!"
+                            </p>
+                        </div>
+
+                        <!-- Sprite Dinámico del Sr. Bigotes -->
+                        <div class="w-20 h-20 relative z-10 flex items-center justify-center">
+                            <img id="sr-bigotes-sprite" src="" class="w-full h-full object-contain drop-shadow-md">
+                        </div>
+                    </div>
+
+                    <!-- NOTIFICACIÓN / CONSEJO RÁPIDO DEL SR. BIGOTES -->
+                    <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-2xl p-3 shadow-sm flex items-center gap-3">
+                        <div class="text-2xl shrink-0">🔔</div>
+                        <div class="text-[10px]">
+                            <b class="text-amber-300 block text-xs">Mensaje del Sr. Bigotes:</b>
+                            <span id="sr-bigotes-noticall">"Recuerda revisar tus alimentos marcados con punto rojo hoy."</span>
+                        </div>
+                    </div>
+
+                    <!-- MÉTRICAS DE IMPACTO AMBIENTAL Y AHORRO -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">💰</span>
+                            <span id="metric-ahorro" class="text-xs font-extrabold text-emerald-700 mt-1">$45.000</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Ahorrado</span>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">🎁</span>
+                            <span id="metric-donado" class="text-xs font-extrabold text-amber-600 mt-1">5 Packs</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Donados</span>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                            <span class="text-lg">⚖️</span>
+                            <span id="metric-salvado" class="text-xs font-extrabold text-emerald-800 mt-1">8.5 kg</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Comida Salvada</span>
+                        </div>
+                    </div>
+
+                    <!-- OPCIONES DE CUENTA Y AJUSTES -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm space-y-1">
+                        <button type="button" onclick="cambiarDeCuenta()" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-users-line text-emerald-600"></i> Cambiar de Cuenta</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </button>
+
+                        <button type="button" onclick="reiniciarDatosCuenta()" class="w-full text-left p-2.5 rounded-xl hover:bg-red-50 flex items-center justify-between text-xs font-bold text-red-600 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-red-500"></i> Reiniciar Datos de Cuenta</span>
+                            <i class="fa-solid fa-chevron-right text-red-300"></i>
+                        </button>
+
+                        <button type="button" onclick="cerrarSesion()" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-600 cursor-pointer">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-from-bracket text-slate-400"></i> Cerrar Sesión</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </button>
+                    </div>
+
+                </main>
+
+                <nav class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center rounded-t-3xl shadow-lg">
+                    <button type="button" onclick="volverADespensa()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-box-archive text-base mb-0.5"></i>
+                        <span>Despensa</span>
+                    </button>
+                    <button type="button" onclick="abrirRecetas()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+                        <span>Recetas</span>
+                    </button>
+                    <button type="button" onclick="abrirModalAgregar()" class="w-11 h-11 rounded-full bg-[#3b630b] text-white flex items-center justify-center -mt-6 shadow-lg border-4 border-slate-50 cursor-pointer">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </button>
+                    <button type="button" onclick="abrirDonaciones()" class="flex flex-col items-center text-slate-400 hover:text-emerald-700 text-[9px]">
+                        <i class="fa-solid fa-hand-holding-heart text-base mb-0.5"></i>
+                        <span>Donar</span>
+                    </button>
+                    <button type="button" onclick="abrirPerfil()" class="flex flex-col items-center text-[#3b630b] font-bold text-[9px]">
+                        <i class="fa-solid fa-user text-base mb-0.5"></i>
+                        <span>Perfil</span>
+                    </button>
+                </nav>
+            </div>
+
         </div>
 
         <!-- PANTALLA DE CARGA CON CONEJO Y ZANAHORIAS -->
@@ -681,6 +806,45 @@
                     <span class="text-xl carrot-3">🥕</span>
                 </div>
                 <p class="text-[10px] text-slate-500 italic">Un momento mientras organizamos tus insumos</p>
+            </div>
+        </div>
+
+        <!-- MODAL EDITOR DE AVATAR -->
+        <div id="modal-editor-avatar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
+                <button type="button" onclick="cerrarEditorAvatar()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-3 text-center">🎨 Personalizar Icono de Perfil</h3>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Selecciona una imagen:</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="seleccionarAvatarPreset('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150')" class="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 cursor-pointer">
+                                <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150" class="w-full h-full object-cover">
+                            </button>
+                            <button type="button" onclick="document.getElementById('input-custom-avatar').click()" class="w-12 h-12 rounded-full bg-emerald-50 border-2 border-dashed border-emerald-400 flex items-center justify-center text-emerald-700 text-xs font-bold cursor-pointer">
+                                + Subir
+                            </button>
+                        </div>
+                        <input type="file" id="input-custom-avatar" accept="image/*" onchange="subirCustomAvatar(event)" class="hidden">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 block mb-1">Ajustar tamaño del Marco:</label>
+                        <input type="range" id="slider-avatar-size" min="60" max="110" value="80" oninput="cambiarTamanoAvatar(this.value)" class="w-full accent-emerald-600 cursor-pointer">
+                    </div>
+                </div>
+
+                <button type="button" onclick="guardarAjustesAvatar()" class="w-full mt-4 btn-green text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition cursor-pointer">
+                    Guardar Cambios
+                </button>
             </div>
         </div>
 
@@ -707,7 +871,7 @@
             </div>
         </div>
 
-        <!-- MODAL PARA PUBLICAR EN LA COMUNIDAD (CON O SIN FOTO) -->
+        <!-- MODAL PARA PUBLICAR EN LA COMUNIDAD -->
         <div id="modal-publicar-comunidad" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarModalNuevaPublicacionComunidad()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
@@ -753,7 +917,7 @@
             </div>
         </div>
 
-        <!-- MODAL DE PUBLICACIÓN DIRECTA DE DONACIÓN ("1-CLIC") -->
+        <!-- MODAL DE PUBLICACIÓN DIRECTA DE DONACIÓN -->
         <div id="modal-publicar-donacion" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarModalPublicarDonacion()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
@@ -799,7 +963,7 @@
             </div>
         </div>
 
-        <!-- MODAL DE SELECCIÓN DE CUENTA SOCIAL CON NOMBRE DE USUARIO EDITABLE -->
+        <!-- MODAL DE SELECCIÓN DE CUENTA SOCIAL -->
         <div id="modal-social" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up">
                 <button type="button" onclick="cerrarModalSocial()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
