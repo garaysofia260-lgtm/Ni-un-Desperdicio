@@ -23,7 +23,8 @@ let donacionFiltro = 'cerca';
 let categoriaPuntosFijos = 'todos';
 
 // Filtros Comunidades y Chat
-let comunidadSubtab = 'perfiles';
+let comunidadSubtab = 'foro';
+let comunidadFiltroCategoria = 'todos';
 let chatActivoEmail = null;
 
 // Base de datos de cuentas registradas localmente
@@ -33,6 +34,59 @@ let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')
     'mcdonalds@comercio.com': { pass: '123456', nombre: 'McDonald\'s Centro', tipo: 'comercio' },
     'fundacion@esperanza.org': { pass: '123456', nombre: 'Fundación San José', tipo: 'fundacion' }
 };
+
+// NOTICIAS DEL SECTOR ECO / ZERO WASTE
+const noticiasEcoList = [
+    {
+        id: 1,
+        titulo: '🌍 Nuevas metas de reducción del desperdicio para 2026',
+        fuente: 'Noticias Ambientales',
+        resumen: 'Se han establecido acuerdos locales para redistribuir más de 10 toneladas de alimentos antes de fin de año.'
+    },
+    {
+        id: 2,
+        titulo: '🌱 Bancos de Alimentos amplían rutas de recolección',
+        fuente: 'Red Solidaria Global',
+        resumen: 'Ahora los pequeños comercios pueden agendar recogidas directamente en barrios céntricos.'
+    }
+];
+
+// DATOS BASE DE PUBLICACIONES DE LA COMUNIDAD
+const publicacionesComunidadDefault = [
+    {
+        id: 401,
+        autor: 'Sofia',
+        tipoAutor: 'hogar',
+        categoria: 'recetas',
+        titulo: '🍞 Cómo aprovechar el pan duro de ayer',
+        contenido: '¡No lo tires! Corta en cubos, agrega aceite de oliva, orégano y hornea por 8 min a 180°C. Tienes crutones deliciosos para ensaladas.',
+        fecha: 'Hace 2 horas',
+        likes: 12,
+        dioLike: false
+    },
+    {
+        id: 402,
+        autor: 'Fundación San José',
+        tipoAutor: 'fundacion',
+        categoria: 'alertas',
+        titulo: '🏛️ Gran Recolección de Granos Secos',
+        contenido: 'Este fin de semana estaremos recibiendo arroz, lentejas y frijoles en la sede central para el comedor comunitario infantil.',
+        fecha: 'Hace 5 horas',
+        likes: 24,
+        dioLike: false
+    },
+    {
+        id: 403,
+        autor: 'McDonald\'s Centro',
+        tipoAutor: 'comercio',
+        categoria: 'tips',
+        titulo: '🏬 Tip de Almacenamiento de Verduras',
+        contenido: 'Guarda las lechugas y verduras de hoja con una servilleta de papel húmeda en un contenedor hermético. ¡Duran el doble!',
+        fecha: 'Ayer',
+        likes: 18,
+        dioLike: false
+    }
+];
 
 // DATOS BASE PREDETERMINADOS DE DONACIONES
 const donacionesBaseDefault = [
@@ -143,9 +197,10 @@ const listaComprasDefault = [
 let inventario = [];
 let listaCompras = [];
 let redDonaciones = [];
-let solicitudesAmistad = {}; // { usuarioEmail: [remitenteEmail, ...] }
-let amigosConectados = {}; // { usuarioEmail: [amigoEmail, ...] }
-let mensajesChat = {}; // { 'email1_email2': [{de, texto, hora}] }
+let publicacionesComunidad = [];
+let solicitudesAmistad = {};
+let amigosConectados = {};
+let mensajesChat = {};
 
 // PLANTILLAS DE RECETAS
 const plantillasRecetas = [
@@ -214,6 +269,7 @@ function cargarDatosUsuario() {
     }
 
     cargarRedDonacionesGlobales();
+    cargarPublicacionesComunidadGlobales();
     guardarEnLocalStorage();
 }
 
@@ -226,6 +282,15 @@ function cargarRedDonacionesGlobales() {
     }
 }
 
+function cargarPublicacionesComunidadGlobales() {
+    const pubGuardadas = localStorage.getItem(`nowaste_comunidad_posts`);
+    if (pubGuardadas) {
+        try { publicacionesComunidad = JSON.parse(pubGuardadas); } catch (e) { publicacionesComunidad = []; }
+    } else {
+        publicacionesComunidad = JSON.parse(JSON.stringify(publicacionesComunidadDefault));
+    }
+}
+
 function guardarEnLocalStorage() {
     try {
         if (usuarioActual) {
@@ -233,6 +298,7 @@ function guardarEnLocalStorage() {
             localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
         }
         localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
+        localStorage.setItem(`nowaste_comunidad_posts`, JSON.stringify(publicacionesComunidad));
         localStorage.setItem('nowaste_usuarios_db', JSON.stringify(usuariosRegistrados));
         localStorage.setItem('nowaste_solicitudes_db', JSON.stringify(solicitudesAmistad));
         localStorage.setItem('nowaste_amigos_db', JSON.stringify(amigosConectados));
@@ -247,6 +313,10 @@ window.addEventListener('storage', (event) => {
     if (event.key === 'nowaste_donaciones_red') {
         cargarRedDonacionesGlobales();
         renderizarRedDonaciones();
+    }
+    if (event.key === 'nowaste_comunidad_posts') {
+        cargarPublicacionesComunidadGlobales();
+        renderizarPublicacionesComunidad();
     }
     if (event.key === 'nowaste_solicitudes_db' || event.key === 'nowaste_amigos_db' || event.key === 'nowaste_chats_db') {
         cargarDatosUsuario();
@@ -270,34 +340,190 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
     renderizarRedDonaciones();
     renderizarPuntosRecoleccion();
+    renderizarNoticiasEco();
+    renderizarPublicacionesComunidad();
     renderizarListaPerfiles();
     renderizarPanelChatsYAmigos();
 });
 
 // ==========================================
-// MÓDULO COMUNIDADES: PERFILES, AMISTADES Y CHAT
+// MÓDULO COMUNIDADES: FORO, NOTICIAS, BUSCAR CUENTAS Y CHAT
 // ==========================================
 function cambiarSubtabComunidad(tab) {
     comunidadSubtab = tab;
+    const btnForo = document.getElementById('tab-com-foro');
     const btnPerfiles = document.getElementById('tab-com-perfiles');
     const btnChat = document.getElementById('tab-com-chat');
+
+    const contForo = document.getElementById('subtab-comunidad-foro');
     const contPerfiles = document.getElementById('subtab-comunidad-perfiles');
     const contChat = document.getElementById('subtab-comunidad-chat');
 
-    if (tab === 'perfiles') {
+    [btnForo, btnPerfiles, btnChat].forEach(b => {
+        if (b) b.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+    });
+
+    [contForo, contPerfiles, contChat].forEach(c => c?.classList.add('hidden'));
+
+    if (tab === 'foro') {
+        btnForo.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        contForo?.classList.remove('hidden');
+        renderizarNoticiasEco();
+        renderizarPublicacionesComunidad();
+    } else if (tab === 'perfiles') {
         btnPerfiles.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
-        btnChat.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
-        contPerfiles.classList.remove('hidden');
-        contChat.classList.add('hidden');
+        contPerfiles?.classList.remove('hidden');
         renderizarListaPerfiles();
     } else {
         btnChat.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
-        btnPerfiles.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
-        contChat.classList.remove('hidden');
-        contPerfiles.classList.add('hidden');
+        contChat?.classList.remove('hidden');
         cerrarChatActivo();
         renderizarPanelChatsYAmigos();
     }
+}
+
+function renderizarNoticiasEco() {
+    const cont = document.getElementById('contenedor-noticias-eco');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+    noticiasEcoList.forEach(n => {
+        cont.innerHTML += `
+            <div class="bg-white/10 p-2 rounded-xl text-[10px] space-y-0.5 border border-white/10">
+                <h4 class="font-bold text-amber-200">${n.titulo}</h4>
+                <p class="text-emerald-100 leading-tight">${n.resumen}</p>
+            </div>
+        `;
+    });
+}
+
+function renderizarPublicacionesComunidad() {
+    const cont = document.getElementById('contenedor-publicaciones-comunidad');
+    if (!cont) return;
+
+    cont.innerHTML = '';
+
+    let filtrados = publicacionesComunidad.filter(p => {
+        return comunidadFiltroCategoria === 'todos' || p.categoria === comunidadFiltroCategoria;
+    });
+
+    if (filtrados.length === 0) {
+        cont.innerHTML = `
+            <div class="text-center py-8 text-xs text-slate-400">
+                <i class="fa-solid fa-comments text-2xl mb-1 block"></i>
+                No hay publicaciones en esta categoría. ¡Sé el primero en compartir!
+            </div>`;
+        return;
+    }
+
+    filtrados.forEach(post => {
+        let badgeTipo = `<b class="text-emerald-700">${post.autor}</b>`;
+        if (post.tipoAutor === 'comercio') {
+            badgeTipo = `<span class="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-amber-200">🏬 ${post.autor}</span>`;
+        } else if (post.tipoAutor === 'fundacion') {
+            badgeTipo = `<span class="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-purple-200">🏛️ ${post.autor}</span>`;
+        }
+
+        let catTxt = '💬 General';
+        if (post.categoria === 'recetas') catTxt = '🍲 Receta';
+        else if (post.categoria === 'tips') catTxt = '💡 Tip';
+        else if (post.categoria === 'alertas') catTxt = '📢 Alerta';
+
+        cont.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm space-y-2">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">${catTxt}</span>
+                        <h4 class="text-xs font-bold text-slate-800 mt-1">${post.titulo}</h4>
+                    </div>
+                    <span class="text-[9px] text-slate-400 font-semibold">${post.fecha}</span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">${post.contenido}</p>
+
+                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px]">
+                    <span class="text-slate-500">Por ${badgeTipo}</span>
+
+                    <button type="button" onclick="darLikePublicacionComunidad(${post.id})" class="flex items-center gap-1 font-bold ${post.dioLike ? 'text-red-500' : 'text-slate-400 hover:text-red-500'} transition cursor-pointer">
+                        <i class="${post.dioLike ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        <span>${post.likes}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function filtrarPublicacionesComunidad(cat) {
+    comunidadFiltroCategoria = cat;
+    ['todos', 'recetas', 'tips', 'alertas'].forEach(c => {
+        const btn = document.getElementById(`btn-com-cat-${c}`);
+        if (btn) {
+            btn.className = (c === cat) 
+                ? "px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer"
+                : "px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
+        }
+    });
+    renderizarPublicacionesComunidad();
+}
+
+function darLikePublicacionComunidad(idPost) {
+    const post = publicacionesComunidad.find(p => p.id === idPost);
+    if (!post) return;
+
+    if (post.dioLike) {
+        post.likes--;
+        post.dioLike = false;
+    } else {
+        post.likes++;
+        post.dioLike = true;
+    }
+
+    guardarEnLocalStorage();
+    renderizarPublicacionesComunidad();
+}
+
+function abrirModalNuevaPublicacionComunidad() {
+    document.getElementById('modal-publicar-comunidad')?.classList.remove('hidden');
+}
+
+function cerrarModalNuevaPublicacionComunidad() {
+    document.getElementById('modal-publicar-comunidad')?.classList.add('hidden');
+}
+
+function guardarPublicacionComunidad() {
+    const cat = document.getElementById('select-comunidad-categoria')?.value || 'recetas';
+    const titulo = document.getElementById('input-comunidad-titulo')?.value.trim();
+    const contenido = document.getElementById('input-comunidad-contenido')?.value.trim();
+
+    if (!titulo || !contenido) {
+        return alert("Por favor completa el título y mensaje de tu publicación.");
+    }
+
+    const miNombre = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
+    const tipoCuenta = usuariosRegistrados[usuarioActual]?.tipo || 'hogar';
+
+    const nuevaPub = {
+        id: Date.now(),
+        autor: miNombre,
+        tipoAutor: tipoCuenta,
+        categoria: cat,
+        titulo: titulo,
+        contenido: contenido,
+        fecha: 'Ahora mismo',
+        likes: 0,
+        dioLike: false
+    };
+
+    publicacionesComunidad.unshift(nuevaPub);
+    guardarEnLocalStorage();
+    renderizarPublicacionesComunidad();
+    cerrarModalNuevaPublicacionComunidad();
+
+    document.getElementById('input-comunidad-titulo').value = '';
+    document.getElementById('input-comunidad-contenido').value = '';
+
+    alert("🎉 Publicación compartida con éxito en la Comunidad.");
 }
 
 function renderizarListaPerfiles() {
@@ -356,7 +582,6 @@ function verPerfilUsuario(email) {
     document.getElementById('perfil-modal-tipo').textContent = u.tipo || 'hogar';
 
     const btnContainer = document.getElementById('perfil-modal-accion-container');
-    
     const misAmigos = amigosConectados[usuarioActual] || [];
     const misSolicitudes = solicitudesAmistad[email] || [];
     const yaSolicitado = misSolicitudes.includes(usuarioActual);
@@ -407,7 +632,6 @@ function renderizarPanelChatsYAmigos() {
     contSolicitudes.innerHTML = '';
     contAmigos.innerHTML = '';
 
-    // Renderizar solicitudes recibidas
     const misSolicitudes = solicitudesAmistad[usuarioActual] || [];
     if (misSolicitudes.length === 0) {
         contSolicitudes.innerHTML = `<p class="text-[11px] text-slate-400 italic">No tienes solicitudes pendientes.</p>`;
@@ -429,7 +653,6 @@ function renderizarPanelChatsYAmigos() {
         });
     }
 
-    // Renderizar amigos aceptados para chat
     const misAmigos = amigosConectados[usuarioActual] || [];
     if (misAmigos.length === 0) {
         contAmigos.innerHTML = `<p class="text-[11px] text-slate-400 italic">Aún no tienes amigos agregados. Busca perfiles para conectar.</p>`;
@@ -1250,6 +1473,9 @@ function abrirDonaciones() {
 function abrirComunidades() {
     ocultarTodasLasVistas();
     document.getElementById('vista-comunidades')?.classList.remove('hidden');
+    cargarPublicacionesComunidadGlobales();
+    renderizarNoticiasEco();
+    renderizarPublicacionesComunidad();
     renderizarListaPerfiles();
     renderizarPanelChatsYAmigos();
 }
