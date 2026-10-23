@@ -22,9 +22,9 @@ let donacionSubtab = 'red';
 let donacionFiltro = 'cerca';
 let categoriaPuntosFijos = 'todos';
 
-// Filtros Comunidades
-let comunidadSubtab = 'muros';
-let comunidadFiltroCategoria = 'todos';
+// Filtros Comunidades y Chat
+let comunidadSubtab = 'perfiles';
+let chatActivoEmail = null;
 
 // Base de datos de cuentas registradas localmente
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
@@ -33,71 +33,6 @@ let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')
     'mcdonalds@comercio.com': { pass: '123456', nombre: 'McDonald\'s Centro', tipo: 'comercio' },
     'fundacion@esperanza.org': { pass: '123456', nombre: 'Fundación San José', tipo: 'fundacion' }
 };
-
-// DATOS BASE DE PUBLICACIONES DE LA COMUNIDAD
-const publicacionesComunidadDefault = [
-    {
-        id: 401,
-        autor: 'Sofia',
-        tipoAutor: 'hogar',
-        categoria: 'recetas',
-        titulo: '🍞 Cómo aprovechar el pan duro de ayer',
-        contenido: '¡No lo tires! Corta en cubos, agrega aceite de oliva, orégano y hornea por 8 min a 180°C. Tienes crutones deliciosos para ensaladas.',
-        fecha: 'Hace 2 horas',
-        likes: 12,
-        dioLike: false
-    },
-    {
-        id: 402,
-        autor: 'Fundación San José',
-        tipoAutor: 'fundacion',
-        categoria: 'alertas',
-        titulo: '🏛️ Gran Recolección de Granos Secos',
-        contenido: 'Este fin de semana estaremos recibiendo arroz, lentejas y frijoles en la sede central para el comedor comunitario infantil.',
-        fecha: 'Hace 5 horas',
-        likes: 24,
-        dioLike: false
-    },
-    {
-        id: 403,
-        autor: 'McDonald\'s Centro',
-        tipoAutor: 'comercio',
-        categoria: 'tips',
-        titulo: '🏬 Tip de Almacenamiento de Verduras',
-        contenido: 'Guarda las lechugas y verduras de hoja con una servilleta de papel húmeda en un contenedor hermético. ¡Duran el doble!',
-        fecha: 'Ayer',
-        likes: 18,
-        dioLike: false
-    }
-];
-
-// DATOS BASE DE GRUPOS Y ALIADOS LOCALES
-const gruposComunidadList = [
-    {
-        id: 501,
-        nombre: 'Vecinos Recicladores Centro',
-        tipo: '👥 Grupo Vecinal',
-        miembros: '142 miembros',
-        descripcion: 'Comunidad orientada al intercambio de insumos y compostaje comunitario.',
-        unido: true
-    },
-    {
-        id: 502,
-        nombre: 'Restaurantes Conscientes',
-        tipo: '🏬 Red Comercial Aliada',
-        miembros: '28 establecimientos',
-        descripcion: 'Red de comercios que ofrecen excedentes diarios de comida en óptimo estado.',
-        unido: false
-    },
-    {
-        id: 503,
-        nombre: 'Voluntarios Zero Waste',
-        tipo: '🌱 Movimiento Voluntario',
-        miembros: '89 voluntarios',
-        descripcion: 'Organización de jornadas de rescate de comida en plazas de mercado.',
-        unido: false
-    }
-];
 
 // DATOS BASE PREDETERMINADOS DE DONACIONES
 const donacionesBaseDefault = [
@@ -208,7 +143,9 @@ const listaComprasDefault = [
 let inventario = [];
 let listaCompras = [];
 let redDonaciones = [];
-let publicacionesComunidad = [];
+let solicitudesAmistad = {}; // { usuarioEmail: [remitenteEmail, ...] }
+let amigosConectados = {}; // { usuarioEmail: [amigoEmail, ...] }
+let mensajesChat = {}; // { 'email1_email2': [{de, texto, hora}] }
 
 // PLANTILLAS DE RECETAS
 const plantillasRecetas = [
@@ -261,8 +198,22 @@ function cargarDatosUsuario() {
         listaCompras = JSON.parse(JSON.stringify(listaComprasDefault));
     }
 
+    const solicitudesGuardadas = localStorage.getItem('nowaste_solicitudes_db');
+    if (solicitudesGuardadas) {
+        try { solicitudesAmistad = JSON.parse(solicitudesGuardadas); } catch (e) { solicitudesAmistad = {}; }
+    }
+
+    const amigosGuardados = localStorage.getItem('nowaste_amigos_db');
+    if (amigosGuardados) {
+        try { amigosConectados = JSON.parse(amigosGuardados); } catch (e) { amigosConectados = {}; }
+    }
+
+    const chatsGuardados = localStorage.getItem('nowaste_chats_db');
+    if (chatsGuardados) {
+        try { mensajesChat = JSON.parse(chatsGuardados); } catch (e) { mensajesChat = {}; }
+    }
+
     cargarRedDonacionesGlobales();
-    cargarPublicacionesComunidadGlobales();
     guardarEnLocalStorage();
 }
 
@@ -275,15 +226,6 @@ function cargarRedDonacionesGlobales() {
     }
 }
 
-function cargarPublicacionesComunidadGlobales() {
-    const pubGuardadas = localStorage.getItem(`nowaste_comunidad_posts`);
-    if (pubGuardadas) {
-        try { publicacionesComunidad = JSON.parse(pubGuardadas); } catch (e) { publicacionesComunidad = []; }
-    } else {
-        publicacionesComunidad = JSON.parse(JSON.stringify(publicacionesComunidadDefault));
-    }
-}
-
 function guardarEnLocalStorage() {
     try {
         if (usuarioActual) {
@@ -291,8 +233,10 @@ function guardarEnLocalStorage() {
             localStorage.setItem(`nowaste_compras_${usuarioActual}`, JSON.stringify(listaCompras));
         }
         localStorage.setItem(`nowaste_donaciones_red`, JSON.stringify(redDonaciones));
-        localStorage.setItem(`nowaste_comunidad_posts`, JSON.stringify(publicacionesComunidad));
         localStorage.setItem('nowaste_usuarios_db', JSON.stringify(usuariosRegistrados));
+        localStorage.setItem('nowaste_solicitudes_db', JSON.stringify(solicitudesAmistad));
+        localStorage.setItem('nowaste_amigos_db', JSON.stringify(amigosConectados));
+        localStorage.setItem('nowaste_chats_db', JSON.stringify(mensajesChat));
     } catch (e) {
         console.warn("Límite de almacenamiento alcanzado", e);
     }
@@ -304,9 +248,12 @@ window.addEventListener('storage', (event) => {
         cargarRedDonacionesGlobales();
         renderizarRedDonaciones();
     }
-    if (event.key === 'nowaste_comunidad_posts') {
-        cargarPublicacionesComunidadGlobales();
-        renderizarPublicacionesComunidad();
+    if (event.key === 'nowaste_solicitudes_db' || event.key === 'nowaste_amigos_db' || event.key === 'nowaste_chats_db') {
+        cargarDatosUsuario();
+        if (comunidadSubtab === 'chat') {
+            renderizarPanelChatsYAmigos();
+            if (chatActivoEmail) abrirChatConAmigo(chatActivoEmail);
+        }
     }
 });
 
@@ -323,202 +270,284 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCompras();
     renderizarRedDonaciones();
     renderizarPuntosRecoleccion();
-    renderizarPublicacionesComunidad();
-    renderizarGruposComunidad();
+    renderizarListaPerfiles();
+    renderizarPanelChatsYAmigos();
 });
 
 // ==========================================
-// MÓDULO PESTAÑA COMUNIDADES Y ALIADOS
+// MÓDULO COMUNIDADES: PERFILES, AMISTADES Y CHAT
 // ==========================================
-function renderizarPublicacionesComunidad() {
-    const cont = document.getElementById('contenedor-publicaciones-comunidad');
+function cambiarSubtabComunidad(tab) {
+    comunidadSubtab = tab;
+    const btnPerfiles = document.getElementById('tab-com-perfiles');
+    const btnChat = document.getElementById('tab-com-chat');
+    const contPerfiles = document.getElementById('subtab-comunidad-perfiles');
+    const contChat = document.getElementById('subtab-comunidad-chat');
+
+    if (tab === 'perfiles') {
+        btnPerfiles.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnChat.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contPerfiles.classList.remove('hidden');
+        contChat.classList.add('hidden');
+        renderizarListaPerfiles();
+    } else {
+        btnChat.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
+        btnPerfiles.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
+        contChat.classList.remove('hidden');
+        contPerfiles.classList.add('hidden');
+        cerrarChatActivo();
+        renderizarPanelChatsYAmigos();
+    }
+}
+
+function renderizarListaPerfiles() {
+    const cont = document.getElementById('contenedor-lista-perfiles');
     if (!cont) return;
 
     cont.innerHTML = '';
+    const busqueda = (document.getElementById('input-buscar-perfil')?.value || '').toLowerCase().trim();
 
-    let filtrados = publicacionesComunidad.filter(p => {
-        return comunidadFiltroCategoria === 'todos' || p.categoria === comunidadFiltroCategoria;
-    });
+    let emails = Object.keys(usuariosRegistrados).filter(email => email !== usuarioActual);
 
-    if (filtrados.length === 0) {
-        cont.innerHTML = `
-            <div class="text-center py-8 text-xs text-slate-400">
-                <i class="fa-solid fa-comments text-2xl mb-1 block"></i>
-                No hay publicaciones en esta categoría. ¡Sé el primero en compartir!
-            </div>`;
+    if (busqueda) {
+        emails = emails.filter(email => {
+            const u = usuariosRegistrados[email];
+            return email.toLowerCase().includes(busqueda) || u.nombre.toLowerCase().includes(busqueda);
+        });
+    }
+
+    if (emails.length === 0) {
+        cont.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">No se encontraron perfiles registrados.</div>`;
         return;
     }
 
-    filtrados.forEach(post => {
-        let badgeTipo = `<b class="text-emerald-700">${post.autor}</b>`;
-        if (post.tipoAutor === 'comercio') {
-            badgeTipo = `<span class="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-amber-200">🏬 ${post.autor}</span>`;
-        } else if (post.tipoAutor === 'fundacion') {
-            badgeTipo = `<span class="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-purple-200">🏛️ ${post.autor}</span>`;
-        }
-
-        let catTxt = '💬 General';
-        if (post.categoria === 'recetas') catTxt = '🍲 Receta';
-        else if (post.categoria === 'tips') catTxt = '💡 Tip';
-        else if (post.categoria === 'alertas') catTxt = '📢 Alerta';
+    emails.forEach(email => {
+        const u = usuariosRegistrados[email];
+        let badgeTipo = `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold text-[9px]">🏠 Hogar</span>`;
+        if (u.tipo === 'comercio') badgeTipo = `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold text-[9px]">🏬 Comercio</span>`;
+        if (u.tipo === 'fundacion') badgeTipo = `<span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-md font-bold text-[9px]">🏛️ Fundación</span>`;
 
         cont.innerHTML += `
-            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm space-y-2">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">${catTxt}</span>
-                        <h4 class="text-xs font-bold text-slate-800 mt-1">${post.titulo}</h4>
+            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3 cursor-pointer flex-1" onclick="verPerfilUsuario('${email}')">
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
+                        ${u.nombre.charAt(0).toUpperCase()}
                     </div>
-                    <span class="text-[9px] text-slate-400 font-semibold">${post.fecha}</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800">${u.nombre}</h4>
+                        <p class="text-[10px] text-slate-400">${email}</p>
+                        <div class="mt-1">${badgeTipo}</div>
+                    </div>
                 </div>
-
-                <p class="text-xs text-slate-600 leading-relaxed">${post.contenido}</p>
-
-                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px]">
-                    <span class="text-slate-500">Por ${badgeTipo}</span>
-
-                    <button type="button" onclick="darLikePublicacionComunidad(${post.id})" class="flex items-center gap-1 font-bold ${post.dioLike ? 'text-red-500' : 'text-slate-400 hover:text-red-500'} transition cursor-pointer">
-                        <i class="${post.dioLike ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                        <span>${post.likes}</span>
-                    </button>
-                </div>
+                <button type="button" onclick="verPerfilUsuario('${email}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">
+                    Ver Perfil
+                </button>
             </div>
         `;
     });
 }
 
-function renderizarGruposComunidad() {
-    const cont = document.getElementById('contenedor-grupos-comunidad');
-    if (!cont) return;
+function verPerfilUsuario(email) {
+    const u = usuariosRegistrados[email];
+    if (!u) return;
+
+    document.getElementById('perfil-modal-nombre').textContent = u.nombre;
+    document.getElementById('perfil-modal-correo').textContent = email;
+    document.getElementById('perfil-modal-tipo').textContent = u.tipo || 'hogar';
+
+    const btnContainer = document.getElementById('perfil-modal-accion-container');
+    
+    const misAmigos = amigosConectados[usuarioActual] || [];
+    const misSolicitudes = solicitudesAmistad[email] || [];
+    const yaSolicitado = misSolicitudes.includes(usuarioActual);
+    const sonAmigos = misAmigos.includes(email);
+
+    if (sonAmigos) {
+        btnContainer.innerHTML = `
+            <button type="button" onclick="cerrarModalPerfil(); cambiarSubtabComunidad('chat'); abrirChatConAmigo('${email}');" class="w-full btn-green text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
+                💬 Abrir Chat Directo
+            </button>`;
+    } else if (yaSolicitado) {
+        btnContainer.innerHTML = `<button type="button" disabled class="w-full bg-slate-100 text-slate-500 text-xs font-bold py-2.5 rounded-xl cursor-not-allowed">⏳ Solicitud Enviada</button>`;
+    } else {
+        btnContainer.innerHTML = `
+            <button type="button" onclick="enviarSolicitudAmistad('${email}')" class="w-full btn-green text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
+                ➕ Enviar Solicitud de Amistad
+            </button>`;
+    }
+
+    document.getElementById('modal-ver-perfil')?.classList.remove('hidden');
+}
+
+function cerrarModalPerfil() {
+    document.getElementById('modal-ver-perfil')?.classList.add('hidden');
+}
+
+function enviarSolicitudAmistad(emailDestino) {
+    if (!solicitudesAmistad[emailDestino]) {
+        solicitudesAmistad[emailDestino] = [];
+    }
+
+    if (!solicitudesAmistad[emailDestino].includes(usuarioActual)) {
+        solicitudesAmistad[emailDestino].push(usuarioActual);
+        guardarEnLocalStorage();
+        alert("✨ Solicitud de amistad enviada con éxito.");
+    } else {
+        alert("Ya habías enviado una solicitud a este usuario.");
+    }
+    cerrarModalPerfil();
+    renderizarListaPerfiles();
+}
+
+function renderizarPanelChatsYAmigos() {
+    const contSolicitudes = document.getElementById('contenedor-solicitudes');
+    const contAmigos = document.getElementById('contenedor-amigos-chats');
+    if (!contSolicitudes || !contAmigos) return;
+
+    contSolicitudes.innerHTML = '';
+    contAmigos.innerHTML = '';
+
+    // Renderizar solicitudes recibidas
+    const misSolicitudes = solicitudesAmistad[usuarioActual] || [];
+    if (misSolicitudes.length === 0) {
+        contSolicitudes.innerHTML = `<p class="text-[11px] text-slate-400 italic">No tienes solicitudes pendientes.</p>`;
+    } else {
+        misSolicitudes.forEach(remitenteEmail => {
+            const rem = usuariosRegistrados[remitenteEmail] || { nombre: remitenteEmail };
+            contSolicitudes.innerHTML += `
+                <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs">
+                    <div>
+                        <p class="font-bold text-slate-800">${rem.nombre}</p>
+                        <p class="text-[9px] text-slate-400">${remitenteEmail}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button type="button" onclick="aceptarSolicitud('${remitenteEmail}')" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded-lg text-[10px] cursor-pointer">Aceptar</button>
+                        <button type="button" onclick="rechazarSolicitud('${remitenteEmail}')" class="bg-slate-200 text-slate-600 font-bold px-2 py-1 rounded-lg text-[10px] cursor-pointer">Rechazar</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Renderizar amigos aceptados para chat
+    const misAmigos = amigosConectados[usuarioActual] || [];
+    if (misAmigos.length === 0) {
+        contAmigos.innerHTML = `<p class="text-[11px] text-slate-400 italic">Aún no tienes amigos agregados. Busca perfiles para conectar.</p>`;
+    } else {
+        misAmigos.forEach(amigoEmail => {
+            const amigo = usuariosRegistrados[amigoEmail] || { nombre: amigoEmail };
+            contAmigos.innerHTML += `
+                <div onclick="abrirChatConAmigo('${amigoEmail}')" class="flex items-center justify-between bg-slate-50 hover:bg-emerald-50/60 p-2.5 rounded-xl border border-slate-200 transition cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                            ${amigo.nombre.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-slate-800">${amigo.nombre}</p>
+                            <p class="text-[9px] text-emerald-700 font-semibold">🟢 Conectado • Toca para chatear</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                </div>
+            `;
+        });
+    }
+}
+
+function aceptarSolicitud(remitenteEmail) {
+    if (!amigosConectados[usuarioActual]) amigosConectados[usuarioActual] = [];
+    if (!amigosConectados[remitenteEmail]) amigosConectados[remitenteEmail] = [];
+
+    if (!amigosConectados[usuarioActual].includes(remitenteEmail)) {
+        amigosConectados[usuarioActual].push(remitenteEmail);
+    }
+    if (!amigosConectados[remitenteEmail].includes(usuarioActual)) {
+        amigosConectados[remitenteEmail].push(usuarioActual);
+    }
+
+    solicitudesAmistad[usuarioActual] = solicitudesAmistad[usuarioActual].filter(e => e !== remitenteEmail);
+    guardarEnLocalStorage();
+    renderizarPanelChatsYAmigos();
+    alert("🤝 ¡Ahora son amigos en la red Zero Waste!");
+}
+
+function rechazarSolicitud(remitenteEmail) {
+    solicitudesAmistad[usuarioActual] = solicitudesAmistad[usuarioActual].filter(e => e !== remitenteEmail);
+    guardarEnLocalStorage();
+    renderizarPanelChatsYAmigos();
+}
+
+function abrirChatConAmigo(amigoEmail) {
+    chatActivoEmail = amigoEmail;
+    const amigo = usuariosRegistrados[amigoEmail] || { nombre: amigoEmail };
+
+    document.getElementById('panel-lista-chats')?.classList.add('hidden');
+    document.getElementById('panel-conversacion-chat')?.classList.remove('hidden');
+    document.getElementById('chat-titulo-amigo').textContent = `Chat con ${amigo.nombre}`;
+
+    renderizarMensajesChat();
+}
+
+function cerrarChatActivo() {
+    chatActivoEmail = null;
+    document.getElementById('panel-conversacion-chat')?.classList.add('hidden');
+    document.getElementById('panel-lista-chats')?.classList.remove('hidden');
+    renderizarPanelChatsYAmigos();
+}
+
+function obtenerClaveChat(e1, e2) {
+    return [e1, e2].sort().join('_');
+}
+
+function renderizarMensajesChat() {
+    const cont = document.getElementById('contenedor-mensajes-chat');
+    if (!cont || !chatActivoEmail) return;
 
     cont.innerHTML = '';
+    const clave = obtenerClaveChat(usuarioActual, chatActivoEmail);
+    const historial = mensajesChat[clave] || [];
 
-    gruposComunidadList.forEach(g => {
+    if (historial.length === 0) {
+        cont.innerHTML = `<p class="text-center text-[10px] text-slate-400 italic py-6">No hay mensajes aún. ¡Comienza la conversación!</p>`;
+        return;
+    }
+
+    historial.forEach(m => {
+        const esMio = m.de === usuarioActual;
         cont.innerHTML += `
-            <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-800">${g.nombre}</h4>
-                        <p class="text-[10px] text-emerald-700 font-bold">${g.tipo} • 👥 ${g.miembros}</p>
-                    </div>
-                    <button type="button" onclick="toggleUnirmeGrupoComunidad(${g.id})" class="${g.unido ? 'bg-slate-200 text-slate-700' : 'bg-emerald-700 text-white'} text-[10px] font-bold px-3 py-1 rounded-xl transition cursor-pointer">
-                        ${g.unido ? '✓ Unido' : '+ Unirme'}
-                    </button>
+            <div class="flex flex-col ${esMio ? 'items-end' : 'items-start'}">
+                <div class="max-w-[80%] rounded-2xl px-3 py-2 text-xs ${esMio ? 'bg-[#3b630b] text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200'}">
+                    <p>${m.texto}</p>
                 </div>
-                <p class="text-[11px] text-slate-600">${g.descripcion}</p>
+                <span class="text-[8px] text-slate-400 mt-0.5 px-1">${m.hora}</span>
             </div>
         `;
     });
+
+    cont.scrollTop = cont.scrollHeight;
 }
 
-function cambiarSubtabComunidad(tab) {
-    comunidadSubtab = tab;
-    const btnMuros = document.getElementById('tab-com-muros');
-    const btnCanales = document.getElementById('tab-com-canales');
-    const contMuros = document.getElementById('subtab-comunidad-muros');
-    const contCanales = document.getElementById('subtab-comunidad-canales');
+function enviarMensajeChat() {
+    const input = document.getElementById('input-mensaje-chat');
+    const texto = input?.value.trim();
+    if (!texto || !chatActivoEmail) return;
 
-    if (tab === 'muros') {
-        btnMuros.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
-        btnCanales.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
-        contMuros.classList.remove('hidden');
-        contCanales.classList.add('hidden');
-    } else {
-        btnCanales.className = "flex-1 py-1.5 rounded-xl bg-white text-emerald-900 shadow-sm transition cursor-pointer";
-        btnMuros.className = "flex-1 py-1.5 rounded-xl text-emerald-100 hover:text-white transition cursor-pointer";
-        contCanales.classList.remove('hidden');
-        contMuros.classList.add('hidden');
+    const clave = obtenerClaveChat(usuarioActual, chatActivoEmail);
+    if (!mensajesChat[clave]) {
+        mensajesChat[clave] = [];
     }
-}
 
-function filtrarPublicacionesComunidad(cat) {
-    comunidadFiltroCategoria = cat;
+    const horaActual = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    ['todos', 'recetas', 'tips', 'alertas'].forEach(c => {
-        const btn = document.getElementById(`btn-com-cat-${c}`);
-        if (btn) {
-            if (c === cat) {
-                btn.className = "px-3 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer";
-            } else {
-                btn.className = "px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
-            }
-        }
+    mensajesChat[clave].push({
+        de: usuarioActual,
+        texto: texto,
+        hora: horaActual
     });
 
-    renderizarPublicacionesComunidad();
-}
-
-function darLikePublicacionComunidad(idPost) {
-    const post = publicacionesComunidad.find(p => p.id === idPost);
-    if (!post) return;
-
-    if (post.dioLike) {
-        post.likes--;
-        post.dioLike = false;
-    } else {
-        post.likes++;
-        post.dioLike = true;
-    }
-
+    input.value = '';
     guardarEnLocalStorage();
-    renderizarPublicacionesComunidad();
-}
-
-function toggleUnirmeGrupoComunidad(idGrupo) {
-    const grupo = gruposComunidadList.find(g => g.id === idGrupo);
-    if (!grupo) return;
-
-    grupo.unido = !grupo.unido;
-    renderizarGruposComunidad();
-
-    if (grupo.unido) {
-        alert(`🤝 Te has unido al grupo "${grupo.nombre}".`);
-    } else {
-        alert(`Has dejado el grupo "${grupo.nombre}".`);
-    }
-}
-
-function abrirModalNuevaPublicacionComunidad() {
-    document.getElementById('modal-publicar-comunidad')?.classList.remove('hidden');
-}
-
-function cerrarModalNuevaPublicacionComunidad() {
-    document.getElementById('modal-publicar-comunidad')?.classList.add('hidden');
-}
-
-function guardarPublicacionComunidad() {
-    const cat = document.getElementById('select-comunidad-categoria')?.value || 'recetas';
-    const titulo = document.getElementById('input-comunidad-titulo')?.value.trim();
-    const contenido = document.getElementById('input-comunidad-contenido')?.value.trim();
-
-    if (!titulo || !contenido) {
-        return alert("Por favor completa el título y mensaje de tu publicación.");
-    }
-
-    const miNombre = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
-    const tipoCuenta = usuariosRegistrados[usuarioActual]?.tipo || 'hogar';
-
-    const nuevaPub = {
-        id: Date.now(),
-        autor: miNombre,
-        tipoAutor: tipoCuenta,
-        categoria: cat,
-        titulo: titulo,
-        contenido: contenido,
-        fecha: 'Ahora mismo',
-        likes: 0,
-        dioLike: false
-    };
-
-    publicacionesComunidad.unshift(nuevaPub);
-    guardarEnLocalStorage();
-    renderizarPublicacionesComunidad();
-    cerrarModalNuevaPublicacionComunidad();
-
-    document.getElementById('input-comunidad-titulo').value = '';
-    document.getElementById('input-comunidad-contenido').value = '';
-
-    alert("🎉 Publicación compartida con éxito en la Comunidad.");
+    renderizarMensajesChat();
 }
 
 // ==========================================
@@ -531,13 +560,11 @@ function obtenerPuntosRecoleccionGPS() {
                 miLatitud = pos.coords.latitude;
                 miLongitud = pos.coords.longitude;
 
-                // Calcular distancia real a cada punto
                 puntosRecoleccionList.forEach(p => {
                     const dist = calcularDistanciaHaversine(miLatitud, miLongitud, p.lat, p.lon);
                     p.distancia = `${dist.toFixed(1)} km`;
                 });
 
-                // Ordenar por cercanía
                 puntosRecoleccionList.sort((a, b) => parseFloat(a.distancia) - parseFloat(b.distancia));
                 renderizarPuntosRecoleccion();
             },
@@ -549,7 +576,7 @@ function obtenerPuntosRecoleccionGPS() {
 }
 
 function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radio de la Tierra en km
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -559,39 +586,12 @@ function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-function filtrarPuntosFijos(cat) {
-    categoriaPuntosFijos = cat;
-    
-    ['todos', 'fundacion', 'banco', 'comedor'].forEach(c => {
-        const btn = document.getElementById(`btn-puntos-cat-${c}`);
-        if (btn) {
-            if (c === cat) {
-                btn.className = "px-2.5 py-1 rounded-xl bg-[#3b630b] text-white font-bold whitespace-nowrap cursor-pointer";
-            } else {
-                btn.className = "px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold whitespace-nowrap cursor-pointer";
-            }
-        }
-    });
-
-    renderizarPuntosRecoleccion();
-}
-
 function renderizarPuntosRecoleccion() {
     const cont = document.getElementById('contenedor-puntos-recoleccion');
     if (!cont) return;
 
     cont.innerHTML = '';
-
-    let filtrados = puntosRecoleccionList.filter(p => {
-        return categoriaPuntosFijos === 'todos' || p.tipoClave === categoriaPuntosFijos;
-    });
-
-    if (filtrados.length === 0) {
-        cont.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">No hay puntos fijos en esta categoría.</div>`;
-        return;
-    }
-
-    filtrados.forEach(p => {
+    puntosRecoleccionList.forEach(p => {
         const linkMap = miLatitud && miLongitud 
             ? `https://www.google.com/maps/dir/?api=1&origin=${miLatitud},${miLongitud}&destination=${p.lat},${p.lon}`
             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.nombre + ' ' + p.direccion)}`;
@@ -607,14 +607,12 @@ function renderizarPuntosRecoleccion() {
                         🟢 ${p.estado}
                     </span>
                 </div>
-
                 <div class="text-[10px] text-slate-600 space-y-1">
                     <p>📍 <b>Dirección:</b> ${p.direccion}</p>
                     <p>⏰ <b>Horario:</b> ${p.horario}</p>
                     <p class="text-emerald-800 font-semibold">📦 ${p.aceptacion}</p>
                     <p class="text-red-600 font-bold bg-red-50 p-1.5 rounded-lg border border-red-100">${p.necesidadUrgente}</p>
                 </div>
-
                 <a href="${linkMap}" target="_blank" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 no-underline">
                     <i class="fa-solid fa-map-location-dot text-emerald-700"></i> Abrir en GPS / Maps
                 </a>
@@ -631,25 +629,18 @@ function renderizarRedDonaciones() {
     if (!cont) return;
 
     cont.innerHTML = '';
-
     const busqueda = (document.getElementById('input-buscar-donaciones')?.value || '').toLowerCase().trim();
 
     let filtrados = redDonaciones.filter(item => {
         const coincideBusqueda = item.nombre.toLowerCase().includes(busqueda) ||
                                 item.donante.toLowerCase().includes(busqueda) ||
                                 item.ubicacion.toLowerCase().includes(busqueda);
-
         const coincideUrgencia = donacionFiltro === 'urgente' ? item.urgente : true;
-
         return coincideBusqueda && coincideUrgencia;
     });
 
     if (filtrados.length === 0) {
-        cont.innerHTML = `
-            <div class="text-center py-8 text-xs text-slate-400">
-                <i class="fa-solid fa-box-open text-2xl mb-1 block"></i>
-                No se encontraron alimentos o donantes que coincidan con "${busqueda}".
-            </div>`;
+        cont.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">No se encontraron alimentos o donantes.</div>`;
         return;
     }
 
@@ -658,13 +649,6 @@ function renderizarRedDonaciones() {
     filtrados.forEach(item => {
         const esReservado = item.reservadoPor !== null;
         const reservadoPorMi = item.reservadoPor === miUsername;
-
-        let badgeDonante = `<b class="text-emerald-700">${item.donante}</b>`;
-        if (item.tipoDonante === 'comercio') {
-            badgeDonante = `<span class="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-amber-200">🏬 ${item.donante}</span>`;
-        } else if (item.tipoDonante === 'fundacion') {
-            badgeDonante = `<span class="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-purple-200">🏛️ ${item.donante}</span>`;
-        }
 
         cont.innerHTML += `
             <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
@@ -675,18 +659,16 @@ function renderizarRedDonaciones() {
                             <h4 class="text-xs font-bold text-slate-800">${item.nombre}</h4>
                             ${item.urgente ? '<span class="bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0">🔴 Urgente</span>' : ''}
                         </div>
-                        <p class="text-[10px] text-slate-500 mt-0.5">Donado por ${badgeDonante} • ${item.cantidad}</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Donado por <b class="text-emerald-700">${item.donante}</b> • ${item.cantidad}</p>
                         <p class="text-[9px] text-slate-400 mt-0.5">📍 ${item.ubicacion}</p>
                     </div>
                 </div>
-
                 <div class="bg-amber-50 px-2.5 py-1.5 rounded-xl border border-amber-200/60 flex justify-between items-center text-[10px] text-amber-900 font-semibold">
                     <span>⏰ Límite: ${item.fechaLimite}</span>
                     <span class="text-[9px] ${esReservado ? 'bg-slate-200 text-slate-700' : 'bg-emerald-200 text-emerald-900'} px-1.5 py-0.2 rounded font-bold">
                         ${esReservado ? 'Reservado' : 'Disponible'}
                     </span>
                 </div>
-
                 ${esReservado ? `
                     <button type="button" disabled class="w-full bg-slate-100 text-slate-500 text-xs font-bold py-2 rounded-xl border border-slate-200 cursor-not-allowed flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-lock text-slate-400"></i> ${reservadoPorMi ? '✅ Apartado por ti' : 'Reservado por ' + item.reservadoPor}
@@ -743,7 +725,6 @@ function abrirModalPublicarDonacion(itemPreseleccionado = null) {
     if (!modal || !select) return;
 
     select.innerHTML = '<option value="">-- Seleccionar de mi despensa --</option>';
-    
     inventario.forEach(i => {
         select.innerHTML += `<option value="${i.id}">${i.nombre} (${i.cantidad}) - ${i.pronto ? '🔴 Próximo a vencer' : '🟢 Fresco'}</option>`;
     });
@@ -756,11 +737,8 @@ function abrirModalPublicarDonacion(itemPreseleccionado = null) {
         document.getElementById('input-donar-cantidad').value = '';
     }
 
-    const hoy = new Date();
-    const hoyTxt = hoy.toISOString().split('T')[0];
-    const fechaInput = document.getElementById('input-donar-fecha-limite');
-    if (fechaInput) fechaInput.value = hoyTxt;
-
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('input-donar-fecha-limite').value = hoy;
     modal.classList.remove('hidden');
 }
 
@@ -768,9 +746,7 @@ function cerrarModalPublicarDonacion() { document.getElementById('modal-publicar
 
 function autocompletarDonacionDesdeDespensa() {
     const select = document.getElementById('select-donar-despensa');
-    const idSel = parseInt(select.value);
-
-    const item = inventario.find(i => i.id === idSel);
+    const item = inventario.find(i => i.id === parseInt(select.value));
     if (item) {
         document.getElementById('input-donar-nombre').value = item.nombre;
         document.getElementById('input-donar-cantidad').value = item.cantidad;
@@ -791,10 +767,9 @@ function confirmarPublicarDonacion() {
 
     const miNombre = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
     const tipoCuenta = usuariosRegistrados[usuarioActual]?.tipo || 'hogar';
-
     let itemOriginal = inventario.find(i => i.id === idDespensa);
 
-    const nuevaDonacion = {
+    redDonaciones.unshift({
         id: Date.now(),
         donante: miNombre,
         tipoDonante: tipoCuenta,
@@ -802,13 +777,10 @@ function confirmarPublicarDonacion() {
         cantidad: cantidad || '1 paquete',
         ubicacion: ubicacion,
         urgente: itemOriginal ? itemOriginal.pronto : true,
-        dias: itemOriginal ? itemOriginal.dias : 1,
         fechaLimite: `${fechaLim || 'Hoy'} hasta las ${horaLim}`,
         imagen: itemOriginal ? itemOriginal.imagen : 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
         reservadoPor: null
-    };
-
-    redDonaciones.unshift(nuevaDonacion);
+    });
 
     if (itemOriginal) {
         inventario = inventario.filter(i => i.id !== idDespensa);
@@ -817,7 +789,6 @@ function confirmarPublicarDonacion() {
     guardarEnLocalStorage();
     renderizarDespensa();
     cerrarModalPublicarDonacion();
-
     alert(`🤝 ¡Excelente! "${nombre}" publicado en la Red Solidaria.`);
     abrirDonaciones();
 }
@@ -827,18 +798,15 @@ function reservarDonacion(idDonacion) {
     if (!don) return;
 
     const miUsername = localStorage.getItem(`nowaste_username_${usuarioActual}`) || usuarioActual.split('@')[0];
-
     don.reservadoPor = miUsername;
     guardarEnLocalStorage();
     renderizarRedDonaciones();
-
-    alert(`🎉 ¡Alimento Reservado!\n\nHas apartado "${don.nombre}" de ${don.donante}.\nRecolección antes de: ${don.fechaLimite}.`);
+    alert(`🎉 ¡Alimento Reservado!\n\nHas apartado "${don.nombre}" de ${don.donante}.`);
 }
 
 function donarAlimentoDirecto(idAlimento) {
     const item = inventario.find(i => i.id === idAlimento);
     if (!item) return;
-
     abrirModalPublicarDonacion(item);
 }
 
@@ -849,12 +817,10 @@ function renderizarListaCompras() {
     const cont = document.getElementById('contenedor-lista-compras');
     const badge = document.getElementById('badge-compras-count');
     const resumen = document.getElementById('resumen-compras-pendientes');
-
     if (!cont) return;
 
     cont.innerHTML = '';
     const pendientes = listaCompras.filter(i => !i.comprado).length;
-
     if (badge) badge.textContent = pendientes;
     if (resumen) resumen.textContent = `${pendientes} pendientes`;
 
@@ -867,16 +833,12 @@ function renderizarListaCompras() {
         cont.innerHTML += `
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                 <label class="flex items-center gap-2.5 cursor-pointer flex-1">
-                    <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleItemCompra(${item.id})" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
-                    <span class="${item.comprado ? 'line-through text-slate-400' : 'text-slate-800 font-semibold'} bg-transparent p-0 m-0 border-none outline-none">${item.nombre}</span>
+                    <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleItemCompra(${item.id})" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="${item.comprado ? 'line-through text-slate-400' : 'text-slate-800 font-semibold'}">${item.nombre}</span>
                 </label>
                 <div class="flex items-center gap-1">
-                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg transition cursor-pointer">
-                        + Despensa
-                    </button>
-                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1 transition cursor-pointer">
-                        <i class="fa-solid fa-trash text-xs"></i>
-                    </button>
+                    <button type="button" onclick="moverADespensaDesdeCompras(${item.id})" title="Pasar a Despensa" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg transition cursor-pointer">+ Despensa</button>
+                    <button type="button" onclick="eliminarItemCompra(${item.id})" class="text-red-400 hover:text-red-600 px-1.5 py-1 transition cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
                 </div>
             </div>
         `;
@@ -886,7 +848,6 @@ function renderizarListaCompras() {
 function agregarItemCompra() {
     const input = document.getElementById('input-item-compra');
     const txt = input?.value.trim();
-
     if (!txt) return;
 
     listaCompras.unshift({ id: Date.now(), nombre: txt, comprado: false });
@@ -938,31 +899,22 @@ function renderizarDespensa() {
     const seccionPronto = document.getElementById('seccion-pronto');
     const seccionFrescos = document.getElementById('seccion-frescos');
     const mensajeVacio = document.getElementById('mensaje-vacio');
-
     if (!listaPronto || !listaFrescos) return;
 
     listaPronto.innerHTML = '';
     listaFrescos.innerHTML = '';
 
     const termino = (document.getElementById('input-buscar')?.value || '').toLowerCase().trim();
-
     let filtrados = inventario.filter(item => {
         const coincideNombre = item.nombre.toLowerCase().includes(termino);
-        const coincideEstado = categoriaFiltro === 'todos' || 
-                              (categoriaFiltro === 'pronto' && item.pronto) || 
-                              (categoriaFiltro === 'frescos' && !item.pronto);
-        
+        const coincideEstado = categoriaFiltro === 'todos' || (categoriaFiltro === 'pronto' && item.pronto) || (categoriaFiltro === 'frescos' && !item.pronto);
         const coincideTipo = tipoFiltro === 'todos' || item.tipo === tipoFiltro;
         const coincideUbicacion = ubicacionFiltro === 'todas' || item.ubicacion === ubicacionFiltro;
-
         return coincideNombre && coincideEstado && coincideTipo && coincideUbicacion;
     });
 
-    if (ordenActual === 'vencimiento') {
-        filtrados.sort((a, b) => a.dias - b.dias);
-    } else if (ordenActual === 'nombre') {
-        filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    }
+    if (ordenActual === 'vencimiento') filtrados.sort((a, b) => a.dias - b.dias);
+    else if (ordenActual === 'nombre') filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     let contadorPronto = 0;
     let contadorFrescos = 0;
@@ -981,12 +933,8 @@ function renderizarDespensa() {
                         </div>
                     </div>
                     <div class="flex gap-1">
-                        <button type="button" onclick="event.stopPropagation(); donarAlimentoDirecto(${item.id})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                            🤝 Donar
-                        </button>
-                        <button type="button" onclick="event.stopPropagation(); abrirRecetas()" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm active:scale-95 transition cursor-pointer">
-                            🍳 Recetas
-                        </button>
+                        <button type="button" onclick="event.stopPropagation(); donarAlimentoDirecto(${item.id})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm transition cursor-pointer">🤝 Donar</button>
+                        <button type="button" onclick="event.stopPropagation(); abrirRecetas()" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1.5 rounded-xl shadow-sm transition cursor-pointer">🍳 Recetas</button>
                     </div>
                 </div>
             `;
@@ -1012,14 +960,7 @@ function renderizarDespensa() {
 
     if (seccionPronto) seccionPronto.style.display = (contadorPronto > 0) ? 'block' : 'none';
     if (seccionFrescos) seccionFrescos.style.display = (contadorFrescos > 0) ? 'block' : 'none';
-
-    if (mensajeVacio) {
-        if (contadorPronto === 0 && contadorFrescos === 0) {
-            mensajeVacio.classList.remove('hidden');
-        } else {
-            mensajeVacio.classList.add('hidden');
-        }
-    }
+    if (mensajeVacio) mensajeVacio.classList.toggle('hidden', contadorPronto > 0 || contadorFrescos > 0);
 }
 
 function guardarAlimento() {
@@ -1033,14 +974,12 @@ function guardarAlimento() {
 
     let dias = 3;
     if (fecha) {
-        const hoy = new Date();
-        hoy.setHours(0,0,0,0);
-        const destino = new Date(fecha);
-        destino.setHours(0,0,0,0);
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const destino = new Date(fecha); destino.setHours(0,0,0,0);
         dias = Math.max(0, Math.ceil((destino - hoy) / (1000 * 3600 * 24)));
     }
 
-    const nuevo = {
+    inventario.unshift({
         id: Date.now(),
         nombre: nom,
         cantidad: cant,
@@ -1050,21 +989,17 @@ function guardarAlimento() {
         ubicacion: ub,
         imagen: fotoTemporal || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500',
         diasTotal: Math.max(dias + 2, 7)
-    };
+    });
 
-    inventario.unshift(nuevo);
     guardarEnLocalStorage();
-    
     renderizarDespensa();
     cerrarModalAgregar();
-
     document.getElementById('input-nombre-alimento').value = '';
     document.getElementById('input-cantidad-alimento').value = '';
     document.getElementById('input-fecha-alimento').value = '';
     fotoTemporal = null;
     document.getElementById('preview-foto')?.classList.add('hidden');
     document.getElementById('placeholder-foto')?.classList.remove('hidden');
-
     alert(`🥑 "${nom}" guardado con éxito en tu cuenta.`);
 }
 
@@ -1073,17 +1008,13 @@ function abrirDetalleTab(id) {
     if (!item) return;
 
     alimentoSeleccionadoId = id;
-
     document.getElementById('tab-detalle-nombre').textContent = item.nombre;
     document.getElementById('tab-detalle-cantidad').textContent = item.cantidad;
     document.getElementById('tab-detalle-dias-restantes').textContent = `${item.dias} días restantes para vencimiento`;
     document.getElementById('tab-detalle-ubicacion-tag').textContent = `📍 ${item.ubicacion} • ${item.tipo}`;
+    document.getElementById('tab-detalle-img').src = item.imagen;
 
-    const imgEl = document.getElementById('tab-detalle-img');
-    if (imgEl) imgEl.src = item.imagen;
-
-    const diasTotal = item.diasTotal || 7;
-    let pct = Math.min(100, Math.max(10, Math.round((item.dias / diasTotal) * 100)));
+    let pct = Math.min(100, Math.max(10, Math.round((item.dias / (item.diasTotal || 7)) * 100)));
     if (item.dias === 0) pct = 5;
 
     const barEl = document.getElementById('tab-detalle-bar');
@@ -1116,9 +1047,7 @@ function marcarComoConsumidoTab() {
 }
 
 function donarAlimentoDetalle() {
-    if (alimentoSeleccionadoId) {
-        donarAlimentoDirecto(alimentoSeleccionadoId);
-    }
+    if (alimentoSeleccionadoId) donarAlimentoDirecto(alimentoSeleccionadoId);
 }
 
 // ==========================================
@@ -1130,7 +1059,6 @@ function procesarFormulario(e) {
     if (modoModal === 'login') {
         const emailInput = document.getElementById('input-login-email');
         const passInput = document.getElementById('pass-login');
-
         const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
         const pass = passInput ? passInput.value.trim() : '';
 
@@ -1225,7 +1153,6 @@ function abrirModalSocial(red) {
     }
 
     if (select) select.value = select.options[0].value;
-
     document.getElementById('campo-correo-custom')?.classList.add('hidden');
     actualizarUsuarioDesdeSelect();
     cerrarLogin();
@@ -1239,7 +1166,6 @@ function actualizarUsuarioDesdeSelect() {
     const campoCustom = document.getElementById('campo-correo-custom');
     const inputUsername = document.getElementById('input-username-social');
     const btnLabel = document.getElementById('btn-user-label');
-
     if (!select || !inputUsername) return;
 
     if (select.value === 'nuevo_correo') {
@@ -1247,10 +1173,8 @@ function actualizarUsuarioDesdeSelect() {
         inputUsername.value = 'nuevo_usuario';
     } else {
         if (campoCustom) campoCustom.classList.add('hidden');
-        const prefijo = select.value.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
-        inputUsername.value = prefijo;
+        inputUsername.value = select.value.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
     }
-
     if (btnLabel) btnLabel.textContent = `@${inputUsername.value}`;
 }
 
@@ -1259,13 +1183,10 @@ function confirmarLoginSocial() {
     const customEmail = document.getElementById('input-correo-social-custom')?.value.trim();
     const username = document.getElementById('input-username-social')?.value.trim() || 'usuario';
 
-    let emailFinal = select.value;
-    if (emailFinal === 'nuevo_correo') {
-        if (!customEmail) {
-            alert("⚠️ Por favor ingresa un correo electrónico válido.");
-            return;
-        }
-        emailFinal = customEmail;
+    let emailFinal = select.value === 'nuevo_correo' ? customEmail : select.value;
+    if (select.value === 'nuevo_correo' && !customEmail) {
+        alert("⚠️ Por favor ingresa un correo electrónico válido.");
+        return;
     }
 
     usuarioActual = emailFinal;
@@ -1291,11 +1212,9 @@ function confirmarLoginSocial() {
 function cerrarSesion() {
     localStorage.removeItem('nowaste_autenticado');
     localStorage.removeItem('nowaste_usuario_activo');
-
     inventario = [];
     listaCompras = [];
     usuarioActual = '';
-
     ocultarTodasLasVistas();
     document.getElementById('vista-auth')?.classList.remove('hidden');
 }
@@ -1331,9 +1250,8 @@ function abrirDonaciones() {
 function abrirComunidades() {
     ocultarTodasLasVistas();
     document.getElementById('vista-comunidades')?.classList.remove('hidden');
-    cargarPublicacionesComunidadGlobales();
-    renderizarPublicacionesComunidad();
-    renderizarGruposComunidad();
+    renderizarListaPerfiles();
+    renderizarPanelChatsYAmigos();
 }
 
 function abrirRecetas() {
@@ -1355,14 +1273,11 @@ function ejecutarPantallaDeCarga(callback) {
             loader.classList.add('hidden');
             if (callback) callback();
         }, 1500);
-    } else {
-        if (callback) callback();
-    }
+    } else if (callback) callback();
 }
 
 function activarNotificacionesPush() {
     const icono = document.getElementById('icono-notificacion');
-
     if (!('Notification' in window)) {
         alert("🔔 Las notificaciones push no están soportadas en este navegador.");
         return;
@@ -1371,17 +1286,15 @@ function activarNotificacionesPush() {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             if (icono) icono.className = "fa-solid fa-bell text-amber-300 animate-bounce";
-            
             const porVencer = inventario.filter(i => i.dias <= 2);
-            
             if (porVencer.length > 0) {
                 porVencer.forEach(item => {
                     new Notification("⚠️ ¡Insumo Próximo a Vencer!", {
-                        body: `Tu alimento "${item.nombre}" vence en ${item.dias === 0 ? 'hoy' : item.dias + ' días'}. ¡Aprovéchalo en tus recetas!`,
+                        body: `Tu alimento "${item.nombre}" vence en ${item.dias === 0 ? 'hoy' : item.dias + ' días'}.`,
                         icon: item.imagen
                     });
                 });
-                alert(`🔔 ¡Notificaciones activadas! Tienes ${porVencer.length} alimento(s) por vencer pronto.`);
+                alert(`🔔 Tienes ${porVencer.length} alimento(s) por vencer pronto.`);
             } else {
                 alert("🔔 ¡Notificaciones activadas correctamente!");
             }
@@ -1404,7 +1317,7 @@ function generarRecetasDinamicas() {
 
     if (inventario.length === 0) {
         if (chipsCont) chipsCont.innerHTML = `<span class="text-xs text-slate-400 italic">No hay ingredientes en tu despensa.</span>`;
-        contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Agrega alimentos en tu despensa para sugerir recetas.</div>`;
+        contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Agrega alimentos para sugerir recetas.</div>`;
         return;
     }
 
@@ -1419,7 +1332,6 @@ function generarRecetasDinamicas() {
     });
 
     let recetasGeneradas = [];
-
     inventario.forEach(item => {
         plantillasRecetas.forEach(plantilla => {
             if (plantilla.aplicableA.includes(item.tipo) || plantilla.aplicableA.includes('Frutas y Verduras')) {
@@ -1431,8 +1343,6 @@ function generarRecetasDinamicas() {
                     imagen: item.imagen || plantilla.imagenDefault,
                     tiempo: plantilla.tiempo,
                     dificultad: plantilla.dificultad,
-                    esUrgente: item.pronto,
-                    diasRestantes: item.dias,
                     pasos: plantilla.pasosTemplate(item.nombre)
                 });
             }
@@ -1449,13 +1359,10 @@ function generarRecetasDinamicas() {
                         <p class="text-[10px] text-slate-500 mt-0.5">Ingrediente: <b class="text-emerald-700">${receta.ingredienteEstrella}</b></p>
                     </div>
                 </div>
-                <button type="button" onclick="verPasosRecetaDinamica('${receta.id}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer">
-                    Ver Preparación
-                </button>
+                <button type="button" onclick="verPasosRecetaDinamica('${receta.id}')" class="w-full bg-slate-100 hover:bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1.5 rounded-xl transition cursor-pointer">Ver Preparación</button>
             </div>
         `;
     });
-
     window.recetasGeneradasCache = recetasGeneradas;
 }
 
@@ -1466,16 +1373,13 @@ function verPasosRecetaDinamica(idReceta) {
     document.getElementById('modal-receta-img').src = receta.imagen;
     document.getElementById('modal-receta-titulo').textContent = receta.titulo;
     document.getElementById('modal-receta-meta').innerHTML = `⏱️ Tiempo: ${receta.tiempo} | 📊 Dificultad: ${receta.dificultad}`;
-
-    const ingList = document.getElementById('modal-receta-ingredientes');
-    ingList.innerHTML = `<li class="text-emerald-700 font-semibold">✓ ${receta.ingredienteEstrella}</li>`;
+    document.getElementById('modal-receta-ingredientes').innerHTML = `<li class="text-emerald-700 font-semibold">✓ ${receta.ingredienteEstrella}</li>`;
 
     const pasosList = document.getElementById('modal-receta-pasos');
     pasosList.innerHTML = '';
     receta.pasos.forEach(p => { pasosList.innerHTML += `<li>${p}</li>`; });
 
-    const btnCocinar = document.getElementById('btn-cocinar-receta');
-    btnCocinar.onclick = () => {
+    document.getElementById('btn-cocinar-receta').onclick = () => {
         inventario = inventario.filter(i => i.id !== receta.itemOriginalId);
         guardarEnLocalStorage();
         renderizarDespensa();
@@ -1487,7 +1391,6 @@ function verPasosRecetaDinamica(idReceta) {
 }
 
 function cerrarModalReceta() { document.getElementById('modal-receta-detalle').classList.add('hidden'); }
-
 function abrirModalFiltros() { document.getElementById('modal-filtros')?.classList.remove('hidden'); }
 function cerrarModalFiltros() { document.getElementById('modal-filtros')?.classList.add('hidden'); }
 function cambiarOrden(orden) { ordenActual = orden; renderizarDespensa(); }
@@ -1511,7 +1414,6 @@ function actualizarModalUI() {
     const linkOlvidaste = document.getElementById('link-olvidaste');
     const tabLogin = document.getElementById('tab-login');
     const tabRegistro = document.getElementById('tab-registro');
-
     if (!titulo || !camposLogin || !camposRegistro) return;
 
     if (modoModal === 'login') {
@@ -1566,46 +1468,26 @@ function cerrarModalAgregar() { document.getElementById('modal-agregar')?.classL
 
 function filtrarTipo(tipo) {
     tipoFiltro = tipo;
-    const botones = document.querySelectorAll('#contenedor-filtros-tipo .btn-tipo');
-    botones.forEach(b => {
-        const valAttr = b.getAttribute('data-tipo');
-        if (valAttr === tipo) {
-            b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer";
-        } else {
-            b.className = "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
-        }
+    document.querySelectorAll('#contenedor-filtros-tipo .btn-tipo').forEach(b => {
+        b.className = b.getAttribute('data-tipo') === tipo ? "btn-tipo px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white whitespace-nowrap shadow-xs cursor-pointer" : "btn-tipo px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 whitespace-nowrap cursor-pointer";
     });
     renderizarDespensa();
 }
 
 function filtrarUbicacion(ub) {
     ubicacionFiltro = ub;
-    const botones = document.querySelectorAll('#contenedor-filtros-ubicacion .btn-ubicacion');
-    botones.forEach(b => {
-        const valAttr = b.getAttribute('data-ub');
-        if (valAttr === ub) {
-            b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer";
-        } else {
-            b.className = "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
-        }
+    document.querySelectorAll('#contenedor-filtros-ubicacion .btn-ubicacion').forEach(b => {
+        b.className = b.getAttribute('data-ub') === ub ? "btn-ubicacion px-2.5 py-1 rounded-lg bg-[#3b630b] font-bold text-white shadow-xs cursor-pointer" : "btn-ubicacion px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 cursor-pointer";
     });
     renderizarDespensa();
 }
 
 function filtrarCategoria(cat) {
     categoriaFiltro = cat;
-    const btnTodos = document.getElementById('btn-cat-todos');
-    const btnPronto = document.getElementById('btn-cat-pronto');
-    const btnFrescos = document.getElementById('btn-cat-frescos');
-
-    [btnTodos, btnPronto, btnFrescos].forEach(b => {
-        if (b) b.className = "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
+    ['todos', 'pronto', 'frescos'].forEach(c => {
+        const btn = document.getElementById(`btn-cat-${c}`);
+        if (btn) btn.className = c === cat ? "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer" : "px-3.5 py-1.5 rounded-xl font-semibold bg-white border border-slate-200 text-slate-600 whitespace-nowrap transition cursor-pointer";
     });
-
-    if (cat === 'todos' && btnTodos) btnTodos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'pronto' && btnPronto) btnPronto.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-    if (cat === 'frescos' && btnFrescos) btnFrescos.className = "px-3.5 py-1.5 rounded-xl font-bold bg-[#3b630b] text-white shadow-sm whitespace-nowrap transition cursor-pointer";
-
     renderizarDespensa();
 }
 
@@ -1621,10 +1503,8 @@ function previsualizarFoto(e) {
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
-
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
                 fotoTemporal = canvas.toDataURL('image/jpeg', 0.7);
 
                 const imgPreview = document.getElementById('preview-foto');
@@ -1652,7 +1532,6 @@ function obtenerUbicacion() {
             (pos) => {
                 miLatitud = pos.coords.latitude;
                 miLongitud = pos.coords.longitude;
-
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${miLatitud}&lon=${miLongitud}`)
                     .then(res => res.json())
                     .then(data => {
