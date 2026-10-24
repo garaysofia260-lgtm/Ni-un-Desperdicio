@@ -122,7 +122,8 @@
                 <header class="bg-gradient-to-b from-[#2d4c08] to-[#3b630b] pt-5 pb-4 px-5 text-white rounded-b-3xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[#2d4c08] font-bold text-base shadow-sm">
+                            <!-- AVATAR EN EL HEADER QUE SE ACTUALIZA DINÁMICAMENTE -->
+                            <div onclick="abrirPerfil()" class="avatar-header-container w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[#2d4c08] font-bold text-base shadow-sm overflow-hidden cursor-pointer">
                                 🥑
                             </div>
                             <div>
@@ -156,7 +157,7 @@
                             <i class="fa-solid fa-leaf text-emerald-300 text-sm"></i>
                             <span>Has salvado <b id="stat-salvados">0 kg</b> este mes</span>
                         </div>
-                        <span class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Nivel 1 🌟</span>
+                        <span id="badge-nivel-header" class="bg-emerald-400/30 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-100">Semilla Ambiental 🌿</span>
                     </div>
                 </header>
 
@@ -685,9 +686,8 @@
                     <!-- TARJETA PRINCIPAL DE PERFIL -->
                     <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm flex flex-col items-center relative text-center">
                         <div class="relative group my-1">
-                            <!-- MARCO DE FOTO CON POSICIÓN Y ZOOM AJUSTABLE (TIPO WHATSAPP) -->
                             <div id="avatar-frame" class="w-24 h-24 rounded-full border-4 border-emerald-500 overflow-hidden shadow-md bg-slate-100 flex items-center justify-center relative cursor-pointer" onclick="abrirEditorAvatar()">
-                                <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover transition-transform duration-100" style="transform: scale(1) translate(0px, 0px);">
+                                <img id="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover transition-transform duration-100">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-white text-xs font-bold">
                                     <i class="fa-solid fa-camera"></i>
                                 </div>
@@ -700,11 +700,11 @@
                         <h3 id="perfil-nombre-usuario" class="text-base font-bold text-slate-800 mt-1">Usuario Nuevo</h3>
                         <p id="perfil-correo-usuario" class="text-[10px] text-slate-400 font-semibold">correo@nowaste.com</p>
                         <span id="perfil-badge-tipo" class="mt-1.5 bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2.5 py-0.5 rounded-full border border-emerald-200">
-                            🌱 Principiante Zero Waste
+                            🌱 Defensor del Alimento
                         </span>
                     </div>
 
-                    <!-- RACHA INICIALIZADA EN CERO (0) -->
+                    <!-- RACHA -->
                     <div id="racha-card" class="rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden bg-slate-100 border-slate-300">
                         <div class="space-y-1 z-10 max-w-[65%]">
                             <div class="flex items-center gap-1.5">
@@ -731,7 +731,7 @@
                         </div>
                     </div>
 
-                    <!-- MÉTRICAS DE IMPACTO AMBIENTAL Y AHORRO (INICIALIZADAS EN 0) -->
+                    <!-- MÉTRICAS DE IMPACTO AMBIENTAL Y AHORRO -->
                     <div class="grid grid-cols-3 gap-2">
                         <div class="bg-white border border-slate-200 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
                             <span class="text-lg">💰</span>
@@ -797,7 +797,7 @@
 
         </div>
 
-        <!-- PANTALLA DE CARGA CON CONEJO Y ZANAHORIAS -->
+        <!-- PANTALLA DE CARGA -->
         <div id="pantalla-carga" class="fixed inset-0 bg-[#1b3303]/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-4 z-50 animate-fade-in">
             <div class="bg-white rounded-3xl p-6 w-full max-w-[280px] shadow-2xl flex flex-col items-center text-center space-y-3 relative border-2 border-emerald-300">
                 <div class="text-5xl animate-bunny-hop my-2">🐇</div>
@@ -811,14 +811,13 @@
             </div>
         </div>
 
-        <!-- MODAL EDITOR DE AVATAR (NUEVO: CON AJUSTES DE POSICIÓN Y ZOOM TIPO WHATSAPP) -->
+        <!-- MODAL EDITOR DE AVATAR Y CAMBIO DE FOTO -->
         <div id="modal-editor-avatar" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl relative border border-slate-100 animate-scale-up space-y-3">
                 <button type="button" onclick="cerrarEditorAvatar()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
 
                 <h3 class="text-sm font-bold text-slate-800 text-center">🖼️ Ajustar Foto de Perfil</h3>
 
-                <!-- PREVISUALIZADOR EN TIEMPO REAL CON MÁSCARA CIRCULAR -->
                 <div class="flex justify-center my-2">
                     <div class="w-28 h-28 rounded-full border-4 border-emerald-500 overflow-hidden shadow-inner bg-slate-100 relative flex items-center justify-center">
                         <img id="avatar-img-preview-modal" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-full h-full object-cover transition-transform duration-75">
@@ -836,7 +835,6 @@
                         </div>
                     </div>
 
-                    <!-- CONTROLES DE ZOOM Y POSICIÓN (ESTILO WHATSAPP) -->
                     <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-2xl space-y-2">
                         <div>
                             <div class="flex justify-between text-[10px] font-bold text-slate-600 mb-0.5">
@@ -868,7 +866,7 @@
             </div>
         </div>
 
-        <!-- MODAL VER PERFIL DE USUARIO EXTERNO -->
+        <!-- MODAL VER PERFIL EXTERNO -->
         <div id="modal-ver-perfil" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-3xl p-5 w-full max-w-[300px] shadow-2xl relative border border-slate-100 animate-scale-up text-center space-y-3">
                 <button type="button" onclick="cerrarModalPerfil()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
