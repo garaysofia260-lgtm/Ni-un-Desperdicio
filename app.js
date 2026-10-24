@@ -27,18 +27,11 @@ let comunidadSubtab = 'foro';
 let comunidadFiltroCategoria = 'todos';
 let chatActivoEmail = null;
 
-// Variables de estado de perfil y editor de avatar
-let avatarUrlTemporal = null;
-let avatarTamanoTemporal = 80;
-let imagenPerfilOriginal = null;
-let perfilZoom = 1;
-let perfilOffsetX = 0;
-let perfilOffsetY = 0;
-
 // Base de datos de cuentas registradas localmente
 let usuariosRegistrados = JSON.parse(localStorage.getItem('nowaste_usuarios_db')) || {
     'usuario.demo@gmail.com': { pass: '123456', nombre: 'Usuario Demo', tipo: 'hogar' },
     'sofia@nowaste.com': { pass: '123456', nombre: 'Sofia', tipo: 'hogar' },
+    'garaysofia@gmail.com': { pass: '123456', nombre: 'Sofia', tipo: 'hogar' },
     'mcdonalds@comercio.com': { pass: '123456', nombre: 'McDonald\'s Centro', tipo: 'comercio' },
     'fundacion@esperanza.org': { pass: '123456', nombre: 'Fundación San José', tipo: 'fundacion' }
 };
@@ -60,37 +53,37 @@ let miPerfil = { ...perfilDefault };
 // ==========================================
 const spritesSrBigotes = {
     1: {
-        img: 'image_90a5e3.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-amber-50 border-amber-300',
         mensaje: '"¡Bienvenido! Hoy empieza tu racha con la zanahoria del ahorro."'
     },
     2: {
-        img: 'image_90a5fd.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-emerald-50 border-emerald-300',
         mensaje: '"¡2 días seguidos! Estás salvando comida como un profesional."'
     },
     3: {
-        img: 'image_90a603.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-indigo-50 border-indigo-300',
         mensaje: '"¡3 días de racha! ¡Qué estilo tienes para no desperdiciar nada!"'
     },
     4: {
-        img: 'image_90a620.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-pink-50 border-pink-300',
         mensaje: '"¡4 días! El planeta y tu bolsillo te lo agradecen mucho."'
     },
     5: {
-        img: 'image_90a65d.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-blue-50 border-blue-300',
         mensaje: '"¡5 días en racha! Tu disciplina de consumo es imbatible."'
     },
     6: {
-        img: 'image_90a677.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-purple-50 border-purple-300',
         mensaje: '"¡6 días consecutivos! Ya eres todo un experto en desperdicio cero."'
     },
     7: {
-        img: 'image_90a658.png',
+        img: 'https://cdn-icons-png.flaticon.com/512/3076/3076897.png',
         bgCard: 'bg-teal-50 border-teal-300',
         mensaje: '"¡UNA SEMANA ENTERA! 🎉 ¡Logro legendario con el Sr. Bigotes!"'
     }
@@ -299,25 +292,28 @@ function actualizarSincronizacionPerfilUI() {
     const saludo = document.getElementById('saludo-usuario');
     if (saludo) saludo.textContent = `¡Hola, ${usernameGuardado}! 👋`;
 
-    // Sincronizar Avatar en todas las cabeceras e íconos
-    const fotosNodos = document.querySelectorAll('.img-perfil-header, .avatar-usuario-icon, #avatar-img, #avatar-img-preview-modal');
-    fotosNodos.forEach(el => {
+    // 1. Sincronizar Avatar en la Cabecera (Mi Despensa Header)
+    const headerAvatar = document.querySelector('.avatar-header-container');
+    if (headerAvatar) {
         if (miPerfil.avatar) {
-            if (el.tagName === 'IMG') {
-                el.src = miPerfil.avatar;
-            } else {
-                el.innerHTML = `<img src="${miPerfil.avatar}" class="w-full h-full object-cover rounded-full">`;
-            }
+            headerAvatar.innerHTML = `<img src="${miPerfil.avatar}" class="w-full h-full object-cover rounded-full">`;
         } else {
-            if (el.tagName === 'IMG') {
-                el.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
-            } else {
-                el.textContent = '🥑';
-            }
+            headerAvatar.textContent = '🥑';
         }
-    });
+    }
 
-    // Sincronizar Métricas e Impacto en las vistas
+    // 2. Sincronizar Foto en Perfil Principal y Modal
+    const imgMainPerfil = document.getElementById('avatar-img');
+    if (imgMainPerfil) {
+        imgMainPerfil.src = miPerfil.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+    }
+
+    const imgPreviewModal = document.getElementById('avatar-img-preview-modal');
+    if (imgPreviewModal) {
+        imgPreviewModal.src = miPerfil.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+    }
+
+    // Sincronizar Métricas e Impacto
     const statSalvados = document.getElementById('stat-salvados');
     if (statSalvados) statSalvados.textContent = `${(miPerfil.kilosSalvados || 0).toFixed(1)} kg`;
 
@@ -419,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// CONTROLES Y AJUSTE DE FOTO DE PERFIL (SLIDERS Y CANVAS)
+// CONTROLES Y EDICIÓN DE FOTO DE PERFIL
 // ==========================================
 function actualizarTransformacionAvatar() {
     const sliderZoom = document.getElementById('slider-avatar-zoom');
@@ -449,7 +445,16 @@ function subirCustomAvatar(e) {
 
     const reader = new FileReader();
     reader.onload = function(evt) {
-        miPerfil.avatar = evt.target.result;
+        const imgData = evt.target.result;
+        miPerfil.avatar = imgData;
+
+        // Actualizar vistas inmediatas
+        const imgPreview = document.getElementById('avatar-img-preview-modal');
+        if (imgPreview) imgPreview.src = imgData;
+
+        const imgAvatarMain = document.getElementById('avatar-img');
+        if (imgAvatarMain) imgAvatarMain.src = imgData;
+
         actualizarSincronizacionPerfilUI();
     };
     reader.readAsDataURL(file);
@@ -545,9 +550,10 @@ function cerrarEditorAvatar() {
 
 function guardarAjustesAvatar() {
     guardarEnLocalStorage();
+    actualizarSincronizacionPerfilUI();
     cerrarEditorAvatar();
     cargarDatosPerfil();
-    alert("✨ ¡Avatar y foto de perfil actualizados con éxito!");
+    alert("✨ ¡Foto de perfil guardada con éxito!");
 }
 
 function cambiarDeCuenta() {
@@ -1563,7 +1569,6 @@ function procesarFormulario(e) {
                 return false;
             }
         } else {
-            // Si el correo no existe, registrar automáticamente un demo
             usuariosRegistrados[email] = { pass: pass, nombre: email.split('@')[0], tipo: 'hogar' };
         }
 
