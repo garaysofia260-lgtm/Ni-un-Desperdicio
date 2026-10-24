@@ -300,7 +300,7 @@ function actualizarSincronizacionPerfilUI() {
     if (saludo) saludo.textContent = `¡Hola, ${usernameGuardado}! 👋`;
 
     // Sincronizar Avatar en todas las cabeceras e íconos
-    const fotosNodos = document.querySelectorAll('.img-perfil-header, .avatar-usuario-icon, #avatar-img');
+    const fotosNodos = document.querySelectorAll('.img-perfil-header, .avatar-usuario-icon, #avatar-img, #avatar-img-preview-modal');
     fotosNodos.forEach(el => {
         if (miPerfil.avatar) {
             if (el.tagName === 'IMG') {
@@ -310,7 +310,7 @@ function actualizarSincronizacionPerfilUI() {
             }
         } else {
             if (el.tagName === 'IMG') {
-                el.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';
+                el.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
             } else {
                 el.textContent = '🥑';
             }
@@ -419,82 +419,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// CONTROLES Y AJUSTE DE FOTO DE PERFIL (ZOOM Y CANVAS)
+// CONTROLES Y AJUSTE DE FOTO DE PERFIL (SLIDERS Y CANVAS)
 // ==========================================
-function cargarImagenPerfilOriginal(e) {
+function actualizarTransformacionAvatar() {
+    const sliderZoom = document.getElementById('slider-avatar-zoom');
+    const sliderX = document.getElementById('slider-avatar-x');
+    const sliderY = document.getElementById('slider-avatar-y');
+    const labelZoom = document.getElementById('val-zoom');
+    const imgPreview = document.getElementById('avatar-img-preview-modal');
+    const imgAvatarMain = document.getElementById('avatar-img');
+
+    if (!sliderZoom || !sliderX || !sliderY) return;
+
+    const zoom = sliderZoom.value / 100;
+    const x = sliderX.value;
+    const y = sliderY.value;
+
+    if (labelZoom) labelZoom.textContent = `${sliderZoom.value}%`;
+
+    const transformStr = `scale(${zoom}) translate(${x}px, ${y}px)`;
+
+    if (imgPreview) imgPreview.style.transform = transformStr;
+    if (imgAvatarMain) imgAvatarMain.style.transform = transformStr;
+}
+
+function subirCustomAvatar(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-            imagenPerfilOriginal = img;
-            perfilZoom = 1;
-            perfilOffsetX = 0;
-            perfilOffsetY = 0;
-            
-            const rangeZoom = document.getElementById('range-perfil-zoom');
-            if (rangeZoom) rangeZoom.value = 1;
-
-            dibujarCanvasPerfil();
-            document.getElementById('modal-ajustar-foto')?.classList.remove('hidden');
-        };
-        img.src = evt.target.result;
+        miPerfil.avatar = evt.target.result;
+        actualizarSincronizacionPerfilUI();
     };
     reader.readAsDataURL(file);
-}
-
-function cambiarZoomPerfil(val) {
-    perfilZoom = parseFloat(val);
-    dibujarCanvasPerfil();
-}
-
-function moverFotoPerfil(dx, dy) {
-    perfilOffsetX += dx;
-    perfilOffsetY += dy;
-    dibujarCanvasPerfil();
-}
-
-function dibujarCanvasPerfil() {
-    const canvas = document.getElementById('canvas-perfil');
-    if (!canvas || !imagenPerfilOriginal) return;
-
-    const ctx = canvas.getContext('2d');
-    const size = canvas.width;
-
-    ctx.clearRect(0, 0, size, size);
-
-    const nw = imagenPerfilOriginal.width * perfilZoom;
-    const nh = imagenPerfilOriginal.height * perfilZoom;
-
-    const x = (size - nw) / 2 + perfilOffsetX;
-    const y = (size - nh) / 2 + perfilOffsetY;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-
-    ctx.drawImage(imagenPerfilOriginal, x, y, nw, nh);
-    ctx.restore();
-}
-
-function guardarFotoPerfilAjustada() {
-    const canvas = document.getElementById('canvas-perfil');
-    if (!canvas) return;
-
-    miPerfil.avatar = canvas.toDataURL('image/jpeg', 0.85);
-    guardarEnLocalStorage();
-    actualizarSincronizacionPerfilUI();
-
-    document.getElementById('modal-ajustar-foto')?.classList.add('hidden');
-    alert("📸 ¡Foto de perfil actualizada correctamente!");
-}
-
-function cerrarModalAjustarFoto() {
-    document.getElementById('modal-ajustar-foto')?.classList.add('hidden');
 }
 
 // ==========================================
@@ -536,7 +494,7 @@ function cargarDatosPerfil() {
 
 function actualizarRachaDiaria() {
     const hoyStr = new Date().toISOString().split('T')[0];
-    let rachaActual = parseInt(localStorage.getItem(`nowaste_racha_count_${usuarioActual}`)) || 1;
+    let rachaActual = parseInt(localStorage.getItem(`nowaste_racha_count_${usuarioActual}`)) || 0;
     let ultimaFecha = localStorage.getItem(`nowaste_racha_fecha_${usuarioActual}`);
 
     if (ultimaFecha && ultimaFecha !== hoyStr) {
@@ -547,16 +505,13 @@ function actualizarRachaDiaria() {
         if (diffDias === 1) {
             rachaActual++;
         } else if (diffDias > 1) {
-            rachaActual = 1;
+            rachaActual = 0;
         }
         localStorage.setItem(`nowaste_racha_count_${usuarioActual}`, rachaActual);
         localStorage.setItem(`nowaste_racha_fecha_${usuarioActual}`, hoyStr);
-    } else if (!ultimaFecha) {
-        localStorage.setItem(`nowaste_racha_count_${usuarioActual}`, 1);
-        localStorage.setItem(`nowaste_racha_fecha_${usuarioActual}`, hoyStr);
     }
 
-    const diaClave = ((rachaActual - 1) % 7) + 1;
+    const diaClave = Math.min(7, Math.max(1, rachaActual));
     const configRacha = spritesSrBigotes[diaClave] || spritesSrBigotes[1];
 
     const numEl = document.getElementById('racha-dias-numero');
@@ -566,9 +521,11 @@ function actualizarRachaDiaria() {
     const notiEl = document.getElementById('sr-bigotes-noticall');
 
     if (numEl) numEl.textContent = rachaActual;
-    if (msgEl) msgEl.textContent = configRacha.mensaje;
+    if (msgEl) {
+        msgEl.textContent = rachaActual > 0 ? configRacha.mensaje : '"¡Hola! Guarda o consume tu primer alimento para activar tu racha."';
+    }
     if (spriteEl) spriteEl.src = configRacha.img;
-    if (cardEl) {
+    if (cardEl && rachaActual > 0) {
         cardEl.className = `rounded-3xl p-4 shadow-md border-2 transition-all duration-500 flex items-center justify-between relative overflow-hidden ${configRacha.bgCard}`;
     }
 
@@ -579,12 +536,6 @@ function actualizarRachaDiaria() {
 }
 
 function abrirEditorAvatar() {
-    avatarUrlTemporal = miPerfil.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
-    avatarTamanoTemporal = localStorage.getItem(`nowaste_avatar_size_${usuarioActual}`) || 80;
-
-    const slider = document.getElementById('slider-avatar-size');
-    if (slider) slider.value = avatarTamanoTemporal;
-
     document.getElementById('modal-editor-avatar')?.classList.remove('hidden');
 }
 
@@ -592,33 +543,11 @@ function cerrarEditorAvatar() {
     document.getElementById('modal-editor-avatar')?.classList.add('hidden');
 }
 
-function seleccionarAvatarPreset(url) {
-    miPerfil.avatar = url;
-    actualizarSincronizacionPerfilUI();
-}
-
-function subirCustomAvatar(e) {
-    const file = e.target.files[0];
-    if (file) {
-        cargarImagenPerfilOriginal(e);
-    }
-}
-
-function cambiarTamanoAvatar(val) {
-    avatarTamanoTemporal = val;
-    const frame = document.getElementById('avatar-frame');
-    if (frame) {
-        frame.style.width = `${val}px`;
-        frame.style.height = `${val}px`;
-    }
-}
-
 function guardarAjustesAvatar() {
-    localStorage.setItem(`nowaste_avatar_size_${usuarioActual}`, avatarTamanoTemporal);
     guardarEnLocalStorage();
     cerrarEditorAvatar();
     cargarDatosPerfil();
-    alert("✨ ¡Avatar e icono de perfil actualizados con éxito!");
+    alert("✨ ¡Avatar y foto de perfil actualizados con éxito!");
 }
 
 function cambiarDeCuenta() {
@@ -1634,6 +1563,7 @@ function procesarFormulario(e) {
                 return false;
             }
         } else {
+            // Si el correo no existe, registrar automáticamente un demo
             usuariosRegistrados[email] = { pass: pass, nombre: email.split('@')[0], tipo: 'hogar' };
         }
 
@@ -1647,7 +1577,7 @@ function procesarFormulario(e) {
 
     } else {
         const nombreInput = document.getElementById('input-reg-nombre');
-        const emailRegInput = document.querySelectorAll('#campos-registro input[type="email"]')[0];
+        const emailRegInput = document.getElementById('input-reg-email');
         const pass1Input = document.getElementById('pass-reg1');
         const pass2Input = document.getElementById('pass-reg2');
         const checkTerminos = document.getElementById('check-terminos');
@@ -1843,7 +1773,7 @@ function ejecutarPantallaDeCarga(callback) {
         setTimeout(() => {
             loader.classList.add('hidden');
             if (callback) callback();
-        }, 1500);
+        }, 1200);
     } else if (callback) callback();
 }
 
